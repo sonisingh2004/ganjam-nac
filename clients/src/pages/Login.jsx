@@ -1,285 +1,309 @@
 import React, { useState } from "react";
-
-const text = {
-  en: {
-    title: "Solid Waste Management System",
-    welcome: "Welcome to the Solid Waste Management System",
-    phone: "Phone Number *",
-    getOtp: "GET OTP",
-    verifyOtp: "VERIFY OTP",
-    login: "Login"
-  },
-  hi: {
-    title: "ठोस अपशिष्ट प्रबंधन प्रणाली",
-    welcome: "ठोस अपशिष्ट प्रबंधन प्रणाली में आपका स्वागत है",
-    phone: "मोबाइल नंबर *",
-    getOtp: "ओटीपी प्राप्त करें",
-    verifyOtp: "ओटीपी सत्यापित करें",
-    login: "लॉगिन"
-  },
-  od: {
-    title: "ଠୋସ ଅବଞ୍ଜନ ପରିଚାଳନା ପ୍ରଣାଳୀ",
-    welcome: "ଠୋସ ଅବଞ୍ଜନ ପରିଚାଳନା ପ୍ରଣାଳୀକୁ ସ୍ୱାଗତ",
-    phone: "ମୋବାଇଲ୍ ନମ୍ବର *",
-    getOtp: "ଓଟିପି ପାଆନ୍ତୁ",
-    verifyOtp: "ଓଟିପି ଯାଞ୍ଚ",
-    login: "ଲଗଇନ୍"
-  }
-};
+import { useTranslation, withTranslation } from "react-i18next";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-toastify";
 
 const Login = () => {
+  const { t, i18n } = useTranslation();
+
   const [role, setRole] = useState("citizen");
-  const [lang, setLang] = useState("en");
-  const t = text[lang];
-
-  // Notice popup (once)
-  const [showNotice, setShowNotice] = useState(
-    !localStorage.getItem("noticeAccepted")
-  );
-
-  // OTP states
   const [phone, setPhone] = useState("");
-  const [showOtp, setShowOtp] = useState(false);
   const [otp, setOtp] = useState("");
+  const [showOtp, setShowOtp] = useState(false);
+  const [showPopup, setShowPopup] = useState(true);
 
   return (
-    <div className="min-h-screen flex relative">
-
-      {/* ================= NOTICE POPUP ================= */}
-      {showNotice && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-          <div className="bg-white w-full max-w-lg rounded-xl shadow-xl overflow-hidden">
-
-            <div className="bg-green-700 text-white px-6 py-4 flex items-center gap-3">
-              <span className="text-xl">⚠️</span>
-              <h2 className="text-lg font-semibold">Official Notice</h2>
-            </div>
-
-            <div className="px-6 py-5 text-gray-700 text-sm leading-relaxed">
-              <p className="mb-3">
-                This portal is an official digital service of
-                <span className="font-semibold"> Berhampur N.A.C </span>
-                under the Solid Waste Management System.
-              </p>
-              <p className="mb-3">
-                Any misuse, false reporting, or unauthorized access may lead
-                to administrative or legal action.
-              </p>
-              <p>
-                Please proceed only if you are an authorized user or
-                registered citizen.
-              </p>
-            </div>
-
-            <div className="bg-gray-50 px-6 py-4 flex justify-center">
-              <button
-                onClick={() => {
-                  localStorage.setItem("noticeAccepted", "true");
-                  setShowNotice(false);
-                }}
-                className="bg-green-600 hover:bg-green-700 text-white px-8 py-2 rounded-md"
-              >
-                I Understand
-              </button>
-            </div>
-
+    <div className="min-h-screen relative overflow-hidden">
+      {/* ================= BACKGROUND ================= */}
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-700 via-green-600 to-teal-600"></div>
+      
+      {/* ================= MOBILE NAVBAR ================= */}
+      <div className="lg:hidden fixed top-0 left-0 w-full z-40
+                      bg-green-700/95 backdrop-blur-md
+                      flex items-center justify-between px-4 py-3 shadow-md">
+        {/* LEFT: LOGO + TEXT */}
+        <div className="flex items-center gap-2">
+          <img
+            src="https://swachhganjam.in/assets/logo-D7UUn_EU.png"
+            alt="logo"
+            className="h-8"
+          />
+          <div className="leading-tight">
+            <p className="text-white text-sm font-semibold">
+              {t("berhampurNAC")}
+            </p>
+            <p className="text-green-100 text-[11px]">
+              {t("solidWaste")}
+            </p>
           </div>
         </div>
-      )}
 
-      {/* ================= MOBILE NAVBAR ================= */}
-      <div className="lg:hidden fixed top-0 left-0 w-full bg-green-600 flex items-center gap-3 px-4 py-3 z-40">
-        <img
-          src="https://swachhganjam.in/assets/logo-D7UUn_EU.png"
-          className="h-8"
-          alt="logo"
-        />
-        <span className="text-white font-semibold text-sm">
-          Solid Waste Management
-        </span>
-
+        {/* RIGHT: LANGUAGE */}
         <select
-          value={lang}
-          onChange={(e) => setLang(e.target.value)}
-          className="ml-auto text-sm rounded px-1"
+          value={i18n.language}
+          onChange={(e) => i18n.changeLanguage(e.target.value)}
+          className="text-xs rounded-md px-2 py-1 bg-white text-gray-700"
         >
-          <option value="en">EN</option>
-          <option value="hi">HI</option>
-          <option value="od">OD</option>
+          <option value="en">{t("english")}</option>
+          <option value="hi">{t("hindi")}</option>
+          <option value="od">{t("odia")}</option>
         </select>
       </div>
 
-      {/* ================= LEFT SECTION ================= */}
-      <div className="hidden lg:flex w-1/2 bg-[#2f7d57] text-white px-16 py-20">
-        <div>
-          <div className="flex items-center gap-3 mb-16">
-            <img
-              src="https://swachhganjam.in/assets/logo-D7UUn_EU.png"
-              className="h-10"
-              alt="logo"
-            />
-            <span className="font-semibold text-lg">GANJAM N.A.C</span>
-          </div>
-
-          <h1 className="text-5xl font-bold mb-6">{t.title}</h1>
-
-          <p className="text-green-100 max-w-md mb-14">
-            Join our community effort to create a cleaner, greener environment
-            through responsible waste management.
-          </p>
-
-          <div className="flex gap-6">
-            {["PAPER", "GLASS", "ORGANIC", "PLASTIC"].map((i) => (
-              <div
-                key={i}
-                className="w-28 h-24 bg-white/10 border border-white/20 rounded-lg
-                           flex flex-col items-center justify-center text-sm"
-              >
-                ♻
-                <span className="mt-1">{i}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ================= RIGHT SECTION ================= */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center bg-gray-50 pt-20 lg:pt-0">
-        <div className="bg-white w-full max-w-md p-8 shadow-lg rounded">
-
-          {/* Language (desktop) */}
-          <div className="hidden lg:flex justify-end mb-2">
-            <select
-              value={lang}
-              onChange={(e) => setLang(e.target.value)}
-              className="border text-sm rounded px-2 py-1"
+      {/* ================= POPUP (MUST & SHOULD) ================= */}
+      <AnimatePresence>
+        {showPopup && (
+          <motion.div
+            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              initial={{ scale: 0.85, y: 40 }}
+              animate={{ scale: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 text-center"
             >
-              <option value="en">English</option>
-              <option value="hi">हिंदी</option>
-              <option value="od">ଓଡ଼ିଆ</option>
-            </select>
-          </div>
+              <h3 className="text-xl font-semibold text-green-700 mb-3">
+                🏛️ {t("officialPortal")}
+              </h3>
 
-          <div className="flex justify-center mb-4">
-            <img
-              src="https://swachhganjam.in/assets/logo-D7UUn_EU.png"
-              className="h-20"
-              alt="logo"
-            />
-          </div>
-
-          {/* Tabs */}
-          <div className="flex justify-center gap-8 text-sm mb-6">
-            {["citizen", "supervisor", "admin"].map((r) => (
-              <button
-                key={r}
-                onClick={() => {
-                  setRole(r);
-                  setShowOtp(false);
-                  setPhone("");
-                  setOtp("");
-                }}
-                className={`uppercase pb-2 ${
-                  role === r
-                    ? "text-green-600 border-b-2 border-green-600"
-                    : "text-gray-400"
-                }`}
-              >
-                {r}
-              </button>
-            ))}
-          </div>
-
-          <h2 className="text-xl font-semibold text-center mb-2 capitalize">
-            {role} Login
-          </h2>
-
-          <p className="text-center text-gray-500 text-sm mb-6">
-            {t.welcome}
-          </p>
-
-          {/* ================= CITIZEN OTP FLOW ================= */}
-          {role === "citizen" && !showOtp && (
-            <>
-              <input
-                value={phone}
-                onChange={(e) => {
-                  if (/^\d*$/.test(e.target.value) && e.target.value.length <= 10) {
-                    setPhone(e.target.value);
-                  }
-                }}
-                placeholder={t.phone}
-                className="w-full border px-4 py-2 rounded mb-5"
-              />
-
-              <button
-                disabled={phone.length !== 10}
-                onClick={() => setShowOtp(true)}
-                className={`w-full py-2 rounded text-white ${
-                  phone.length === 10
-                    ? "bg-green-600 hover:bg-green-700"
-                    : "bg-green-300 cursor-not-allowed"
-                }`}
-              >
-                {t.getOtp}
-              </button>
-            </>
-          )}
-
-          {role === "citizen" && showOtp && (
-            <>
-              <p className="text-sm text-center text-gray-600 mb-2">
-                Demo OTP: <span className="font-semibold">123456</span>
+              <p className="text-sm text-gray-600 mb-6">
+                {t("officialWarning")}
               </p>
 
-              <input
-                value={otp}
-                onChange={(e) => {
-                  if (/^\d*$/.test(e.target.value) && e.target.value.length <= 6) {
-                    setOtp(e.target.value);
-                  }
-                }}
-                placeholder="Enter OTP"
-                className="w-full border px-4 py-2 rounded mb-5"
-              />
-
               <button
-                onClick={() => {
-                  if (otp === "123456") {
-                    alert("OTP Verified (Demo)");
-                  } else {
-                    alert("Invalid OTP");
-                  }
-                }}
-                className="w-full bg-green-600 text-white py-2 rounded"
+                onClick={() => setShowPopup(false)}
+                className="bg-green-600 hover:bg-green-700 text-white
+                          px-6 py-2 rounded-xl font-medium"
               >
-                {t.verifyOtp}
+                {t("iUnderstand")}
               </button>
-            </>
-          )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-          {/* ================= SUPERVISOR / ADMIN ================= */}
-          {role !== "citizen" && (
-            <>
-              <input
-                placeholder="Username *"
-                className="w-full border px-4 py-2 rounded mb-4"
-              />
-              <input
-                type="password"
-                placeholder="Password *"
-                className="w-full border px-4 py-2 rounded mb-5"
-              />
-              <button className="w-full bg-green-600 text-white py-2 rounded">
-                {t.login}
-              </button>
-            </>
-          )}
+      {/* ================= MAIN GRID ================= */}
+      <div className="relative z-10 min-h-screen grid lg:grid-cols-2">
+        {/* ================= LEFT PANEL ================= */}
+        <motion.div
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+          className="hidden lg:flex flex-col justify-center px-16 text-white"
+        >
+          {/* TOP BRANDING */}
+          <div className="flex items-center gap-4 mb-10">
+            <img
+              src="https://swachhganjam.in/assets/logo-D7UUn_EU.png"
+              alt="logo"
+              className="h-14"
+            />
+            <div>
+              <h3 className="text-xl font-semibold">{t("berhampurNAC")}</h3>
+              <p className="text-sm text-green-100">{t("solidWaste")}</p>
+            </div>
+          </div>
 
-          <p className="text-xs text-center text-gray-500 mt-6">
-            By logging in, you agree to our Terms of Service and Privacy Policy
+          <h1 className="text-4xl font-bold mb-4">{t("smartCity")}</h1>
+
+          <p className="text-green-100 max-w-lg mb-10">
+            {t("platformDescription")}
           </p>
 
+          <div className="grid grid-cols-2 gap-6">
+            {[
+              t("liveTracking"),
+              t("doorCollection"),
+              t("photoComplaints"),
+              t("wardReports"),
+            ].map((item, i) => (
+              <motion.div
+                key={item}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.15 }}
+                className="bg-white/15 border border-white/20
+                          rounded-xl px-5 py-4 text-sm"
+              >
+                {item}
+              </motion.div>
+            ))}
+          </div>
+
+          <p className="mt-10 text-xs text-green-100">
+            {t("governmentAuthorized")}
+          </p>
+        </motion.div>
+
+        {/* ================= RIGHT LOGIN ================= */}
+        <div className="flex items-center justify-center px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="w-full max-w-md bg-white/95 backdrop-blur-xl
+                      rounded-3xl shadow-2xl px-8 py-10"
+          >
+            {/* FORM LOGO */}
+            <div className="flex justify-center mb-4">
+              <img
+                src="https://swachhganjam.in/assets/logo-D7UUn_EU.png"
+                alt="logo"
+                className="h-16"
+              />
+            </div>
+
+            <h2 className="text-center text-xl font-semibold text-gray-800 mb-1 capitalize">
+              {t("loginAs")} {t(`roles.${role}`)}
+            </h2>
+
+            <p className="text-center text-sm text-gray-500 mb-6">
+              {t("welcome")}
+            </p>
+
+            {/* LANGUAGE */}
+            <div className="flex justify-center mb-6">
+              <select
+                value={i18n.language}
+                onChange={(e) => i18n.changeLanguage(e.target.value)}
+                className="border rounded-lg px-3 py-1 text-sm"
+              >
+                <option value="en">{t("english")}</option>
+                <option value="hi">{t("hindi")}</option>
+                <option value="od">{t("odia")}</option>
+              </select>
+            </div>
+
+            {/* ROLE SWITCH */}
+            <div className="flex bg-gray-100 rounded-full p-1 mb-6">
+              {["citizen", "supervisor", "admin"].map((r) => (
+                <button
+                  key={r}
+                  onClick={() => {
+                    setRole(r);
+                    setShowOtp(false);
+                    setPhone("");
+                    setOtp("");
+                  }}
+                  className={`flex-1 py-2 rounded-full text-sm transition
+                  ${
+                    role === r
+                      ? "bg-green-600 text-white shadow"
+                      : "text-gray-500"
+                  }`}
+                >
+                  {t(`roles.${r}`)}
+                </button>
+              ))}
+            </div>
+
+            {/* LOGIN FLOW */}
+            <AnimatePresence mode="wait">
+              {/* CITIZEN PHONE */}
+              {role === "citizen" && !showOtp && (
+                <motion.div
+                  key="citizen-phone"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                >
+                  <input
+                    value={phone}
+                    onChange={(e) =>
+                      /^\d*$/.test(e.target.value) &&
+                      e.target.value.length <= 10 &&
+                      setPhone(e.target.value)
+                    }
+                    placeholder={t("phone")}
+                    className="w-full border rounded-xl px-4 py-3 mb-4 text-center text-lg"
+                  />
+
+                  <button
+                    disabled={phone.length !== 10}
+                    onClick={() => {
+                      setShowOtp(true);
+                      toast.info(t("otpSent"));
+                    }}
+                    className={`w-full py-3 rounded-xl text-white font-semibold
+                    ${
+                      phone.length === 10
+                        ? "bg-green-600 hover:bg-green-700"
+                        : "bg-green-300 cursor-not-allowed"
+                    }`}
+                  >
+                    {t("getOtp")}
+                  </button>
+                </motion.div>
+              )}
+
+              {/* CITIZEN OTP */}
+              {role === "citizen" && showOtp && (
+                <motion.div
+                  key="citizen-otp"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                >
+                  <input
+                    value={otp}
+                    onChange={(e) =>
+                      /^\d*$/.test(e.target.value) &&
+                      e.target.value.length <= 6 &&
+                      setOtp(e.target.value)
+                    }
+                    placeholder={t("enterOtp")}
+                    className="w-full border rounded-xl px-4 py-3 mb-2 text-center text-lg"
+                  />
+
+                  <p className="text-xs text-center text-gray-500 mb-4">
+                    {t("demoOtp")}: <b>123456</b>
+                  </p>
+
+                  <button
+                    onClick={() =>
+                      otp === "123456"
+                        ? toast.success(t("loginSuccess"))
+                        : toast.error(t("invalidOtp"))
+                    }
+                    className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold"
+                  >
+                    {t("verifyOtp")}
+                  </button>
+                </motion.div>
+              )}
+
+              {/* ADMIN / SUPERVISOR */}
+              {role !== "citizen" && (
+                <motion.div
+                  key="admin"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                >
+                  <input
+                    placeholder={t("username")}
+                    className="w-full border rounded-xl px-4 py-3 mb-4 text-center"
+                  />
+                  <input
+                    type="password"
+                    placeholder={t("password")}
+                    className="w-full border rounded-xl px-4 py-3 mb-6 text-center"
+                  />
+
+                  <button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold">
+                    {t("login")}
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <p className="text-xs text-center text-gray-400 mt-6">
+              {t("secureSystem")}
+            </p>
+          </motion.div>
         </div>
       </div>
     </div>

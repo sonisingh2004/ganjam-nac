@@ -1,6 +1,6 @@
 // src/routes/AppRoutes.jsx
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-
+import React from "react";
 import MainLayout from "../layout/MainLayout";
 import Dashboard from "../pages/Dashboard";
 import Login from "../pages/Login";

@@ -1,0 +1,11 @@
+{
+  "citizens": [
+    { "id": 1, "phone": "9876543210" }
+  ],
+  "supervisors": [
+    { "id": 1, "username": "sup1", "password": "1234" }
+  ],
+  "admins": [
+    { "id": 1, "username": "admin", "password": "admin123" }
+  ]
+}

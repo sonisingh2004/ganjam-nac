@@ -14,14 +14,13 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
 
   const menuItems = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: '🏠' },
-    { name: 'Complaint', path: '/admin/complaints', icon: '📋' },
+    { name: 'Complaints', path: '/admin/complaints', icon: '📋' },
+    { name: 'Vehicles', path: '/admin/vehicles', icon: '🚛' },
+    { name: 'Wards', path: '/admin/wards', icon: '🏘️' },
+    { name: 'Track Vehicles', path: '/admin/track-vehicles', icon: '📍' },
+    { name: 'Attendance', path: '/admin/attendance', icon: '✅' },
+    { name: 'Waste Collection', path: '/admin/waste-collection', icon: '♻️' },
     { name: 'Fuel Management', path: '/admin/fuel', icon: '⛽' },
-    { name: 'MSW', path: '/admin/msw', icon: '♻️' },
-    { name: 'Master Data', path: '/admin/master-data', icon: '📊' },
-    { name: 'Customer Management', path: '/admin/customers', icon: '👥' },
-    { name: 'AVTS', path: '/admin/avts', icon: '🚛' },
-    { name: 'Waste Collection', path: '/admin/waste-collection', icon: '🗑️' },
-    { name: 'Coverage Monitoring', path: '/admin/coverage', icon: '📍' },
   ];
 
   return (
@@ -37,23 +36,23 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
       {/* Sidebar */}
       <aside className={`${
         isOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:translate-x-0 w-64 bg-white shadow-lg h-screen fixed left-0 top-0 transition-transform duration-300 z-50 overflow-y-auto`}>
+      } lg:translate-x-0 w-64 bg-gradient-to-b from-emerald-400 via-emerald-500 to-teal-500 shadow-2xl h-screen fixed left-0 top-0 transition-transform duration-300 z-50 overflow-y-auto`}>
         {/* Logo Section */}
-        <div className="p-6 border-b border-gray-200">
+        <div className="p-6 border-b border-emerald-300/30">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-indigo-600">
+            <h1 className="text-2xl font-bold text-white">
               Admin
             </h1>
             <button 
               onClick={() => setIsOpen(!isOpen)}
-              className="p-1 hover:bg-gray-100 rounded lg:hidden"
+              className="p-1 hover:bg-white/10 rounded lg:hidden text-white"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
-          <p className="text-xs text-gray-500 mt-1">Admin Panel</p>
+          <p className="text-xs text-white/80 mt-1">Admin Panel</p>
         </div>
 
         {/* Menu Items */}
@@ -67,8 +66,8 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
                     to={item.path}
                     className={`flex items-center justify-start px-4 py-3 rounded-lg transition-all ${
                       isActive
-                        ? 'bg-indigo-50 text-indigo-600 font-semibold'
-                        : 'text-gray-700 hover:bg-gray-100'
+                        ? 'bg-white text-emerald-600 font-semibold shadow-lg'
+                        : 'text-white hover:bg-white/15 hover:text-white'
                     }`}
                   >
                     <span className="text-xl">{item.icon}</span>

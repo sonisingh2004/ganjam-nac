@@ -1,13 +1,17 @@
+// @ts-nocheck
 import { useEffect, useState } from 'react';
-import Collection from '../../components/admin/Collection';
 import ComplaintsStatus from '../../components/admin/ComplaintsStatus';
-import KYCStatus from '../../components/admin/KYCStatus';
+import FuelManagement from '../../components/admin/FuelManagement';
 import MapView from '../../components/admin/MapView';
+import PendingActions from '../../components/admin/PendingActions';
+import QuickActions from '../../components/admin/QuickActions';
 import RecentActivity from '../../components/admin/RecentActivity';
-import SecondaryScan from '../../components/admin/SecondaryScan';
+import RouteCompletion from '../../components/admin/RouteCompletion';
+import StaffPerformance from '../../components/admin/StaffPerformance';
 import StatsCard from '../../components/admin/StatsCard';
-import UsersCharge from '../../components/admin/UsersCharge';
+import TodaysPerformance from '../../components/admin/TodaysPerformance';
 import VehiclesStatus from '../../components/admin/VehiclesStatus';
+import WardCoverage from '../../components/admin/WardCoverage';
 
 
 const AdminDashboard = () => {
@@ -16,18 +20,44 @@ const AdminDashboard = () => {
     stats: {
       waste: 0,
       vehicles: 0,
-      fuel: 0,
-      fuelCost: 0,
+      activeStaff: 0,
       complaints: 0,
-      userFees: 0
+      wards: 0,
+      citizens: 0
     },
-    usersCharge: {
-      today: 0,
-      tillMonth: 0
+    performance: {
+      resolvedComplaints: 0,
+      totalComplaints: 0,
+      collectionRate: 0
     },
-    collection: {
-      prevMonth: 0,
-      tillYear: 0
+    pending: {
+      pendingComplaints: 0,
+      avgResponseTime: '0h'
+    },
+    wardCoverage: {
+      wards: []
+    },
+    staffPerformance: {
+      present: 0,
+      absent: 0,
+      onLeave: 0,
+      attendanceRate: 0,
+      tasksAssigned: 0,
+      tasksCompleted: 0,
+      tasksInProgress: 0
+    },
+    routeCompletion: {
+      overallCompletion: 0,
+      completedRoutes: 0,
+      totalRoutes: 0,
+      routes: []
+    },
+    fuelManagement: {
+      todayUsage: 0,
+      monthUsage: 0,
+      totalCost: 0,
+      avgCostPerLiter: 0,
+      alerts: []
     },
     vehicles: {
       all: 0,
@@ -42,24 +72,6 @@ const AdminDashboard = () => {
       open: 0,
       closed: 0,
       outOfScope: 0
-    },
-    secondaryScan: {
-      today: 0,
-      yesterday: 0,
-      tillMonth: 0,
-      prevMonth: 0
-    },
-    kyc: {
-      residential: 0,
-      commercial: 0,
-      religious: 0,
-      industrial: 0,
-      doorToDoor: {
-        today: 0,
-        yesterday: 0,
-        tillMonth: 0,
-        prevMonth: 0
-      }
     },
     recentActivities: []
   });
@@ -81,54 +93,86 @@ const AdminDashboard = () => {
       // Mock data for demonstration
       const mockData = {
         stats: {
-          waste: 100.33,
-          vehicles: 1,
-          fuel: 4630,
-          fuelCost: 1687611,
+          waste: 125.50,
+          vehicles: 18,
+          activeStaff: 45,
           complaints: 23,
-          userFees: 0
+          wards: 12,
+          citizens: 8250
         },
-        usersCharge: {
-          today: 0,
-          tillMonth: 240
+        performance: {
+          resolvedComplaints: 87,
+          totalComplaints: 100,
+          collectionRate: 94,
+          complaintsTrend: [72, 68, 75, 81, 78, 85, 87],
+          collectionTrend: [88, 90, 89, 92, 91, 93, 94]
         },
-        collection: {
-          prevMonth: 100,
-          tillYear: 340
+        pending: {
+          pendingComplaints: 234,
+          avgResponseTime: '2.4h'
+        },
+        wardCoverage: {
+          wards: [
+            { name: 'Ward 1', status: 'completed', completion: 100, collectedToday: 12.5 },
+            { name: 'Ward 2', status: 'completed', completion: 100, collectedToday: 10.8 },
+            { name: 'Ward 3', status: 'in-progress', completion: 75, collectedToday: 8.5 },
+            { name: 'Ward 4', status: 'in-progress', completion: 60, collectedToday: 7.2 },
+            { name: 'Ward 5', status: 'pending', completion: 25, collectedToday: 3.5 },
+            { name: 'Ward 6', status: 'completed', completion: 100, collectedToday: 11.3 }
+          ]
+        },
+        staffPerformance: {
+          present: 45,
+          absent: 2,
+          onLeave: 1,
+          attendanceRate: 94,
+          tasksAssigned: 52,
+          tasksCompleted: 38,
+          tasksInProgress: 14
+        },
+        routeCompletion: {
+          overallCompletion: 73,
+          completedRoutes: 11,
+          totalRoutes: 15,
+          routes: [
+            { name: 'Route A1', vehicle: 'MH-12-AB-1234', status: 'completed', completion: 100 },
+            { name: 'Route A2', vehicle: 'MH-12-AB-1235', status: 'completed', completion: 100 },
+            { name: 'Route B1', vehicle: 'MH-12-CD-5678', status: 'in-progress', completion: 65 },
+            { name: 'Route B2', vehicle: 'MH-12-CD-5679', status: 'in-progress', completion: 45 },
+            { name: 'Route C1', vehicle: 'MH-12-EF-9012', status: 'pending', completion: 0 }
+          ]
+        },
+        fuelManagement: {
+          todayUsage: 285,
+          monthUsage: 4630,
+          totalCost: 1687611,
+          avgCostPerLiter: 105,
+          alerts: [
+            { type: 'warning', message: 'High fuel consumption detected', vehicle: 'MH-12-CD-5678' },
+            { type: 'info', message: 'Refueling scheduled', vehicle: 'MH-12-AB-1234' }
+          ]
         },
         vehicles: {
-          all: 1,
+          all: 18,
           overSpeeding: 0,
-          running: 0,
-          standing: 0,
-          stopped: 0,
+          running: 12,
+          standing: 3,
+          stopped: 2,
           dataNotRetrieving: 1
         },
         complaints: {
-          pending: 1,
-          open: 18,
-          closed: 3,
-          outOfScope: 1
+          pending: 5,
+          open: 12,
+          closed: 58,
+          outOfScope: 3
         },
-        secondaryScan: {
-          today: 0,
-          yesterday: 0,
-          tillMonth: 0,
-          prevMonth: 0
-        },
-        kyc: {
-          residential: 21,
-          commercial: 10,
-          religious: 5,
-          industrial: 6,
-          doorToDoor: {
-            today: 0,
-            yesterday: 0,
-            tillMonth: 42,
-            prevMonth: 0
-          }
-        },
-        recentActivities: []
+        recentActivities: [
+          { type: 'collection', message: 'Waste collected from Ward 5 - 2.5 tons', time: '10 mins ago' },
+          { type: 'complaint', message: 'New complaint registered - Missed collection', time: '25 mins ago' },
+          { type: 'vehicle', message: 'Vehicle MH-12-AB-1234 route completed', time: '45 mins ago' },
+          { type: 'staff', message: 'Morning shift attendance completed - 45/48 present', time: '1 hour ago' },
+          { type: 'payment', message: 'Payment received - ₹1,850', time: '2 hours ago' }
+        ]
       };
 
       setDashboardData(mockData);
@@ -171,11 +215,11 @@ const AdminDashboard = () => {
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <h1 className="text-4xl sm:text-4xl font-extrabold bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent mb-3 animate-gradient">
-                Welcome Back, Admin! 👋
+                Command & Control Center 🌿
               </h1>
               <p className="text-gray-600 text-lg flex items-center gap-2">
                 <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                Here's what's happening with your waste management system today.
+                Real-time monitoring of waste management operations across all wards
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -190,28 +234,22 @@ const AdminDashboard = () => {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 sm:gap-5 mb-8 sm:mb-10">
           <StatsCard
-            title="Waste(Ton.)"
+            title="Waste Collected"
             value={dashboardData.stats.waste}
             icon="♻️"
             gradient="from-emerald-500 to-teal-600"
           />
           <StatsCard
-            title="Vehicles"
+            title="Active Vehicles"
             value={dashboardData.stats.vehicles}
             icon="🚛"
             gradient="from-teal-500 to-cyan-600"
           />
           <StatsCard
-            title="Fuel(Ltr.)"
-            value={dashboardData.stats.fuel}
-            icon="⛽"
-            gradient="from-orange-500 to-amber-600"
-          />
-          <StatsCard
-            title="Fuel Cost(₹)"
-            value={dashboardData.stats.fuelCost}
-            icon="💰"
-            gradient="from-lime-600 to-green-600"
+            title="Staff Present"
+            value={dashboardData.stats.activeStaff}
+            icon="👷"
+            gradient="from-blue-500 to-indigo-600"
           />
           <StatsCard
             title="Complaints"
@@ -220,38 +258,53 @@ const AdminDashboard = () => {
             gradient="from-rose-500 to-pink-600"
           />
           <StatsCard
-            title="User Fees"
-            value={dashboardData.stats.userFees}
-            icon="₹"
-            gradient="from-green-600 to-emerald-700"
+            title="Total Wards"
+            value={dashboardData.stats.wards}
+            icon="🏘️"
+            gradient="from-lime-600 to-green-600"
           />
+          <StatsCard
+            title="Registered Citizens"
+            value={dashboardData.stats.citizens}
+            icon="👥"
+            gradient="from-purple-500 to-violet-600"
+          />
+        </div>
+
+        {/* Performance & Actions Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8 sm:mb-10">
+          <TodaysPerformance data={dashboardData.performance} />
+          <ComplaintsStatus data={dashboardData.complaints} />
+          <QuickActions />
         </div>
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 mb-6 sm:mb-8">
-          {/* Users Charge & Collection */}
-          <div className="space-y-5 sm:space-y-6">
-            <UsersCharge data={dashboardData.usersCharge} />
-            <Collection data={dashboardData.collection} />
-          </div>
+          {/* Ward Coverage */}
+          <WardCoverage data={dashboardData.wardCoverage} />
 
           {/* Vehicles Status */}
           <VehiclesStatus data={dashboardData.vehicles} />
 
           {/* Complaints Status */}
-          <ComplaintsStatus data={dashboardData.complaints} />
+          <PendingActions data={dashboardData.pending} />
         </div>
 
-        {/* Secondary Scan & KYC */}
+        {/* Staff & Route Management */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 mb-6 sm:mb-8">
-          <SecondaryScan data={dashboardData.secondaryScan} />
-          <KYCStatus data={dashboardData.kyc} />
+          <StaffPerformance data={dashboardData.staffPerformance} />
+          <RouteCompletion data={dashboardData.routeCompletion} />
+        </div>
+
+        {/* Fuel Management */}
+        <div className="mb-6 sm:mb-8">
+            <MapView />
         </div>
 
         {/* Map & Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
           <div className="lg:col-span-2">
-            <MapView />
+          <FuelManagement data={dashboardData.fuelManagement} />
           </div>
           <RecentActivity activities={dashboardData.recentActivities} />
         </div>

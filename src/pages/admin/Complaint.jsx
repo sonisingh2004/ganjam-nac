@@ -150,53 +150,83 @@ const Complaint = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Complaint Management</h1>
-        <p className="text-gray-600">Manage and track all citizen complaints</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-teal-50 to-cyan-100 p-4 sm:p-6 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-green-300/40 to-emerald-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-teal-300/40 to-cyan-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-2000"></div>
+      
+      <div className="relative z-10">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent mb-2">Complaint Management 📋</h1>
+          <p className="text-gray-600 text-lg">Monitor and resolve citizen complaints efficiently</p>
+        </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
-          <p className="text-sm text-gray-600 mb-1">Total Complaints</p>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-800">{stats.total}</p>
+        <div className="bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl shadow-xl p-5 sm:p-6 text-white hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-medium opacity-90">Total Complaints</p>
+            <svg className="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <p className="text-3xl sm:text-4xl font-extrabold">{stats.total}</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
-          <p className="text-sm text-gray-600 mb-1">Open</p>
-          <p className="text-2xl sm:text-3xl font-bold text-red-600">{stats.open}</p>
+        <div className="bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl shadow-xl p-5 sm:p-6 text-white hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-medium opacity-90">Open</p>
+            <svg className="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <p className="text-3xl sm:text-4xl font-extrabold">{stats.open}</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
-          <p className="text-sm text-gray-600 mb-1">Pending</p>
-          <p className="text-2xl sm:text-3xl font-bold text-yellow-600">{stats.pending}</p>
+        <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-xl p-5 sm:p-6 text-white hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-medium opacity-90">Pending</p>
+            <svg className="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p className="text-3xl sm:text-4xl font-extrabold">{stats.pending}</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
-          <p className="text-sm text-gray-600 mb-1">Closed</p>
-          <p className="text-2xl sm:text-3xl font-bold text-green-600">{stats.closed}</p>
+        <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl p-5 sm:p-6 text-white hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-medium opacity-90">Closed</p>
+            <svg className="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p className="text-3xl sm:text-4xl font-extrabold">{stats.closed}</p>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow p-4 sm:p-6 mb-6">
+      <div className="bg-white rounded-2xl shadow-xl p-5 sm:p-6 mb-6 border border-gray-100">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Search */}
           <div className="lg:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
-            <input
-              type="text"
-              placeholder="Search by ID, title, or location..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              value={filters.search}
-              onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-            />
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Search</label>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search by ID, title, or location..."
+                className="w-full px-4 py-3 pl-10 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                value={filters.search}
+                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+              />
+              <svg className="w-5 h-5 text-gray-400 absolute left-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
           </div>
 
           {/* Status Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Status</label>
             <select
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
               value={filters.status}
               onChange={(e) => setFilters({ ...filters, status: e.target.value })}
             >
@@ -213,7 +243,7 @@ const Complaint = () => {
           <div className="flex items-end space-x-2">
             <button
               onClick={() => setFilters({ status: 'all', search: '', dateFrom: '', dateTo: '' })}
-              className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+              className="flex-1 px-4 py-3 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 font-semibold rounded-xl hover:from-gray-200 hover:to-gray-300 transition-all shadow-sm hover:shadow-md"
             >
               Reset
             </button>
@@ -222,19 +252,19 @@ const Complaint = () => {
       </div>
 
       {/* Complaints Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Category</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Location</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden xl:table-cell">Date</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">ID</th>
+                <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Title</th>
+                <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider hidden md:table-cell">Category</th>
+                <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider hidden lg:table-cell">Location</th>
+                <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Priority</th>
+                <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Status</th>
+                <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider hidden xl:table-cell">Date</th>
+                <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -246,7 +276,7 @@ const Complaint = () => {
                 </tr>
               ) : (
                 filteredComplaints.map((complaint) => (
-                  <tr key={complaint.id} className="hover:bg-gray-50">
+                  <tr key={complaint.id} className="hover:bg-emerald-50 transition-colors border-b border-gray-100 last:border-0">
                     <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {complaint.id}
                     </td>
@@ -289,7 +319,7 @@ const Complaint = () => {
                           setSelectedComplaint(complaint);
                           setShowModal(true);
                         }}
-                        className="text-indigo-600 hover:text-indigo-900 font-medium"
+                        className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold px-4 py-2 rounded-lg hover:from-emerald-600 hover:to-teal-700 transition-all shadow-sm hover:shadow-md"
                       >
                         View
                       </button>
@@ -304,18 +334,18 @@ const Complaint = () => {
 
       {/* Modal */}
       {showModal && selectedComplaint && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
+        <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-100">
+            <div className="p-6 sm:p-8">
               {/* Modal Header */}
-              <div className="flex justify-between items-start mb-4">
+              <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-800">{selectedComplaint.title}</h2>
-                  <p className="text-sm text-gray-500 mt-1">ID: {selectedComplaint.id}</p>
+                  <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">{selectedComplaint.title}</h2>
+                  <p className="text-sm text-gray-500 mt-2 font-medium">ID: {selectedComplaint.id}</p>
                 </div>
                 <button
                   onClick={() => setShowModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded-lg transition-all"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -324,28 +354,28 @@ const Complaint = () => {
               </div>
 
               {/* Modal Content */}
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                  <p className="text-gray-900">{selectedComplaint.description}</p>
+              <div className="space-y-5">
+                <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+                  <p className="text-gray-900 leading-relaxed">{selectedComplaint.description}</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                    <p className="text-gray-900">{selectedComplaint.category}</p>
+                  <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
+                    <p className="text-gray-900 font-medium">{selectedComplaint.category}</p>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-                    <p className={`font-semibold ${getPriorityColor(selectedComplaint.priority)}`}>
+                  <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-100">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Priority</label>
+                    <p className={`font-bold text-lg ${getPriorityColor(selectedComplaint.priority)}`}>
                       {selectedComplaint.priority.toUpperCase()}
                     </p>
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                  <p className="text-gray-900">{selectedComplaint.location}</p>
+                <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Location</label>
+                  <p className="text-gray-900 font-medium">{selectedComplaint.location}</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -384,15 +414,15 @@ const Complaint = () => {
               </div>
 
               {/* Modal Footer */}
-              <div className="mt-6 flex flex-col sm:flex-row gap-2 sm:justify-end">
+              <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:justify-end">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+                  className="px-6 py-3 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 font-semibold rounded-xl hover:from-gray-200 hover:to-gray-300 transition-all shadow-sm hover:shadow-md"
                 >
                   Close
                 </button>
                 <button
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+                  className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all shadow-md hover:shadow-lg"
                 >
                   Assign Supervisor
                 </button>
@@ -401,6 +431,7 @@ const Complaint = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

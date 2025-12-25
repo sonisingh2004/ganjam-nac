@@ -8,11 +8,13 @@ const ComplaintsStatus = ({ data }) => {
   };
 
   const complaintStats = [
-    { label: 'Pending', count: data?.pending || 0, color: 'text-orange-500', dotColor: 'bg-orange-500' },
-    { label: 'Open', count: data?.open || 0, color: 'text-red-500', dotColor: 'bg-red-500' },
-    { label: 'Closed', count: data?.closed || 0, color: 'text-green-500', dotColor: 'bg-green-500' },
-    { label: 'Out of Scope', count: data?.outOfScope || 0, color: 'text-gray-500', dotColor: 'bg-gray-500' },
+    { label: 'Pending', count: data?.pending || 0, color: 'text-orange-500', dotColor: 'bg-orange-500', gradient: 'from-orange-400 to-amber-500' },
+    { label: 'Open', count: data?.open || 0, color: 'text-red-500', dotColor: 'bg-red-500', gradient: 'from-red-400 to-rose-500' },
+    { label: 'Closed', count: data?.closed || 0, color: 'text-green-500', dotColor: 'bg-green-500', gradient: 'from-emerald-400 to-teal-500' },
+    { label: 'Out of Scope', count: data?.outOfScope || 0, color: 'text-gray-500', dotColor: 'bg-gray-500', gradient: 'from-gray-400 to-slate-500' },
   ];
+
+  const maxCount = Math.max(...complaintStats.map(s => s.count), 1);
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition-shadow duration-300 border border-gray-100">
@@ -25,68 +27,39 @@ const ComplaintsStatus = ({ data }) => {
         </div>
       </div>
       
-      {/* Donut Chart Placeholder */}
-      <div className="flex justify-center mb-4 sm:mb-6">
-        <div className="relative w-32 h-32 sm:w-40 sm:h-40">
-          <svg className="w-full h-full transform -rotate-90">
-            <circle
-              cx="80"
-              cy="80"
-              r="60"
-              fill="none"
-              stroke="#f3f4f6"
-              strokeWidth="20"
-            />
-            {/* Segments would be calculated based on percentages */}
-            <circle
-              cx="80"
-              cy="80"
-              r="60"
-              fill="none"
-              stroke="url(#gradientOpen)"
-              strokeWidth="20"
-              strokeDasharray={`${calculatePercentage(data?.open) * 3.77} 377`}
-              strokeDashoffset="0"
-              className="transition-all duration-500"
-            />
-            <circle
-              cx="80"
-              cy="80"
-              r="60"
-              fill="none"
-              stroke="url(#gradientClosed)"
-              strokeWidth="20"
-              strokeDasharray={`${calculatePercentage(data?.closed) * 3.77} 377`}
-              strokeDashoffset={`-${calculatePercentage(data?.open) * 3.77}`}
-              className="transition-all duration-500"
-            />
-            <defs>
-              <linearGradient id="gradientOpen" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#ef4444" />
-                <stop offset="100%" stopColor="#f87171" />
-              </linearGradient>
-              <linearGradient id="gradientClosed" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#22c55e" />
-                <stop offset="100%" stopColor="#4ade80" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
-      </div>
-
-      {/* Stats List */}
-      <div className="space-y-2">
+      {/* Horizontal Bar Chart */}
+      <div className="space-y-4 mb-6">
         {complaintStats.map((stat, index) => (
-          <div key={index} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-gradient-to-r hover:from-gray-50 hover:to-pink-50 transition-all group">
-            <div className="flex items-center">
-              <span className={`w-3 h-3 rounded-full ${stat.dotColor} mr-2`}></span>
-              <span className="text-sm text-gray-700 font-medium group-hover:text-gray-900">{stat.label}</span>
+          <div key={index} className="group">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center">
+                <span className={`w-2.5 h-2.5 rounded-full ${stat.dotColor} mr-2`}></span>
+                <span className="text-sm text-gray-700 font-medium group-hover:text-gray-900">{stat.label}</span>
+              </div>
+              <span className={`text-sm font-bold ${stat.color}`}>
+                {stat.count}
+              </span>
             </div>
-            <span className={`text-sm font-bold ${stat.color}`}>
-              {stat.count}
-            </span>
+            <div className="relative h-3 bg-gray-100 rounded-full overflow-hidden">
+              <div 
+                className={`absolute top-0 left-0 h-full bg-gradient-to-r ${stat.gradient} rounded-full transition-all duration-700 ease-out shadow-sm`}
+                style={{ width: `${maxCount > 0 ? (stat.count / maxCount) * 100 : 0}%` }}
+              >
+                <div className="absolute inset-0 bg-white/20 animate-shimmer"></div>
+              </div>
+            </div>
           </div>
         ))}
+      </div>
+
+      {/* Total Summary */}
+      <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-100">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-semibold text-gray-700">Total Complaints</span>
+          <span className="text-lg font-extrabold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+            {totalComplaints}
+          </span>
+        </div>
       </div>
 
       {/* Secondary Scan Section */}

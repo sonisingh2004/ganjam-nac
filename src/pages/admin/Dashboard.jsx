@@ -141,81 +141,120 @@ const AdminDashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-xl text-gray-600">Loading...</div>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-emerald-50 via-green-50/50 to-teal-50 relative overflow-hidden">
+        {/* Animated background circles */}
+        <div className="absolute top-20 left-20 w-72 h-72 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
+        <div className="absolute top-40 right-20 w-72 h-72 bg-emerald-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-8 left-40 w-72 h-72 bg-teal-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
+        
+        <div className="text-center relative z-10">
+          <div className="inline-flex items-center justify-center mb-4">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-emerald-600"></div>
+          </div>
+          <p className="text-xl font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent animate-pulse">Loading dashboard...</p>
+          <p className="text-sm text-gray-500 mt-2">Please wait while we fetch your data</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4 mb-4 sm:mb-6">
-        <StatsCard
-          title="Waste(Ton.)"
-          value={dashboardData.stats.waste}
-          icon="♻️"
-          bgColor="bg-blue-400"
-        />
-        <StatsCard
-          title="Vehicles"
-          value={dashboardData.stats.vehicles}
-          icon="🚛"
-          bgColor="bg-teal-400"
-        />
-        <StatsCard
-          title="Fuel(Ltr.)"
-          value={dashboardData.stats.fuel}
-          icon="⛽"
-          bgColor="bg-yellow-400"
-        />
-        <StatsCard
-          title="Fuel Cost(₹)"
-          value={dashboardData.stats.fuelCost}
-          icon="💰"
-          bgColor="bg-indigo-600"
-        />
-        <StatsCard
-          title="Complaints"
-          value={dashboardData.stats.complaints}
-          icon="📧"
-          bgColor="bg-pink-400"
-        />
-        <StatsCard
-          title="User Fees"
-          value={dashboardData.stats.userFees}
-          icon="₹"
-          bgColor="bg-purple-600"
-        />
-      </div>
-
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
-        {/* Users Charge & Collection */}
-        <div className="space-y-4 sm:space-y-6">
-          <UsersCharge data={dashboardData.usersCharge} />
-          <Collection data={dashboardData.collection} />
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50/70 via-green-50/50 to-teal-50/70 p-4 sm:p-6 lg:p-8 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-green-200/35 to-emerald-200/35 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-teal-200/35 to-cyan-200/35 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-lime-100/15 to-green-100/15 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+      
+      <div className="relative z-10">
+        {/* Welcome Header */}
+        <div className="mb-8 sm:mb-10">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h1 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent mb-3 animate-gradient">
+                Welcome Back, Admin! 👋
+              </h1>
+              <p className="text-gray-600 text-lg flex items-center gap-2">
+                <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                Here's what's happening with your waste management system today.
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="bg-white px-4 py-2 rounded-xl shadow-lg border border-gray-100">
+                <p className="text-xs text-gray-500">Current Date</p>
+                <p className="font-semibold text-gray-800">{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Vehicles Status */}
-        <VehiclesStatus data={dashboardData.vehicles} />
-
-        {/* Complaints Status */}
-        <ComplaintsStatus data={dashboardData.complaints} />
-      </div>
-
-      {/* Secondary Scan & KYC */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
-        <SecondaryScan data={dashboardData.secondaryScan} />
-        <KYCStatus data={dashboardData.kyc} />
-      </div>
-
-      {/* Map & Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        <div className="lg:col-span-2">
-          <MapView />
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 sm:gap-5 mb-8 sm:mb-10">
+          <StatsCard
+            title="Waste(Ton.)"
+            value={dashboardData.stats.waste}
+            icon="♻️"
+            gradient="from-blue-500 to-cyan-500"
+          />
+          <StatsCard
+            title="Vehicles"
+            value={dashboardData.stats.vehicles}
+            icon="🚛"
+            gradient="from-emerald-500 to-teal-500"
+          />
+          <StatsCard
+            title="Fuel(Ltr.)"
+            value={dashboardData.stats.fuel}
+            icon="⛽"
+            gradient="from-amber-500 to-orange-500"
+          />
+          <StatsCard
+            title="Fuel Cost(₹)"
+            value={dashboardData.stats.fuelCost}
+            icon="💰"
+            gradient="from-indigo-600 to-purple-600"
+          />
+          <StatsCard
+            title="Complaints"
+            value={dashboardData.stats.complaints}
+            icon="📧"
+            gradient="from-pink-500 to-rose-500"
+          />
+          <StatsCard
+            title="User Fees"
+            value={dashboardData.stats.userFees}
+            icon="₹"
+            gradient="from-violet-600 to-purple-600"
+          />
         </div>
-        <RecentActivity activities={dashboardData.recentActivities} />
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 mb-6 sm:mb-8">
+          {/* Users Charge & Collection */}
+          <div className="space-y-5 sm:space-y-6">
+            <UsersCharge data={dashboardData.usersCharge} />
+            <Collection data={dashboardData.collection} />
+          </div>
+
+          {/* Vehicles Status */}
+          <VehiclesStatus data={dashboardData.vehicles} />
+
+          {/* Complaints Status */}
+          <ComplaintsStatus data={dashboardData.complaints} />
+        </div>
+
+        {/* Secondary Scan & KYC */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 mb-6 sm:mb-8">
+          <SecondaryScan data={dashboardData.secondaryScan} />
+          <KYCStatus data={dashboardData.kyc} />
+        </div>
+
+        {/* Map & Recent Activity */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
+          <div className="lg:col-span-2">
+            <MapView />
+          </div>
+          <RecentActivity activities={dashboardData.recentActivities} />
+        </div>
       </div>
     </div>
   );

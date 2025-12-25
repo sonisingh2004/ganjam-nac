@@ -2,16 +2,16 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import AdminLayout from "../layout/AdminLayout";
-import Login from "../pages/Login";
 import Complaint from "../pages/admin/Complaint";
 import AdminDashboard from "../pages/admin/Dashboard";
+import Login from "../pages/Login";
 
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Login/>} />
         
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminLayout />}>

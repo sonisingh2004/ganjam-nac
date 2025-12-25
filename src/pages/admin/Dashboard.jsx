@@ -159,18 +159,18 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50/70 via-green-50/50 to-teal-50/70 p-4 sm:p-6 lg:p-8 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-teal-50 to-cyan-100 p-4 sm:p-6 lg:p-8 relative overflow-hidden">
       {/* Decorative background elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-green-200/35 to-emerald-200/35 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-teal-200/35 to-cyan-200/35 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-lime-100/15 to-green-100/15 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-green-300/40 to-emerald-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-teal-300/40 to-cyan-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-2000"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-lime-200/20 to-green-200/20 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
       
       <div className="relative z-10">
         {/* Welcome Header */}
         <div className="mb-8 sm:mb-10">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <h1 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent mb-3 animate-gradient">
+              <h1 className="text-4xl sm:text-4xl font-extrabold bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent mb-3 animate-gradient">
                 Welcome Back, Admin! 👋
               </h1>
               <p className="text-gray-600 text-lg flex items-center gap-2">
@@ -193,37 +193,37 @@ const AdminDashboard = () => {
             title="Waste(Ton.)"
             value={dashboardData.stats.waste}
             icon="♻️"
-            gradient="from-blue-500 to-cyan-500"
+            gradient="from-emerald-500 to-teal-600"
           />
           <StatsCard
             title="Vehicles"
             value={dashboardData.stats.vehicles}
             icon="🚛"
-            gradient="from-emerald-500 to-teal-500"
+            gradient="from-teal-500 to-cyan-600"
           />
           <StatsCard
             title="Fuel(Ltr.)"
             value={dashboardData.stats.fuel}
             icon="⛽"
-            gradient="from-amber-500 to-orange-500"
+            gradient="from-orange-500 to-amber-600"
           />
           <StatsCard
             title="Fuel Cost(₹)"
             value={dashboardData.stats.fuelCost}
             icon="💰"
-            gradient="from-indigo-600 to-purple-600"
+            gradient="from-lime-600 to-green-600"
           />
           <StatsCard
             title="Complaints"
             value={dashboardData.stats.complaints}
             icon="📧"
-            gradient="from-pink-500 to-rose-500"
+            gradient="from-rose-500 to-pink-600"
           />
           <StatsCard
             title="User Fees"
             value={dashboardData.stats.userFees}
             icon="₹"
-            gradient="from-violet-600 to-purple-600"
+            gradient="from-green-600 to-emerald-700"
           />
         </div>
 

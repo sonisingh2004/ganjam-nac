@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   Menu,
   X,
@@ -11,11 +11,14 @@ import {
   LogOut,
 } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 const SupervisorLayout = () => {
   const [open, setOpen] = useState(false);
-  const LOGO = "https://swachhganjam.in/assets/logo-D7UUn_EU.png";
+  const navigate = useNavigate();
+  const { logout } = useAuth();
 
+  const LOGO = "https://swachhganjam.in/assets/logo-D7UUn_EU.png";
 
   const links = [
     { name: "Dashboard", path: "/supervisor/dashboard", icon: <LayoutDashboard size={18} /> },
@@ -26,12 +29,22 @@ const SupervisorLayout = () => {
     { name: "Live Tracking", path: "/supervisor/live-tracking", icon: <Navigation size={18} /> },
   ];
 
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   return (
     <div className="h-screen flex bg-gray-100 overflow-hidden">
 
       {/* ================= MOBILE TOP BAR ================= */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-white shadow px-4 py-3 flex items-center justify-between">
-        <h2 className="font-semibold text-green-700">Supervisor Panel</h2>
+        <div className="flex items-center gap-2">
+          <img src={LOGO} className="h-8 w-8 rounded-full" />
+          <span className="font-semibold text-green-700">
+            Supervisor
+          </span>
+        </div>
         <button onClick={() => setOpen(true)}>
           <Menu />
         </button>
@@ -42,7 +55,9 @@ const SupervisorLayout = () => {
         <div className="fixed inset-0 z-50 bg-black/40">
           <aside className="w-64 bg-white h-full shadow-lg p-4 flex flex-col">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="font-bold text-green-700">Supervisor</h2>
+              <h2 className="font-bold text-green-700">
+                Supervisor Panel
+              </h2>
               <button onClick={() => setOpen(false)}>
                 <X />
               </button>
@@ -68,8 +83,11 @@ const SupervisorLayout = () => {
               ))}
             </nav>
 
-            {/* LOGOUT */}
-            <button className="mt-4 flex items-center gap-3 text-red-600 px-3 py-2 rounded-md hover:bg-red-50">
+            {/* LOGOUT MOBILE */}
+            <button
+              onClick={handleLogout}
+              className="mt-4 flex items-center gap-3 text-red-600 px-3 py-2 rounded-md hover:bg-red-50"
+            >
               <LogOut size={18} />
               Logout
             </button>
@@ -77,27 +95,25 @@ const SupervisorLayout = () => {
         </div>
       )}
 
-      {/* ================= DESKTOP SIDEBAR (FIXED) ================= */}
-      <aside className="hidden md:flex w-64 bg-white shadow flex-col h-screen fixed left-0 top-0">
+      {/* ================= DESKTOP SIDEBAR ================= */}
+      <aside className="hidden md:flex w-64 bg-white shadow flex-col fixed left-0 top-0 h-screen">
         <div className="px-6 py-5 border-b flex items-center gap-3">
-  <img
-    src={LOGO}
-    alt="Logo"
-    className="h-10 w-10 rounded-full bg-white p-1 shadow"
-  />
-  <div>
-    <h2 className="text-base font-bold text-green-700 leading-tight">
-      Supervisor Panel
-    </h2>
-    <p className="text-xs text-gray-500 leading-tight">
-      Waste Management System
-    </p>
-  </div>
-</div>
+          <img
+            src={LOGO}
+            alt="Logo"
+            className="h-10 w-10 rounded-full bg-white p-1 shadow"
+          />
+          <div>
+            <h2 className="text-base font-bold text-green-700">
+              Supervisor Panel
+            </h2>
+            <p className="text-xs text-gray-500">
+              Waste Management
+            </p>
+          </div>
+        </div>
 
-
-        {/* MENU */}
-        <nav className="flex-1 p-4 space-y-2 overflow-hidden">
+        <nav className="flex-1 p-4 space-y-2">
           {links.map((l) => (
             <NavLink
               key={l.name}
@@ -116,17 +132,31 @@ const SupervisorLayout = () => {
           ))}
         </nav>
 
-        {/* LOGOUT FIXED BOTTOM */}
+        {/* LOGOUT BOTTOM */}
         <div className="p-4 border-t">
-          <button className="w-full flex items-center gap-3 text-red-600 px-4 py-2 rounded-md hover:bg-red-50">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 text-red-600 px-4 py-2 rounded-md hover:bg-red-50"
+          >
             <LogOut size={18} />
             Logout
           </button>
         </div>
       </aside>
 
-      {/* ================= RIGHT CONTENT (SCROLL ONLY) ================= */}
-      <main className="flex-1 ml-0 md:ml-64 pt-16 md:pt-6 overflow-y-auto">
+      {/* ================= TOP HEADER (LOGOUT TOP RIGHT) ================= */}
+      <header className="hidden md:flex fixed top-0 left-64 right-0 h-16 bg-white border-b z-40 items-center justify-end px-6">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+        >
+          <LogOut size={18} />
+          Logout
+        </button>
+      </header>
+
+      {/* ================= MAIN CONTENT ================= */}
+      <main className="flex-1 ml-0 md:ml-64 pt-16 overflow-y-auto">
         <div className="p-6">
           <Outlet />
         </div>

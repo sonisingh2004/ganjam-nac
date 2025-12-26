@@ -1,114 +1,104 @@
-import i18n from 'i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
-import { initReactI18next } from 'react-i18next';
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
+import LanguageDetector from "i18next-browser-languagedetector";
 
 const resources = {
   en: {
     translation: {
-      // Official Notice
-      officialPortal: "Official Government Portal",
-      officialWarning: "This is the official portal of Berhampur NAC. Beware of fake websites and unauthorized apps.",
-      iUnderstand: "I Understand",
-
-      // Header
-      berhampurNAC: "Berhampur NAC",
+      berhampurNAC: "GANJAM N.A.C",
       solidWaste: "Solid Waste Management",
-
-      // Left Panel
-      smartCity: "Smart City, Clean Future",
-      platformDescription: "Digital platform for efficient waste management with real-time tracking and citizen engagement.",
-      liveTracking: "Live Vehicle Tracking",
-      doorCollection: "Door-to-Door Collection",
-      photoComplaints: "Photo Complaints",
-      wardReports: "Ward-wise Reports",
-      governmentAuthorized: "Government Authorized Platform © 2025",
-
-      // Roles
-      "roles.citizen": "Citizen",
-      "roles.supervisor": "Supervisor",
-      "roles.admin": "Admin",
-
-      // Login Form
+      smartCity: "Smart City Waste Platform",
+      platformDescription:
+        "Monitor garbage collection, manage complaints, and ensure cleanliness across all wards digitally.",
+      liveTracking: "🚛 Live Vehicle Tracking",
+      doorCollection: "🗑️ Door-to-Door Collection",
+      photoComplaints: "📸 Photo Complaints",
+      wardReports: "📊 Ward Reports",
+      governmentAuthorized:
+        "Government Authorized • Secure • Real-time Monitoring",
+      officialPortal: "Official Government Portal",
+      officialWarning:
+        "This is an official Solid Waste Management System of Berhampur N.A.C. Unauthorized use may lead to action.",
+      iUnderstand: "I Understand",
       loginAs: "Login as",
-      welcome: "Welcome back! Please login to continue",
-      phone: "Enter 10-digit mobile number",
+      welcome: "Enter your credentials to continue",
+      roles: {
+        citizen: "Citizen",
+        supervisor: "Supervisor",
+        admin: "Admin"
+      },
+      phone: "Phone Number (10 digits)",
       getOtp: "Get OTP",
       username: "Username",
       password: "Password",
       login: "Login",
-      secureSystem: "🔒 Secure login system powered by Briskode Technology"
+      secureSystem: "Secure • Government Authorized System"
     }
   },
+
   hi: {
     translation: {
-      // Official Notice
-      officialPortal: "आधिकारिक सरकारी पोर्टल",
-      officialWarning: "यह बेहरामपुर एनएसी का आधिकारिक पोर्टल है। नकली वेबसाइटों और अनधिकृत ऐप्स से सावधान रहें।",
-      iUnderstand: "मैं समझता हूं",
-
-      // Header
-      berhampurNAC: "बेहरामपुर एनएसी",
+      berhampurNAC: "गंजा़म N.A.C",
       solidWaste: "ठोस अपशिष्ट प्रबंधन",
-
-      // Left Panel
-      smartCity: "स्मार्ट सिटी, स्वच्छ भविष्य",
-      platformDescription: "वास्तविक समय ट्रैकिंग और नागरिक जुड़ाव के साथ कुशल अपशिष्ट प्रबंधन के लिए डिजिटल प्लेटफॉर्म।",
-      liveTracking: "लाइव वाहन ट्रैकिंग",
-      doorCollection: "घर-घर संग्रह",
-      photoComplaints: "फोटो शिकायतें",
-      wardReports: "वार्ड-वार रिपोर्ट",
-      governmentAuthorized: "सरकार द्वारा अधिकृत प्लेटफॉर्म © 2025",
-
-      // Roles
-      "roles.citizen": "नागरिक",
-      "roles.supervisor": "पर्यवेक्षक",
-      "roles.admin": "व्यवस्थापक",
-
-      // Login Form
+      smartCity: "स्मार्ट सिटी कचरा मंच",
+      platformDescription:
+        "कचरा संग्रह की निगरानी करें, शिकायतों का प्रबंधन करें और स्वच्छता सुनिश्चित करें।",
+      liveTracking: "🚛 लाइव वाहन ट्रैकिंग",
+      doorCollection: "🗑️ घर-घर संग्रह",
+      photoComplaints: "📸 फोटो शिकायतें",
+      wardReports: "📊 वार्ड रिपोर्ट",
+      governmentAuthorized:
+        "सरकारी अधिकृत • सुरक्षित • रीयल-टाइम निगरानी",
+      officialPortal: "आधिकारिक सरकारी पोर्टल",
+      officialWarning:
+        "यह बेरहमपुर N.A.C का आधिकारिक सिस्टम है।",
+      iUnderstand: "समझ गया",
       loginAs: "लॉगिन करें",
-      welcome: "वापसी पर स्वागत है! जारी रखने के लिए कृपया लॉगिन करें",
-      phone: "10-अंकों का मोबाइल नंबर दर्ज करें",
-      getOtp: "ओटीपी प्राप्त करें",
+      welcome: "जारी रखने के लिए जानकारी दर्ज करें",
+      roles: {
+        citizen: "नागरिक",
+        supervisor: "निरीक्षक",
+        admin: "प्रशासक"
+      },
+      phone: "फ़ोन नंबर (10 अंक)",
+      getOtp: "OTP प्राप्त करें",
       username: "उपयोगकर्ता नाम",
       password: "पासवर्ड",
       login: "लॉगिन",
-      secureSystem: "🔒 ब्रिस्कोड टेक्नोलॉजी द्वारा संचालित सुरक्षित लॉगिन सिस्टम"
+      secureSystem: "सुरक्षित सरकारी प्रणाली"
     }
   },
+
   od: {
     translation: {
-      // Official Notice
-      officialPortal: "ସରକାରୀ ସରକାରୀ ପୋର୍ଟାଲ୍",
-      officialWarning: "ଏହା ବେହରାମପୁର NAC ର ସରକାରୀ ପୋର୍ଟାଲ୍ | ନକଲି ୱେବସାଇଟ୍ ଏବଂ ଅନଧିକୃତ ଆପ୍ ଠାରୁ ସାବଧାନ ରୁହନ୍ତୁ |",
-      iUnderstand: "ମୁଁ ବୁଝିଲି",
-
-      // Header
-      berhampurNAC: "ବେହରାମପୁର NAC",
-      solidWaste: "କଠିନ ବର୍ଜ୍ୟବସ୍ତୁ ପରିଚାଳନା",
-
-      // Left Panel
-      smartCity: "ସ୍ମାର୍ଟ ସିଟି, ସ୍ୱଚ୍ଛ ଭବିଷ୍ୟତ",
-      platformDescription: "ରିଅଲ୍-ଟାଇମ୍ ଟ୍ରାକିଂ ଏବଂ ନାଗରିକ ସମ୍ପୃକ୍ତି ସହିତ ଦକ୍ଷ ବର୍ଜ୍ୟବସ୍ତୁ ପରିଚାଳନା ପାଇଁ ଡିଜିଟାଲ୍ ପ୍ଲାଟଫର୍ମ |",
-      liveTracking: "ଲାଇଭ୍ ଯାନ ଟ୍ରାକିଂ",
-      doorCollection: "ଘର-ଘର ସଂଗ୍ରହ",
-      photoComplaints: "ଫଟୋ ଅଭିଯୋଗ",
-      wardReports: "ୱାର୍ଡ-ଅନୁସାରେ ରିପୋର୍ଟ",
-      governmentAuthorized: "ସରକାରଙ୍କ ଦ୍ୱାରା ଅନୁମୋଦିତ ପ୍ଲାଟଫର୍ମ © 2025",
-
-      // Roles
-      "roles.citizen": "ନାଗରିକ",
-      "roles.supervisor": "ପର୍ଯ୍ୟବେକ୍ଷକ",
-      "roles.admin": "ପ୍ରଶାସକ",
-
-      // Login Form
-      loginAs: "ଲଗ୍ ଇନ୍ କରନ୍ତୁ",
-      welcome: "ସ୍ୱାଗତ! ଜାରି ରଖିବାକୁ ଦୟାକରି ଲଗ୍ ଇନ୍ କରନ୍ତୁ",
-      phone: "10-ଅଙ୍କ ବିଶିଷ୍ଟ ମୋବାଇଲ୍ ନମ୍ବର ପ୍ରବେଶ କରନ୍ତୁ",
+      berhampurNAC: "ଗଞ୍ଜାମ N.A.C",
+      solidWaste: "ଘନ କୁଆଡ଼଼ା ପରିଚାଳନା",
+      smartCity: "ସ୍ମାର୍ଟ୍ ସିଟି କୁଆଡ଼଼ା ମଞ୍ଚ",
+      platformDescription:
+        "କୁଆଡ଼଼ା ସଂଗ୍ରହ ଓ ଦରକାର ପରିଚାଳନା।",
+      liveTracking: "🚛 ଗାଡ଼ି ଟ୍ରାକିଂ",
+      doorCollection: "🗑️ ଦରଜା ସଂଗ୍ରହ",
+      photoComplaints: "📸 ଫଟୋ ଦରକାର",
+      wardReports: "📊 ଓ୍ବାର୍ଡ ରିପୋର୍ଟ",
+      governmentAuthorized:
+        "ସରକାରୀ ଅନୁମୋଦିତ • ନିରାପଦ",
+      officialPortal: "ଆଧିକାରିକ ପୋର୍ଟାଲ୍",
+      officialWarning:
+        "ଏହା ଆଧିକାରିକ ସିଷ୍ଟମ୍।",
+      iUnderstand: "ମୁଁ ବୁଝିଛି",
+      loginAs: "ଲଗିନ୍",
+      welcome: "ସୂଚନା ପ୍ରବେଶ କରନ୍ତୁ",
+      roles: {
+        citizen: "ନାଗରିକ",
+        supervisor: "ପର୍ଯ୍ୟବେକ୍ଷକ",
+        admin: "ପ୍ରଶାସକ"
+      },
+      phone: "ଫୋନ୍ ନମ୍ବର",
       getOtp: "OTP ପାଆନ୍ତୁ",
-      username: "ଉପଯୋଗକର୍ତ୍ତା ନାମ",
+      username: "ଉପଭୋକ୍ତା",
       password: "ପାସୱାର୍ଡ",
-      login: "ଲଗ୍ ଇନ୍",
-      secureSystem: "🔒 ବ୍ରିସ୍କୋଡ୍ ଟେକ୍ନୋଲୋଜି ଦ୍ୱାରା ସୁରକ୍ଷିତ ଲଗ୍ଇନ୍ ସିଷ୍ଟମ୍"
+      login: "ଲଗିନ୍",
+      secureSystem: "ସରକାରୀ ସୁରକ୍ଷିତ ସିଷ୍ଟମ୍"
     }
   }
 };
@@ -118,15 +108,8 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: 'en',
-    debug: false,
-    interpolation: {
-      escapeValue: false
-    },
-    detection: {
-      order: ['localStorage', 'navigator'],
-      caches: ['localStorage']
-    }
+    fallbackLng: "en",
+    interpolation: { escapeValue: false }
   });
 
 export default i18n;

@@ -12,7 +12,11 @@ import Vehicle from "../pages/admin/Vehicle";
 import Ward from "../pages/admin/Ward";
 
 /* Supervisor */
+import CitizenLayout from "../layout/CitizenLayout";
 import SupervisorLayout from "../layout/SupervisorLayout";
+import CitizenDashboard from "../pages/citizen/CitizenDashboard";
+import CitizenPostComplaint from "../pages/citizen/CitizenPostComplaint";
+import CitizenTrackVehicle from "../pages/citizen/CitizenTrackVehicle";
 import Analytics from "../pages/supervisor/Analytics";
 import Attendance from "../pages/supervisor/Attendance";
 import Complaints from "../pages/supervisor/Complaints";
@@ -22,6 +26,8 @@ import SupervisorDashboard from "../pages/supervisor/SupervisorDashboard";
 import Vehicles from "../pages/supervisor/Vehicles";
 import Wards from "../pages/supervisor/Wards";
 import ProtectedRoute from "./ProtectedRoute";
+
+
 
 export default function AppRoutes() {
   return (
@@ -39,6 +45,16 @@ export default function AppRoutes() {
           <Route path="vehicles" element={<Vehicle />} />
           <Route path="wards" element={<Ward />} />
           <Route path="track-vehicles" element={<TrackVehicle />} />
+        </Route>
+
+{/* ================= CITIZEN ROUTES ================= */}
+        <Route element={<CitizenLayout />}>
+          <Route path="/citizen" element={<CitizenDashboard />} />
+          <Route
+            path="/citizen/complaint"
+            element={<CitizenPostComplaint />}
+          />
+          <Route path="/citizen/track" element={<CitizenTrackVehicle />} />
         </Route>
 
         {/* ================= SUPERVISOR ROUTES ================= */}

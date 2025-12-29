@@ -77,11 +77,16 @@ const featureBoxes = [
     if (role === "supervisor") {
       if (username === "supervisor" && password === "supervisor@123") {
         toast.success("Supervisor login successful");
+
         localStorage.setItem(
           "user",
           JSON.stringify({ role: "supervisor", username })
         );
-        navigate("/supervisor/dashboard");
+
+        // 🔑 IMPORTANT FIX (delay for ProtectedRoute)
+        setTimeout(() => {
+          navigate("/supervisor/dashboard");
+        }, 300);
       } else {
         toast.error("Invalid supervisor credentials");
       }

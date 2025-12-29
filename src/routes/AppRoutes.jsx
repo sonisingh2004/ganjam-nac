@@ -1,24 +1,27 @@
 // src/routes/AppRoutes.jsx
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import Login from "../pages/Login";
 
 /* Admin */
 import AdminLayout from "../layout/AdminLayout";
-import AdminDashboard from "../pages/admin/Dashboard";
 import Complaint from "../pages/admin/Complaint";
+import AdminDashboard from "../pages/admin/Dashboard";
+import TrackVehicle from "../pages/admin/TrackVehicle";
+import Vehicle from "../pages/admin/Vehicle";
+import Ward from "../pages/admin/Ward";
 
 /* Supervisor */
 import SupervisorLayout from "../layout/SupervisorLayout";
+import Analytics from "../pages/supervisor/Analytics";
+import Attendance from "../pages/supervisor/Attendance";
+import Complaints from "../pages/supervisor/Complaints";
+import LiveTracking from "../pages/supervisor/LiveTracking";
+import QueueFulfillment from "../pages/supervisor/QueueFulfillment";
 import SupervisorDashboard from "../pages/supervisor/SupervisorDashboard";
 import Vehicles from "../pages/supervisor/Vehicles";
 import Wards from "../pages/supervisor/Wards";
-import Complaints from "../pages/supervisor/Complaints";
-import Attendance from "../pages/supervisor/Attendance";
-import Analytics from "../pages/supervisor/Analytics";
-import LiveTracking from "../pages/supervisor/LiveTracking";
 import ProtectedRoute from "./ProtectedRoute";
-import QueueFulfillment from "../pages/supervisor/QueueFulfillment";
 
 export default function AppRoutes() {
   return (
@@ -33,6 +36,9 @@ export default function AppRoutes() {
           <Route index element={<AdminDashboard />} />
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="complaints" element={<Complaint />} />
+          <Route path="vehicles" element={<Vehicle />} />
+          <Route path="wards" element={<Ward />} />
+          <Route path="track-vehicles" element={<TrackVehicle />} />
         </Route>
 
         {/* ================= SUPERVISOR ROUTES ================= */}

@@ -325,8 +325,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { useNavigate } from "react-router-dom";
 
-/* ---------------- MOCK DATA ---------------- */
+/* ================= MOCK DATA ================= */
 
 const collectionTrend = [
   { day: "Mon", value: 72 },
@@ -345,14 +346,20 @@ const wards = [
 
 const vehicles = [
   { no: "OD-07-GT-1023", status: "Active" },
-  { no: "OD-07-GT-1048", status: "Idle" },
+  { no: "OD-07-GT-1048", status: "Inactive" },
   { no: "OD-07-GT-1099", status: "Maintenance" },
 ];
 
+/* ================= STAT CARD ================= */
+
 const StatCard = ({ title, value, icon, color }) => (
-  <div className={`rounded-2xl p-6 text-white shadow ${color}`}>
+  <div
+    className={`rounded-3xl p-6 text-white shadow-sm ${color}`}
+  >
     <div className="flex justify-between items-center mb-3">
-      <div className="bg-white/20 p-2 rounded-lg">{icon}</div>
+      <div className="bg-white/20 p-2 rounded-lg">
+        {icon}
+      </div>
       <span className="text-xs bg-white/30 px-2 py-1 rounded-full">
         Today
       </span>
@@ -362,12 +369,16 @@ const StatCard = ({ title, value, icon, color }) => (
   </div>
 );
 
+/* ================= MAIN DASHBOARD ================= */
+
 const SupervisorDashboard = () => {
+  const navigate = useNavigate();
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 bg-emerald-50 p-6 rounded-3xl">
 
       {/* ================= ALERT BAR ================= */}
-      <div className="bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-xl px-6 py-4 flex items-center gap-3">
+      <div className="bg-emerald-100 border border-emerald-300 text-emerald-800 rounded-xl px-6 py-4 flex items-center gap-3">
         <Bell size={20} />
         <p className="text-sm">
           2 vehicles scheduled for maintenance today.
@@ -375,10 +386,15 @@ const SupervisorDashboard = () => {
       </div>
 
       {/* ================= HEADER ================= */}
-      <div className="bg-gradient-to-r from-green-600 to-emerald-500 rounded-3xl p-8 text-white shadow">
-        <h1 className="text-3xl font-bold">Supervisor Dashboard</h1>
+      <div className="bg-gradient-to-r from-emerald-600 to-green-700 rounded-3xl p-8 text-white shadow">
+        <h1 className="text-3xl font-bold">
+          Supervisor Dashboard
+        </h1>
         <p className="text-sm opacity-90 mt-1">
           Smart Solid Waste Monitoring System
+        </p>
+        <p className="text-xs opacity-80 mt-1">
+          Data Period: Today ({new Date().toLocaleDateString()})
         </p>
       </div>
 
@@ -388,36 +404,37 @@ const SupervisorDashboard = () => {
           title="Total Vehicles"
           value="48"
           icon={<Truck />}
-          color="bg-gradient-to-br from-blue-500 to-blue-700"
+          color="bg-gradient-to-br from-emerald-500 to-green-600"
         />
         <StatCard
           title="Active Complaints"
           value="12"
           icon={<AlertCircle />}
-          color="bg-gradient-to-br from-red-500 to-red-700"
+          color="bg-gradient-to-br from-orange-500 to-orange-600"
         />
         <StatCard
-          title="Defects"
+          title="Defects Reported"
           value="6"
           icon={<Wrench />}
-          color="bg-gradient-to-br from-orange-400 to-orange-600"
+          color="bg-gradient-to-br from-yellow-500 to-orange-500"
         />
         <StatCard
           title="Collection Rate"
           value="92%"
           icon={<ClipboardList />}
-          color="bg-gradient-to-br from-green-500 to-green-700"
+          color="bg-gradient-to-br from-green-500 to-emerald-600"
         />
       </div>
 
       {/* ================= CHART + VEHICLE STATUS ================= */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* LINE CHART */}
-        <div className="bg-white rounded-2xl shadow p-6 lg:col-span-2">
+        {/* COLLECTION TREND */}
+        <div className="bg-white rounded-3xl shadow-sm p-6 lg:col-span-2">
           <h3 className="font-semibold mb-4">
-            Weekly Collection Trend
+            Weekly Collection Trend (% Coverage)
           </h3>
+
           <ResponsiveContainer width="100%" height={260}>
             <LineChart data={collectionTrend}>
               <XAxis dataKey="day" />
@@ -426,7 +443,7 @@ const SupervisorDashboard = () => {
               <Line
                 type="monotone"
                 dataKey="value"
-                stroke="#22c55e"
+                stroke="#16a34a"
                 strokeWidth={3}
               />
             </LineChart>
@@ -434,8 +451,11 @@ const SupervisorDashboard = () => {
         </div>
 
         {/* VEHICLE STATUS */}
-        <div className="bg-white rounded-2xl shadow p-6">
-          <h3 className="font-semibold mb-4">Vehicle Status</h3>
+        <div className="bg-white rounded-3xl shadow-sm p-6">
+          <h3 className="font-semibold mb-4">
+            Vehicle Status
+          </h3>
+
           <ul className="space-y-3 text-sm">
             {vehicles.map((v) => (
               <li
@@ -447,7 +467,7 @@ const SupervisorDashboard = () => {
                   className={`px-3 py-1 rounded-full text-xs text-white ${
                     v.status === "Active"
                       ? "bg-green-600"
-                      : v.status === "Idle"
+                      : v.status === "Inactive"
                       ? "bg-yellow-500"
                       : "bg-red-500"
                   }`}
@@ -461,7 +481,7 @@ const SupervisorDashboard = () => {
       </div>
 
       {/* ================= WARD PERFORMANCE ================= */}
-      <div className="bg-white rounded-2xl shadow p-6">
+      <div className="bg-white rounded-3xl shadow-sm p-6">
         <h3 className="font-semibold mb-4">
           Ward-wise Collection Performance
         </h3>
@@ -471,13 +491,15 @@ const SupervisorDashboard = () => {
             <div key={w.name}>
               <div className="flex justify-between text-sm mb-1">
                 <span>{w.name}</span>
-                <span className="font-medium">{w.percent}%</span>
+                <span className="font-medium">
+                  {w.percent}%
+                </span>
               </div>
               <div className="h-2 bg-gray-200 rounded">
                 <div
                   className="h-2 bg-green-600 rounded"
                   style={{ width: `${w.percent}%` }}
-                ></div>
+                />
               </div>
             </div>
           ))}
@@ -486,144 +508,57 @@ const SupervisorDashboard = () => {
 
       {/* ================= QUICK ACTIONS ================= */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <button className="bg-white shadow rounded-xl px-6 py-4 flex items-center gap-3 hover:bg-gray-50">
-          <Wrench className="text-orange-500" />
-          Report Defect
+        <button
+          onClick={() => navigate("/supervisor/defects")}
+          className="bg-gradient-to-r from-emerald-600 to-green-700 text-white rounded-xl px-6 py-4 flex items-center gap-3 shadow hover:opacity-90"
+        >
+          <Wrench /> Report Defect
         </button>
 
-        <button className="bg-white shadow rounded-xl px-6 py-4 flex items-center gap-3 hover:bg-gray-50">
-          <AlertCircle className="text-red-500" />
-          View Complaints
+        <button
+          onClick={() => navigate("/supervisor/complaints")}
+          className="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl px-6 py-4 flex items-center gap-3 shadow hover:opacity-90"
+        >
+          <AlertCircle /> View Complaints
         </button>
 
-        <button className="bg-white shadow rounded-xl px-6 py-4 flex items-center gap-3 hover:bg-gray-50">
-          <Activity className="text-green-600" />
-          Live Tracking
+        <button
+          onClick={() => navigate("/supervisor/live-tracking")}
+          className="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl px-6 py-4 flex items-center gap-3 shadow hover:opacity-90"
+        >
+          <Activity /> Live Tracking
         </button>
       </div>
-      {/* /* ================= TODAY SUMMARY ================= */}
-<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-  {[
-    { label: "Wards Covered", value: "18 / 22", color: "bg-green-500" },
-    { label: "Trips Completed", value: "126", color: "bg-blue-500" },
-    { label: "Pending Tasks", value: "9", color: "bg-orange-500" },
-    { label: "Missed Pickups", value: "2", color: "bg-red-500" },
-  ].map((item) => (
-    <div
-      key={item.label}
-      className="bg-white rounded-xl shadow p-4 flex items-center justify-between"
-    >
-      <div>
-        <p className="text-xs text-gray-500">{item.label}</p>
-        <h3 className="text-xl font-bold">{item.value}</h3>
-      </div>
-      <div className={`h-3 w-3 rounded-full ${item.color}`} />
-    </div>
-  ))}
-</div>
 
-{/*  ================= PROBLEMATIC WARDS ================= */ }
-<div className="bg-white rounded-2xl shadow p-6">
-  <h3 className="font-semibold mb-4">
-    Top Problematic Wards
-  </h3>
+      {/* ================= SYSTEM HEALTH ================= */}
+      <div className="bg-gradient-to-r from-emerald-700 to-green-800 text-white rounded-3xl shadow-sm p-6">
+        <h3 className="font-semibold mb-2">
+          System Health
+        </h3>
+        <p className="text-sm opacity-90 mb-4">
+          Overall platform performance
+        </p>
 
-  <div className="space-y-3 text-sm">
-    {[
-      { ward: "Ward 5", complaints: 8 },
-      { ward: "Ward 12", complaints: 6 },
-      { ward: "Ward 3", complaints: 4 },
-    ].map((w) => (
-      <div
-        key={w.ward}
-        className="flex justify-between items-center"
-      >
-        <span>{w.ward}</span>
-        <span className="px-3 py-1 bg-red-100 text-red-600 rounded-full text-xs">
-          {w.complaints} complaints
-        </span>
-      </div>
-    ))}
-  </div>
-</div>
-
-{/* ================= ATTENDANCE SNAPSHOT ================= */}
-<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-  <div className="bg-white rounded-2xl shadow p-6">
-    <h3 className="font-semibold mb-2">Attendance</h3>
-    <p className="text-sm text-gray-500 mb-4">
-      Sanitation Workforce Today
-    </p>
-
-    <div className="space-y-2">
-      <div className="flex justify-between">
-        <span>Present</span>
-        <span className="font-semibold text-green-600">142</span>
-      </div>
-      <div className="flex justify-between">
-        <span>Absent</span>
-        <span className="font-semibold text-red-600">8</span>
-      </div>
-      <div className="flex justify-between">
-        <span>On Leave</span>
-        <span className="font-semibold text-orange-500">5</span>
-      </div>
-    </div>
-  </div>
-
-  {/* ================= VEHICLE UTILIZATION ================= */}
-  <div className="bg-white rounded-2xl shadow p-6 md:col-span-2">
-    <h3 className="font-semibold mb-4">
-      Vehicle Utilization
-    </h3>
-
-    <div className="space-y-4">
-      {[
-        { label: "Active", percent: 72, color: "bg-green-500" },
-        { label: "Idle", percent: 18, color: "bg-yellow-500" },
-        { label: "Maintenance", percent: 10, color: "bg-red-500" },
-      ].map((v) => (
-        <div key={v.label}>
-          <div className="flex justify-between text-sm mb-1">
-            <span>{v.label}</span>
-            <span>{v.percent}%</span>
-          </div>
-          <div className="h-2 bg-gray-200 rounded">
-            <div
-              className={`h-2 rounded ${v.color}`}
-              style={{ width: `${v.percent}%` }}
-            />
-          </div>
+        <div className="flex flex-wrap gap-4 text-sm">
+          <span className="bg-white/20 px-4 py-2 rounded-full">
+            ✔ API Services Online
+          </span>
+          <span className="bg-white/20 px-4 py-2 rounded-full">
+            ✔ GPS Tracking Active
+          </span>
+          <span className="bg-white/20 px-4 py-2 rounded-full">
+            ⚠ 1 Maintenance Alert
+          </span>
         </div>
-      ))}
-    </div>
-  </div>
-</div>
 
-{/* ================= SYSTEM HEALTH ================= */}
-<div className="bg-gradient-to-r from-emerald-600 to-green-500 text-white rounded-2xl shadow p-6">
-  <h3 className="font-semibold mb-2">System Health</h3>
-  <p className="text-sm opacity-90 mb-4">
-    Overall platform performance
-  </p>
-
-  <div className="flex flex-wrap gap-4 text-sm">
-    <span className="bg-white/20 px-4 py-2 rounded-full">
-      ✔ API Services Online
-    </span>
-    <span className="bg-white/20 px-4 py-2 rounded-full">
-      ✔ GPS Tracking Active
-    </span>
-    <span className="bg-white/20 px-4 py-2 rounded-full">
-      ⚠ 1 Maintenance Alert
-    </span>
-  </div>
-</div>
+        <p className="text-xs opacity-80 mt-3">
+          System status is auto-monitored. Manual intervention is restricted.
+        </p>
+      </div>
 
     </div>
   );
 };
 
 export default SupervisorDashboard;
-
 

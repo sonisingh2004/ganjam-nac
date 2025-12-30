@@ -1,36 +1,119 @@
-const MapView = () => {
+// @ts-nocheck
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
+import { toast } from 'react-toastify';
+
+// Fix for default marker icons in Leaflet
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
+
+const MapView = ({ vehicles = [] }) => {
+  // Create custom vehicle icons
+  const createVehicleIcon = (status) => {
+    const colors = {
+      running: '#10b981',
+      standing: '#3b82f6',
+      stopped: '#f59e0b',
+      dataNotRetrieving: '#6b7280'
+    };
+    
+    return L.divIcon({
+      className: 'custom-marker',
+      html: `<div style="
+        width: 32px;
+        height: 32px;
+        background: ${colors[status]};
+        border: 3px solid white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      ">🚛</div>`,
+      iconSize: [32, 32],
+      iconAnchor: [16, 16],
+      popupAnchor: [0, -16]
+    });
+  };
+
+  const filteredVehicles = vehicles.filter(v => v.location);
+
   return (
-    <div className="bg-white rounded-2xl shadow-xl p-5 sm:p-7 h-64 sm:h-80 lg:h-96 hover:shadow-2xl transition-all duration-500 border border-gray-100 group relative overflow-hidden">
-      <div className="flex items-center justify-between mb-5">
-        <h3 className="text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-          Live Map View
-        </h3>
-        <button className="p-2.5 hover:bg-gradient-to-br hover:from-green-50 hover:to-emerald-50 rounded-xl transition-all duration-300 border border-transparent hover:border-green-200 group/btn">
-          <svg className="w-5 h-5 text-gray-600 group-hover/btn:text-green-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-          </svg>
-        </button>
-      </div>
-      
-      <div className="w-full h-full bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 rounded-xl flex items-center justify-center border-2 border-dashed border-green-200 relative overflow-hidden group-hover:border-green-300 transition-colors">
-        {/* Animated background circles */}
-        <div className="absolute top-10 left-10 w-32 h-32 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
-        <div className="absolute top-20 right-10 w-32 h-32 bg-emerald-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
-        
-        {/* Placeholder for map integration */}
-        <div className="text-center text-gray-500 px-4 relative z-10">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-500">
-            <svg className="w-12 h-12 sm:w-14 sm:h-14 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-            </svg>
+    <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-gray-100">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-bold text-gray-900">Live Satellite Map</h2>
+        <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 bg-emerald-50 px-3 py-1 rounded-lg">
+            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+            <span className="text-xs font-semibold text-emerald-700">Live Tracking</span>
           </div>
-          <p className="text-base font-bold text-gray-700 mb-1">Map Integration</p>
-          <p className="text-xs text-gray-500">
-            {/* TODO: Integrate with Leaflet, Google Maps, or OpenStreetMap */}
-            Connect to mapping service
-          </p>
+          <button
+            onClick={() => toast.info('Switching to roadmap view...')}
+            className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white px-3 py-1 rounded-lg font-semibold text-xs shadow-md transition-all"
+          >
+            🗺️ Road View
+          </button>
         </div>
       </div>
+      
+      {/* OpenStreetMap with Satellite View */}
+      <MapContainer 
+            center={[20.9517, 85.0985]} 
+            zoom={8} 
+            style={{ width: '100%', height: '500px', borderRadius: '12px', zIndex: 0 }}
+          >
+            {/* Satellite Tile Layer (OpenStreetMap alternative) */}
+            <TileLayer
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+              attribution='Tiles &copy; Esri'
+            />
+            
+            {/* Vehicle Markers */}
+            {filteredVehicles.map((vehicle) => (
+              <Marker
+                key={vehicle.id}
+                position={[vehicle.location.lat, vehicle.location.lng]}
+                icon={createVehicleIcon(vehicle.status)}
+              >
+                <Popup>
+                  <div className="p-2">
+                    <h3 className="font-bold text-gray-900 mb-1">{vehicle.registrationNumber}</h3>
+                    <p className="text-sm text-gray-600">Driver: {vehicle.driverName}</p>
+                    <p className="text-sm text-gray-600">Ward: {vehicle.assignedWard}</p>
+                    <p className="text-sm text-gray-600">Speed: {vehicle.speed || 0} km/h</p>
+                    <p className="text-sm text-gray-600">Status: <span className="capitalize">{vehicle.status}</span></p>
+                    <p className="text-sm text-gray-600">📍 Location: {vehicle.location.lat.toFixed(4)}, {vehicle.location.lng.toFixed(4)}</p>
+                  </div>
+                </Popup>
+              </Marker>
+            ))}
+          </MapContainer>
+          
+          {/* Map Legend */}
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-sm">
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 bg-emerald-500 rounded-full border-2 border-white shadow"></div>
+              <span className="text-gray-700">Running</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow"></div>
+              <span className="text-gray-700">Standing</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 bg-orange-500 rounded-full border-2 border-white shadow"></div>
+              <span className="text-gray-700">Stopped</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 bg-gray-500 rounded-full border-2 border-white shadow"></div>
+              <span className="text-gray-700">Offline</span>
+            </div>
+          </div>
     </div>
   );
 };

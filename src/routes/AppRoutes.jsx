@@ -5,11 +5,14 @@ import Login from "../pages/Login";
 
 /* Admin */
 import AdminLayout from "../layout/AdminLayout";
+import AdminAttendance from "../pages/admin/Attendance";
 import Complaint from "../pages/admin/Complaint";
 import AdminDashboard from "../pages/admin/Dashboard";
+import FuelManagement from "../pages/admin/FuelManagement";
 import TrackVehicle from "../pages/admin/TrackVehicle";
 import Vehicle from "../pages/admin/Vehicle";
 import Ward from "../pages/admin/Ward";
+import WasteCollection from "../pages/admin/WasteCollection";
 
 /* Supervisor */
 import CitizenLayout from "../layout/CitizenLayout";
@@ -43,8 +46,11 @@ export default function AppRoutes() {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="complaints" element={<Complaint />} />
           <Route path="vehicles" element={<Vehicle />} />
+          <Route path="attendance" element={<AdminAttendance />} />
           <Route path="wards" element={<Ward />} />
           <Route path="track-vehicles" element={<TrackVehicle />} />
+          <Route path="waste-collection" element={<WasteCollection />} />
+          <Route path="fuel-management" element={<FuelManagement />} />
         </Route>
 
 {/* ================= CITIZEN ROUTES ================= */}

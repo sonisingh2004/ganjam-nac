@@ -20,7 +20,7 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
     { name: 'Track Vehicles', path: '/admin/track-vehicles', icon: '📍' },
     { name: 'Attendance', path: '/admin/attendance', icon: '✅' },
     { name: 'Waste Collection', path: '/admin/waste-collection', icon: '♻️' },
-    { name: 'Fuel Management', path: '/admin/fuel', icon: '⛽' },
+    { name: 'Fuel Management', path: '/admin/fuel-management', icon: '⛽' },
   ];
 
   return (

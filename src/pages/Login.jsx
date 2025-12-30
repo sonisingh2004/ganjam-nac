@@ -1,8 +1,9 @@
 // @ts-nocheck
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
 
 const LOGO = "https://swachhganjam.in/assets/logo-D7UUn_EU.png";
 
@@ -10,6 +11,7 @@ const Login = () => {
   
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [role, setRole] = useState("citizen");
   const [phone, setPhone] = useState("");
@@ -59,7 +61,7 @@ const featureBoxes = [
     }
 
     toast.success("Citizen login successful");
-    localStorage.setItem("user", JSON.stringify({ role: "citizen", phone }));
+    login({ role: "citizen", phone });
     // future: navigate("/citizen/dashboard");
   };
 
@@ -78,10 +80,7 @@ const featureBoxes = [
       if (username === "supervisor" && password === "supervisor@123") {
         toast.success("Supervisor login successful");
 
-        localStorage.setItem(
-          "user",
-          JSON.stringify({ role: "supervisor", username })
-        );
+        login({ role: "supervisor", username });
 
         // 🔑 IMPORTANT FIX (delay for ProtectedRoute)
         setTimeout(() => {
@@ -97,10 +96,7 @@ const featureBoxes = [
     if (role === "admin") {
       if (username === "admin" && password === "admin@123") {
         toast.success("Admin login successful");
-        localStorage.setItem(
-          "user",
-          JSON.stringify({ role: "admin", username })
-        );
+        login({ role: "admin", username });
         navigate("/admin/dashboard");
       } else {
         toast.error("Invalid admin credentials");

@@ -1,12 +1,12 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import MapView from '../../components/admin/MapView';
 
 const TrackVehicle = () => {
   const [vehicles, setVehicles] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [mapView, setMapView] = useState('all'); // 'all' or 'single'
   const [filters, setFilters] = useState({
     status: 'all',
     ward: 'all',
@@ -166,7 +166,7 @@ const TrackVehicle = () => {
     const matchesStatus = filters.status === 'all' || vehicle.status === filters.status;
     const matchesWard = filters.ward === 'all' || vehicle.assignedWard === filters.ward;
     const matchesSearch = vehicle.registrationNumber.toLowerCase().includes(filters.search.toLowerCase()) ||
-                         vehicle.driverName.toLowerCase().includes(filters.search.toLowerCase());
+                        vehicle.driverName.toLowerCase().includes(filters.search.toLowerCase());
     return matchesStatus && matchesWard && matchesSearch;
   });
 
@@ -307,62 +307,7 @@ const TrackVehicle = () => {
         </div>
 
         {/* Map View */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-gray-100">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900">Map View</h2>
-            <button
-              onClick={() => toast.info('Map integration with Leaflet/Google Maps coming soon!')}
-              className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white px-4 py-2 rounded-xl font-semibold text-sm shadow-md transition-all"
-            >
-              View Full Map
-            </button>
-          </div>
-          
-          {/* Map Placeholder */}
-          <div className="w-full h-96 bg-gradient-to-br from-emerald-50 via-teal-50 to-blue-50 rounded-xl flex items-center justify-center border-2 border-dashed border-emerald-200 relative overflow-hidden">
-            {/* Animated background */}
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMCIgb3BhY2l0eT0iMC4wNSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-50"></div>
-            
-            {/* Mock vehicle markers */}
-            <div className="absolute inset-0">
-              {filteredVehicles.filter(v => v.location).map((vehicle, index) => (
-                <div
-                  key={vehicle.id}
-                  className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
-                  style={{
-                    left: `${20 + (index * 15)}%`,
-                    top: `${30 + (index % 3) * 20}%`
-                  }}
-                  onClick={() => setSelectedVehicle(vehicle)}
-                >
-                  <div className="relative group">
-                    <div className={`w-10 h-10 ${getStatusColor(vehicle.status).bg} rounded-full flex items-center justify-center shadow-lg animate-pulse group-hover:scale-110 transition-transform`}>
-                      <span className="text-white text-xl">{getVehicleIcon(vehicle.type)}</span>
-                    </div>
-                    <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
-                      {vehicle.registrationNumber}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            {/* Center message */}
-            <div className="text-center text-gray-500 px-4 relative z-10">
-              <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-xl">
-                <span className="text-white text-4xl">📍</span>
-              </div>
-              <p className="text-base font-bold text-gray-700 mb-1">Interactive Map</p>
-              <p className="text-xs text-gray-500">
-                Click markers to view vehicle details
-              </p>
-              <p className="text-xs text-gray-400 mt-2">
-                {/* TODO: Integrate Leaflet or Google Maps API */}
-                Map API integration pending
-              </p>
-            </div>
-          </div>
-        </div>
+        <MapView vehicles={filteredVehicles} />
 
         {/* Vehicle List */}
         <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">

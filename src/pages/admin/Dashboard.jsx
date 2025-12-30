@@ -73,7 +73,8 @@ const AdminDashboard = () => {
       closed: 0,
       outOfScope: 0
     },
-    recentActivities: []
+    recentActivities: [],
+    vehicleLocations: []
   });
 
   const [loading, setLoading] = useState(true);
@@ -172,6 +173,73 @@ const AdminDashboard = () => {
           { type: 'vehicle', message: 'Vehicle MH-12-AB-1234 route completed', time: '45 mins ago' },
           { type: 'staff', message: 'Morning shift attendance completed - 45/48 present', time: '1 hour ago' },
           { type: 'payment', message: 'Payment received - ₹1,850', time: '2 hours ago' }
+        ],
+        vehicleLocations: [
+          {
+            id: 'VEH001',
+            registrationNumber: 'OD-05-1234',
+            type: 'compactor',
+            status: 'running',
+            location: { lat: 20.2961, lng: 85.8245 },
+            speed: 35,
+            assignedWard: 'Ward 5',
+            driverName: 'Ramesh Singh',
+            driverPhone: '+91 98765 43210',
+            fuelLevel: 75,
+            lastUpdated: new Date().toISOString()
+          },
+          {
+            id: 'VEH002',
+            registrationNumber: 'OD-05-5678',
+            type: 'tipper',
+            status: 'standing',
+            location: { lat: 20.3021, lng: 85.8321 },
+            speed: 0,
+            assignedWard: 'Ward 3',
+            driverName: 'Suresh Kumar',
+            driverPhone: '+91 87654 32109',
+            fuelLevel: 45,
+            lastUpdated: new Date().toISOString()
+          },
+          {
+            id: 'VEH003',
+            registrationNumber: 'OD-05-9012',
+            type: 'compactor',
+            status: 'stopped',
+            location: { lat: 20.2890, lng: 85.8156 },
+            speed: 0,
+            assignedWard: 'Ward 7',
+            driverName: 'Prakash Patel',
+            driverPhone: '+91 76543 21098',
+            fuelLevel: 20,
+            lastUpdated: new Date().toISOString()
+          },
+          {
+            id: 'VEH004',
+            registrationNumber: 'OD-05-3456',
+            type: 'mini-truck',
+            status: 'running',
+            location: { lat: 20.3105, lng: 85.8412 },
+            speed: 52,
+            assignedWard: 'Ward 2',
+            driverName: 'Vijay Sharma',
+            driverPhone: '+91 65432 10987',
+            fuelLevel: 60,
+            lastUpdated: new Date().toISOString()
+          },
+          {
+            id: 'VEH005',
+            registrationNumber: 'OD-05-2345',
+            type: 'tipper',
+            status: 'running',
+            location: { lat: 20.2785, lng: 85.8398 },
+            speed: 28,
+            assignedWard: 'Ward 1',
+            driverName: 'Sanjay Das',
+            driverPhone: '+91 43210 98765',
+            fuelLevel: 80,
+            lastUpdated: new Date().toISOString()
+          }
         ]
       };
 
@@ -298,7 +366,7 @@ const AdminDashboard = () => {
 
         {/* Fuel Management */}
         <div className="mb-6 sm:mb-8">
-            <MapView />
+            <MapView vehicles={dashboardData.vehicleLocations} />
         </div>
 
         {/* Map & Recent Activity */}

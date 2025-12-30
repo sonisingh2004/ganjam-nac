@@ -239,124 +239,151 @@ const WasteCollection = () => {
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-gray-100">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                Waste Collection Management
-              </h1>
-              <p className="text-gray-600 mt-1">Track and manage daily waste collection activities</p>
+        <div className="bg-gradient-to-br from-white to-emerald-50 rounded-3xl shadow-2xl p-8 mb-8 border-2 border-emerald-100 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-emerald-200/20 to-teal-200/20 rounded-full blur-3xl -mr-32 -mt-32"></div>
+          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <span className="text-3xl">🗑️</span>
+              </div>
+              <div>
+                <h1 className="text-3xl font-black bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                  Waste Collection Management
+                </h1>
+                <p className="text-gray-600 mt-1 font-medium">Track and manage daily waste collection activities</p>
+              </div>
             </div>
             <button
               onClick={() => setShowModal(true)}
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg transition-all transform hover:scale-105"
+              className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-2xl font-bold shadow-2xl transition-all transform hover:scale-105 hover:shadow-emerald-500/50 flex items-center gap-2 whitespace-nowrap"
             >
-              + Add Collection
+              <span className="text-xl">+</span>
+              <span>Add Collection</span>
             </button>
           </div>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl p-6 border-2 border-gray-100 hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-600 font-semibold">Total Collections</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">{stats.total}</p>
+                <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2">Total Collections</p>
+                <p className="text-3xl font-black text-gray-900">{stats.total}</p>
               </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">📊</span>
+              <div className="w-14 h-14 bg-gradient-to-br from-gray-400 to-gray-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:rotate-12 transition-transform">
+                <span className="text-white text-2xl">📊</span>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+          <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl shadow-xl p-6 border-2 border-emerald-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-600 font-semibold">Completed</p>
-                <p className="text-2xl font-bold text-emerald-600 mt-1">{stats.completed}</p>
+                <p className="text-xs text-emerald-600 font-bold uppercase tracking-wider mb-2">Completed</p>
+                <p className="text-3xl font-black text-emerald-700">{stats.completed}</p>
               </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">✓</span>
+              <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:rotate-12 transition-transform">
+                <span className="text-white text-2xl font-bold">✓</span>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-xl p-6 border-2 border-blue-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-600 font-semibold">In Progress</p>
-                <p className="text-2xl font-bold text-blue-600 mt-1">{stats.inProgress}</p>
+                <p className="text-xs text-blue-600 font-bold uppercase tracking-wider mb-2">In Progress</p>
+                <p className="text-3xl font-black text-blue-700">{stats.inProgress}</p>
               </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">⏳</span>
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:rotate-12 transition-transform">
+                <span className="text-white text-2xl">⏳</span>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+          <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl shadow-xl p-6 border-2 border-orange-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-600 font-semibold">Pending</p>
-                <p className="text-2xl font-bold text-orange-600 mt-1">{stats.pending}</p>
+                <p className="text-xs text-orange-600 font-bold uppercase tracking-wider mb-2">Pending</p>
+                <p className="text-3xl font-black text-orange-700">{stats.pending}</p>
               </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">⏰</span>
+              <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:rotate-12 transition-transform">
+                <span className="text-white text-2xl">⏰</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Waste Collection Progress */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-gray-100">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Today's Collection Progress</h2>
-          <div className="mb-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-semibold text-gray-700">Total Waste Collected</span>
-              <span className="text-sm font-bold text-emerald-600">{stats.totalWaste} / {stats.targetWaste} tons</span>
+        <div className="bg-gradient-to-br from-white to-emerald-50 rounded-3xl shadow-2xl p-8 mb-8 border-2 border-emerald-100">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-2xl">📈</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-4">
+            <h2 className="text-2xl font-black text-gray-900">Today's Collection Progress</h2>
+          </div>
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-base font-bold text-gray-700">Total Waste Collected</span>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl font-black text-emerald-600">{stats.totalWaste}</span>
+                <span className="text-gray-400 font-bold">/</span>
+                <span className="text-xl font-bold text-gray-600">{stats.targetWaste} tons</span>
+              </div>
+            </div>
+            <div className="relative w-full bg-gray-200 rounded-2xl h-6 shadow-inner overflow-hidden">
               <div 
-                className="bg-gradient-to-r from-emerald-500 to-teal-500 h-4 rounded-full transition-all"
-                style={{ width: `${(stats.totalWaste / stats.targetWaste) * 100}%` }}
-              ></div>
+                className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 rounded-2xl transition-all duration-1000 ease-out shadow-lg"
+                style={{ width: `${Math.min((stats.totalWaste / stats.targetWaste) * 100, 100)}%` }}
+              >
+                <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+              </div>
             </div>
           </div>
-          <p className="text-sm text-gray-600">
-            {((stats.totalWaste / stats.targetWaste) * 100).toFixed(1)}% of target achieved
-          </p>
+          <div className="flex items-center justify-between bg-emerald-100 rounded-xl p-4">
+            <span className="text-sm font-bold text-emerald-800">Target Achievement</span>
+            <span className="text-2xl font-black text-emerald-700">
+              {((stats.totalWaste / stats.targetWaste) * 100).toFixed(1)}%
+            </span>
+          </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-gray-100">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 border-2 border-gray-100">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-xl">🔍</span>
+            </div>
+            <h3 className="text-xl font-black text-gray-900">Filter Collections</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Search</label>
+              <label className="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Search</label>
               <input
                 type="text"
-                placeholder="Vehicle, Driver, Route..."
+                placeholder="🔎 Vehicle, Driver, Route..."
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md font-medium"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Status</label>
+              <label className="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Status</label>
               <select
                 value={filters.status}
                 onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md font-medium"
               >
                 <option value="all">All Status</option>
-                <option value="completed">Completed</option>
-                <option value="in-progress">In Progress</option>
-                <option value="pending">Pending</option>
-                <option value="cancelled">Cancelled</option>
+                <option value="completed">✓ Completed</option>
+                <option value="in-progress">⏳ In Progress</option>
+                <option value="pending">⏰ Pending</option>
+                <option value="cancelled">❌ Cancelled</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Ward</label>
+              <label className="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Ward</label>
               <select
                 value={filters.ward}
                 onChange={(e) => setFilters({ ...filters, ward: e.target.value })}
-                className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md font-medium"
               >
                 <option value="all">All Wards</option>
                 {getUniqueWards().map(ward => (
@@ -365,88 +392,94 @@ const WasteCollection = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Date</label>
+              <label className="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Date</label>
               <input
                 type="date"
                 value={filters.date}
                 onChange={(e) => setFilters({ ...filters, date: e.target.value })}
-                className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md font-medium"
               />
             </div>
           </div>
         </div>
 
         {/* Collections Table */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Waste Collection Records</h2>
+        <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-gray-100">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-xl">📋</span>
+            </div>
+            <h2 className="text-2xl font-black text-gray-900">Waste Collection Records</h2>
+          </div>
           
           {loading ? (
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-emerald-500"></div>
+            <div className="flex flex-col justify-center items-center h-64 gap-4">
+              <div className="animate-spin rounded-full h-20 w-20 border-b-4 border-emerald-500"></div>
+              <p className="text-gray-600 font-semibold">Loading collections...</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto rounded-2xl border-2 border-gray-100">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-gradient-to-r from-emerald-50 to-teal-50 border-b-2 border-emerald-200">
-                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">ID</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Ward</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Vehicle</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Route</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Waste Type</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Collected</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
+                  <tr className="bg-gradient-to-r from-emerald-500 to-teal-600">
+                    <th className="px-6 py-4 text-left text-xs font-black text-white uppercase tracking-wider">ID</th>
+                    <th className="px-6 py-4 text-left text-xs font-black text-white uppercase tracking-wider">Ward</th>
+                    <th className="px-6 py-4 text-left text-xs font-black text-white uppercase tracking-wider">Vehicle</th>
+                    <th className="px-6 py-4 text-left text-xs font-black text-white uppercase tracking-wider">Route</th>
+                    <th className="px-6 py-4 text-left text-xs font-black text-white uppercase tracking-wider">Waste Type</th>
+                    <th className="px-6 py-4 text-left text-xs font-black text-white uppercase tracking-wider">Collected</th>
+                    <th className="px-6 py-4 text-left text-xs font-black text-white uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-left text-xs font-black text-white uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {filteredCollections.map((collection) => (
-                    <tr key={collection.id} className="hover:bg-emerald-50 transition-colors">
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <span className="text-sm font-bold text-gray-900">{collection.id}</span>
+                <tbody className="divide-y-2 divide-gray-100 bg-white">
+                  {filteredCollections.map((collection, index) => (
+                    <tr key={collection.id} className={`hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 transition-all duration-200 ${index % 2 === 0 ? 'bg-gray-50/50' : 'bg-white'}`}>
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        <span className="text-sm font-black text-gray-900 bg-gray-100 px-3 py-1 rounded-lg">{collection.id}</span>
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-900">{collection.ward}</span>
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        <span className="text-sm font-bold text-gray-900">{collection.ward}</span>
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
+                      <td className="px-6 py-5 whitespace-nowrap">
                         <div>
-                          <div className="text-sm font-bold text-gray-900">{collection.vehicle}</div>
-                          <div className="text-xs text-gray-600">{collection.driver}</div>
+                          <div className="text-sm font-black text-gray-900">{collection.vehicle}</div>
+                          <div className="text-xs text-gray-600 font-semibold mt-1">{collection.driver}</div>
                         </div>
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-900">{collection.route}</span>
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        <span className="text-sm font-bold text-gray-700 bg-blue-50 px-3 py-1 rounded-lg">{collection.route}</span>
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <span className="text-lg mr-2">{getWasteTypeIcon(collection.wasteType)}</span>
-                          <span className="text-sm text-gray-900">{collection.wasteType}</span>
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl">{getWasteTypeIcon(collection.wasteType)}</span>
+                          <span className="text-sm font-bold text-gray-900">{collection.wasteType}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
+                      <td className="px-6 py-5 whitespace-nowrap">
                         <div>
-                          <div className="text-sm font-bold text-emerald-600">{collection.quantity} tons</div>
-                          <div className="text-xs text-gray-600">Target: {collection.targetQuantity} tons</div>
+                          <div className="text-sm font-black text-emerald-600">{collection.quantity} tons</div>
+                          <div className="text-xs text-gray-500 font-semibold">Target: {collection.targetQuantity} tons</div>
                         </div>
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(collection.status).badge}`}>
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        <span className={`px-4 py-2 rounded-xl text-xs font-black ${getStatusColor(collection.status).badge} shadow-sm`}>
                           {collection.status.replace('-', ' ').toUpperCase()}
                         </span>
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="flex space-x-2">
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        <div className="flex gap-2">
                           <button
                             onClick={() => handleEdit(collection)}
-                            className="text-blue-600 hover:text-blue-800 font-semibold text-sm"
+                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-xs transition-all shadow-md hover:shadow-lg transform hover:scale-105"
                           >
-                            Edit
+                            ✏️ Edit
                           </button>
                           <button
                             onClick={() => handleDelete(collection.id)}
-                            className="text-red-600 hover:text-red-800 font-semibold text-sm"
+                            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-xs transition-all shadow-md hover:shadow-lg transform hover:scale-105"
                           >
-                            Delete
+                            🗑️ Delete
                           </button>
                         </div>
                       </td>
@@ -456,10 +489,20 @@ const WasteCollection = () => {
               </table>
 
               {filteredCollections.length === 0 && (
-                <div className="text-center py-12">
-                  <div className="text-6xl mb-4">🗑️</div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">No Collections Found</h3>
-                  <p className="text-gray-600">Try adjusting your filters or add a new collection</p>
+                <div className="text-center py-20">
+                  <div className="flex justify-center mb-6">
+                    <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
+                      <span className="text-6xl">🗑️</span>
+                    </div>
+                  </div>
+                  <h3 className="text-2xl font-black text-gray-900 mb-3">No Collections Found</h3>
+                  <p className="text-gray-600 font-medium text-lg mb-6">Try adjusting your filters or add a new collection</p>
+                  <button
+                    onClick={() => setShowModal(true)}
+                    className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition-all transform hover:scale-105"
+                  >
+                    + Add First Collection
+                  </button>
                 </div>
               )}
             </div>
@@ -469,29 +512,34 @@ const WasteCollection = () => {
 
       {/* Add/Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                  {selectedCollection ? 'Edit Collection' : 'Add New Collection'}
-                </h2>
+        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
+          <div className="bg-gradient-to-br from-white to-emerald-50 rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border-2 border-emerald-100 transform transition-all animate-slideUp">
+            <div className="p-8">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <span className="text-2xl">{selectedCollection ? '✏️' : '➕'}</span>
+                  </div>
+                  <h2 className="text-3xl font-black bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                    {selectedCollection ? 'Edit Collection' : 'Add New Collection'}
+                  </h2>
+                </div>
                 <button
                   onClick={handleCloseModal}
-                  className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                  className="w-10 h-10 bg-gray-200 hover:bg-red-500 hover:text-white text-gray-700 rounded-xl text-2xl font-black transition-all transform hover:scale-110 flex items-center justify-center"
                 >
                   ×
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Ward *</label>
+                    <label className="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Ward *</label>
                     <select
                       value={formData.ward}
                       onChange={(e) => setFormData({ ...formData, ward: e.target.value })}
-                      className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md font-medium bg-white"
                       required
                     >
                       <option value="">Select Ward</option>
@@ -507,47 +555,47 @@ const WasteCollection = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Vehicle *</label>
+                    <label className="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Vehicle *</label>
                     <input
                       type="text"
                       value={formData.vehicle}
                       onChange={(e) => setFormData({ ...formData, vehicle: e.target.value })}
-                      className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md font-medium"
                       placeholder="OD-05-1234"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Driver Name *</label>
+                    <label className="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Driver Name *</label>
                     <input
                       type="text"
                       value={formData.driver}
                       onChange={(e) => setFormData({ ...formData, driver: e.target.value })}
-                      className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md font-medium"
                       placeholder="Driver Name"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Route *</label>
+                    <label className="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Route *</label>
                     <input
                       type="text"
                       value={formData.route}
                       onChange={(e) => setFormData({ ...formData, route: e.target.value })}
-                      className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md font-medium"
                       placeholder="Route A-1"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Waste Type *</label>
+                    <label className="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Waste Type *</label>
                     <select
                       value={formData.wasteType}
                       onChange={(e) => setFormData({ ...formData, wasteType: e.target.value })}
-                      className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md font-medium bg-white"
                       required
                     >
                       <option value="">Select Type</option>
@@ -559,35 +607,35 @@ const WasteCollection = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Target Quantity (tons) *</label>
+                    <label className="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Target Quantity (tons) *</label>
                     <input
                       type="number"
                       step="0.1"
                       value={formData.quantity}
                       onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                      className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md font-medium"
                       placeholder="0.0"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Collection Date *</label>
+                    <label className="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Collection Date *</label>
                     <input
                       type="date"
                       value={formData.collectionDate}
                       onChange={(e) => setFormData({ ...formData, collectionDate: e.target.value })}
-                      className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md font-medium"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Status *</label>
+                    <label className="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Status *</label>
                     <select
                       value={formData.status}
                       onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                      className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md font-medium bg-white"
                       required
                     >
                       <option value="pending">Pending</option>
@@ -599,29 +647,29 @@ const WasteCollection = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Notes</label>
+                  <label className="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Notes</label>
                   <textarea
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                    rows="3"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md font-medium"
+                    rows="4"
                     placeholder="Additional notes or comments..."
                   ></textarea>
                 </div>
 
-                <div className="flex space-x-3 pt-4">
+                <div className="flex gap-4 pt-6">
                   <button
                     type="button"
                     onClick={handleCloseModal}
-                    className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-900 py-2 rounded-xl font-semibold transition-all"
+                    className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-900 py-4 rounded-xl font-black text-lg transition-all shadow-md hover:shadow-lg transform hover:scale-105"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-2 rounded-xl font-semibold transition-all"
+                    className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white py-4 rounded-xl font-black text-lg transition-all shadow-lg hover:shadow-2xl transform hover:scale-105"
                   >
-                    {selectedCollection ? 'Update' : 'Add'} Collection
+                    {selectedCollection ? '✓ Update' : '+ Add'} Collection
                   </button>
                 </div>
               </form>

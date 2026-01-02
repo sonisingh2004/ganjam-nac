@@ -1,65 +1,54 @@
 // @ts-nocheck
-import axios from 'axios';
+// api/api.js
+import axios from "axios";
 
-// Base API configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-
-// Create axios instance with default config
-const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:5000",
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
-// Request interceptor - Add auth token if available
-apiClient.interceptors.request.use(
+// ✅ Request interceptor (Auth)
+api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Response interceptor - Handle errors globally
-apiClient.interceptors.response.use(
+// ✅ Response interceptor (Global error handling)
+api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      // Server responded with error status
       switch (error.response.status) {
         case 401:
-          // Unauthorized - redirect to login
-          localStorage.removeItem('token');
-          window.location.href = '/login';
+          localStorage.removeItem("token");
+          window.location.href = "/login";
           break;
         case 403:
-          console.error('Access forbidden');
+          console.error("Forbidden");
           break;
         case 404:
-          console.error('Resource not found');
+          console.error("Not Found");
           break;
         case 500:
-          console.error('Server error');
+          console.error("Server Error");
           break;
         default:
-          console.error('API Error:', error.response.data);
+          console.error("API Error:", error.response.data);
       }
-    } else if (error.request) {
-      // Request made but no response received
-      console.error('Network error - no response from server');
     } else {
-      // Something else happened
-      console.error('Error:', error.message);
+      console.error("Network / Server unreachable");
     }
     return Promise.reject(error);
   }
 );
 
-export default apiClient;
+export default api;

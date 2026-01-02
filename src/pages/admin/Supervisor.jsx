@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { getAllSupervisors } from '../../services/admin/supervisorService';
 
 const SupervisorManagement = () => {
   const [supervisors, setSupervisors] = useState([]);
@@ -20,13 +21,11 @@ const SupervisorManagement = () => {
     fetchSupervisors();
   }, []);
 
-  const fetchSupervisors = () => {
+  const fetchSupervisors = async () => {
     try {
       setLoading(true);
-      // Get from localStorage (replace with API later)
-      const stored = localStorage.getItem('supervisors');
-      const supervisorsList = stored ? JSON.parse(stored) : [];
-      setSupervisors(supervisorsList);
+      const data = await getAllSupervisors();
+      setSupervisors(data);
     } catch (error) {
       console.error('Error fetching supervisors:', error);
       toast.error('Failed to fetch supervisors');

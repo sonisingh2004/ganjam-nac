@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { getAllWards } from '../../services/admin/wardService';
 
 const Ward = () => {
   const [wards, setWards] = useState([]);
@@ -31,155 +32,31 @@ const Ward = () => {
   const fetchWards = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual API endpoint
-      // const response = await fetch('/api/admin/wards', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: JSON.stringify(filters)
-      // });
-      // const data = await response.json();
+      const data = await getAllWards();
       
-      // Mock data for demonstration
-      const mockData = [
-        {
-          id: 'WARD001',
-          name: 'Ward 1',
-          area: '5.2 km²',
-          population: 12500,
-          households: 2850,
-          status: 'completed',
-          completion: 100,
-          collectedToday: 8.5,
-          targetDaily: 8.5,
-          supervisorName: 'Rajesh Kumar',
-          supervisorPhone: '+91 98765 43210',
-          assignedVehicles: ['OD-05-1234', 'OD-05-5678'],
-          assignedStaff: 12,
-          wasteGenerationPerDay: 8.5,
-          collectionFrequency: 'daily',
-          lastCollectionTime: '2025-12-26T08:30:00Z',
-          binLocations: 25,
-          complaints: 2,
-          coordinates: { lat: 20.2961, lng: 85.8245 }
-        },
-        {
-          id: 'WARD002',
-          name: 'Ward 2',
-          area: '4.8 km²',
-          population: 10200,
-          households: 2340,
-          status: 'in-progress',
-          completion: 65,
-          collectedToday: 4.8,
-          targetDaily: 7.4,
-          supervisorName: 'Priya Sharma',
-          supervisorPhone: '+91 87654 32109',
-          assignedVehicles: ['OD-05-3456'],
-          assignedStaff: 10,
-          wasteGenerationPerDay: 7.4,
-          collectionFrequency: 'daily',
-          lastCollectionTime: '2025-12-26T09:15:00Z',
-          binLocations: 20,
-          complaints: 1,
-          coordinates: { lat: 20.3105, lng: 85.8412 }
-        },
-        {
-          id: 'WARD003',
-          name: 'Ward 3',
-          area: '6.5 km²',
-          population: 15800,
-          households: 3560,
-          status: 'in-progress',
-          completion: 45,
-          collectedToday: 4.5,
-          targetDaily: 10.2,
-          supervisorName: 'Amit Patel',
-          supervisorPhone: '+91 76543 21098',
-          assignedVehicles: ['OD-05-9012', 'OD-05-2345'],
-          assignedStaff: 15,
-          wasteGenerationPerDay: 10.2,
-          collectionFrequency: 'daily',
-          lastCollectionTime: '2025-12-26T07:45:00Z',
-          binLocations: 32,
-          complaints: 3,
-          coordinates: { lat: 20.2890, lng: 85.8156 }
-        },
-        {
-          id: 'WARD004',
-          name: 'Ward 4',
-          area: '3.9 km²',
-          population: 8900,
-          households: 2010,
-          status: 'pending',
-          completion: 0,
-          collectedToday: 0,
-          targetDaily: 6.3,
-          supervisorName: 'Sunita Devi',
-          supervisorPhone: '+91 65432 10987',
-          assignedVehicles: ['OD-05-6789'],
-          assignedStaff: 8,
-          wasteGenerationPerDay: 6.3,
-          collectionFrequency: 'daily',
-          lastCollectionTime: '2025-12-25T16:30:00Z',
-          binLocations: 18,
-          complaints: 5,
-          coordinates: { lat: 20.3021, lng: 85.8321 }
-        },
-        {
-          id: 'WARD005',
-          name: 'Ward 5',
-          area: '7.2 km²',
-          population: 18500,
-          households: 4200,
-          status: 'completed',
-          completion: 100,
-          collectedToday: 12.8,
-          targetDaily: 12.8,
-          supervisorName: 'Vikram Singh',
-          supervisorPhone: '+91 54321 09876',
-          assignedVehicles: ['OD-05-7890', 'OD-05-3210', 'OD-05-4567'],
-          assignedStaff: 18,
-          wasteGenerationPerDay: 12.8,
-          collectionFrequency: 'daily',
-          lastCollectionTime: '2025-12-26T10:00:00Z',
-          binLocations: 40,
-          complaints: 1,
-          coordinates: { lat: 20.2785, lng: 85.8398 }
-        },
-        {
-          id: 'WARD006',
-          name: 'Ward 6',
-          area: '5.8 km²',
-          population: 13200,
-          households: 3080,
-          status: 'in-progress',
-          completion: 80,
-          collectedToday: 7.5,
-          targetDaily: 9.4,
-          supervisorName: 'Meena Jena',
-          supervisorPhone: '+91 43210 98765',
-          assignedVehicles: ['OD-05-8901'],
-          assignedStaff: 13,
-          wasteGenerationPerDay: 9.4,
-          collectionFrequency: 'daily',
-          lastCollectionTime: '2025-12-26T09:30:00Z',
-          binLocations: 28,
-          complaints: 0,
-          coordinates: { lat: 20.3150, lng: 85.8290 }
-        }
-      ];
-
-      setWards(mockData);
+      // Apply filters
+      let filteredData = data;
+      if (filters.status !== 'all') {
+        filteredData = filteredData.filter(w => w.status === filters.status);
+      }
+      if (filters.search) {
+        filteredData = filteredData.filter(w => 
+          w.name?.toLowerCase().includes(filters.search.toLowerCase()) ||
+          w.supervisorName?.toLowerCase().includes(filters.search.toLowerCase())
+        );
+      }
+      
+      setWards(filteredData);
     } catch (error) {
       console.error('Error fetching wards:', error);
-      toast.error('Failed to fetch wards');
+      toast.error('Failed to load wards');
+      setWards([]);
     } finally {
       setLoading(false);
     }
   };
+
+
 
   const handleAddWard = async (e) => {
     e.preventDefault();

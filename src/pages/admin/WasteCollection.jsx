@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { getAllWasteCollections } from '../../services/admin/wasteCollectionService';
 
 const WasteCollection = () => {
   const [collections, setCollections] = useState([]);
@@ -32,92 +33,12 @@ const WasteCollection = () => {
   const fetchCollections = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual API endpoint
-      // const response = await fetch('/api/admin/waste-collections', {
-      //   headers: {
-      //     'Authorization': `Bearer ${localStorage.getItem('token')}`
-      //   }
-      // });
-      // const data = await response.json();
-
-      // Mock data
-      const mockData = [
-        {
-          id: 'WC001',
-          ward: 'Ward 1',
-          vehicle: 'OD-05-2345',
-          driver: 'Sanjay Das',
-          route: 'Route A-1',
-          wasteType: 'Mixed Waste',
-          quantity: 11.8,
-          targetQuantity: 12.8,
-          collectionDate: new Date().toISOString().split('T')[0],
-          status: 'completed',
-          completionTime: '09:45 AM',
-          notes: 'Collection completed successfully'
-        },
-        {
-          id: 'WC002',
-          ward: 'Ward 5',
-          vehicle: 'OD-05-1234',
-          driver: 'Ramesh Singh',
-          route: 'Route B-3',
-          wasteType: 'Organic Waste',
-          quantity: 5.5,
-          targetQuantity: 8.5,
-          collectionDate: new Date().toISOString().split('T')[0],
-          status: 'in-progress',
-          completionTime: null,
-          notes: 'Collection in progress'
-        },
-        {
-          id: 'WC003',
-          ward: 'Ward 7',
-          vehicle: 'OD-05-9012',
-          driver: 'Prakash Patel',
-          route: 'Route C-2',
-          wasteType: 'Recyclable',
-          quantity: 8.7,
-          targetQuantity: 10.2,
-          collectionDate: new Date().toISOString().split('T')[0],
-          status: 'in-progress',
-          completionTime: null,
-          notes: 'Almost completed'
-        },
-        {
-          id: 'WC004',
-          ward: 'Ward 3',
-          vehicle: 'OD-05-5678',
-          driver: 'Suresh Kumar',
-          route: 'Route D-1',
-          wasteType: 'Mixed Waste',
-          quantity: 0,
-          targetQuantity: 7.4,
-          collectionDate: new Date().toISOString().split('T')[0],
-          status: 'pending',
-          completionTime: null,
-          notes: 'Scheduled for afternoon'
-        },
-        {
-          id: 'WC005',
-          ward: 'Ward 2',
-          vehicle: 'OD-05-3456',
-          driver: 'Vijay Sharma',
-          route: 'Route E-2',
-          wasteType: 'Organic Waste',
-          quantity: 1.8,
-          targetQuantity: 6.3,
-          collectionDate: new Date().toISOString().split('T')[0],
-          status: 'in-progress',
-          completionTime: null,
-          notes: 'Just started'
-        }
-      ];
-
-      setCollections(mockData);
+      const data = await getAllWasteCollections();
+      setCollections(data);
     } catch (error) {
-      console.error('Error fetching collections:', error);
-      toast.error('Failed to fetch waste collections');
+      console.error('Error fetching waste collections:', error);
+      toast.error('Failed to load waste collections');
+      setCollections([]);
     } finally {
       setLoading(false);
     }

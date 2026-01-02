@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { getAllVehicles } from '../../services/admin/vehicleService';
 
 const Vehicle = () => {
   const [vehicles, setVehicles] = useState([]);
@@ -27,139 +28,23 @@ const Vehicle = () => {
   // Fetch vehicles from API
   useEffect(() => {
     fetchVehicles();
-  }, [filters]);
+  }, []);
 
   const fetchVehicles = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual API endpoint
-      // const response = await fetch('/api/admin/vehicles', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: JSON.stringify(filters)
-      // });
-      // const data = await response.json();
-      
-      // Mock data for demonstration
-      const mockData = [
-        {
-          id: 'VEH001',
-          registrationNumber: 'OD-05-1234',
-          type: 'compactor',
-          model: 'Tata LPT 1613',
-          capacity: '10 tons',
-          fuelType: 'diesel',
-          status: 'running',
-          location: { lat: 20.2961, lng: 85.8245 },
-          speed: 35,
-          assignedWard: 'Ward 5',
-          driverName: 'Ramesh Singh',
-          driverPhone: '+91 98765 43210',
-          lastService: '2025-11-15',
-          nextService: '2026-02-15',
-          mileage: 45230,
-          fuelLevel: 75,
-          insuranceExpiry: '2026-03-20',
-          gpsEnabled: true,
-          maintenanceStatus: 'good'
-        },
-        {
-          id: 'VEH002',
-          registrationNumber: 'OD-05-5678',
-          type: 'tipper',
-          model: 'Ashok Leyland 1618',
-          capacity: '8 tons',
-          fuelType: 'diesel',
-          status: 'standing',
-          location: { lat: 20.3021, lng: 85.8321 },
-          speed: 0,
-          assignedWard: 'Ward 3',
-          driverName: 'Suresh Kumar',
-          driverPhone: '+91 87654 32109',
-          lastService: '2025-12-01',
-          nextService: '2026-03-01',
-          mileage: 38940,
-          fuelLevel: 45,
-          insuranceExpiry: '2026-05-15',
-          gpsEnabled: true,
-          maintenanceStatus: 'good'
-        },
-        {
-          id: 'VEH003',
-          registrationNumber: 'OD-05-9012',
-          type: 'compactor',
-          model: 'Eicher Pro 3015',
-          capacity: '12 tons',
-          fuelType: 'diesel',
-          status: 'stopped',
-          location: { lat: 20.2890, lng: 85.8156 },
-          speed: 0,
-          assignedWard: 'Ward 7',
-          driverName: 'Prakash Patel',
-          driverPhone: '+91 76543 21098',
-          lastService: '2025-10-20',
-          nextService: '2026-01-20',
-          mileage: 52100,
-          fuelLevel: 20,
-          insuranceExpiry: '2026-01-10',
-          gpsEnabled: true,
-          maintenanceStatus: 'service-due'
-        },
-        {
-          id: 'VEH004',
-          registrationNumber: 'OD-05-3456',
-          type: 'mini-truck',
-          model: 'Tata Ace',
-          capacity: '2 tons',
-          fuelType: 'diesel',
-          status: 'running',
-          location: { lat: 20.3105, lng: 85.8412 },
-          speed: 68,
-          assignedWard: 'Ward 2',
-          driverName: 'Vijay Sharma',
-          driverPhone: '+91 65432 10987',
-          lastService: '2025-12-10',
-          nextService: '2026-03-10',
-          mileage: 29450,
-          fuelLevel: 60,
-          insuranceExpiry: '2026-07-25',
-          gpsEnabled: true,
-          maintenanceStatus: 'over-speeding'
-        },
-        {
-          id: 'VEH005',
-          registrationNumber: 'OD-05-7890',
-          type: 'compactor',
-          model: 'BharatBenz 1415R',
-          capacity: '10 tons',
-          fuelType: 'diesel',
-          status: 'dataNotRetrieving',
-          location: null,
-          speed: null,
-          assignedWard: 'Ward 8',
-          driverName: 'Anil Jena',
-          driverPhone: '+91 54321 09876',
-          lastService: '2025-11-28',
-          nextService: '2026-02-28',
-          mileage: 41200,
-          fuelLevel: null,
-          insuranceExpiry: '2026-04-12',
-          gpsEnabled: false,
-          maintenanceStatus: 'gps-issue'
-        }
-      ];
-
-      setVehicles(mockData);
+      const data = await getAllVehicles();
+      setVehicles(data);
     } catch (error) {
       console.error('Error fetching vehicles:', error);
-      toast.error('Failed to fetch vehicles');
+      toast.error('Failed to load vehicles');
+      setVehicles([]);
     } finally {
       setLoading(false);
     }
   };
+
+
 
   const handleAddVehicle = async (e) => {
     e.preventDefault();
@@ -227,9 +112,10 @@ const Vehicle = () => {
   const filteredVehicles = vehicles.filter(vehicle => {
     const matchesStatus = filters.status === 'all' || vehicle.status === filters.status;
     const matchesType = filters.type === 'all' || vehicle.type === filters.type;
-    const matchesSearch = vehicle.registrationNumber.toLowerCase().includes(filters.search.toLowerCase()) ||
-                         vehicle.driverName.toLowerCase().includes(filters.search.toLowerCase()) ||
-                         vehicle.assignedWard.toLowerCase().includes(filters.search.toLowerCase());
+    const matchesSearch = !filters.search || 
+                         vehicle.registrationNumber?.toLowerCase().includes(filters.search.toLowerCase()) ||
+                         vehicle.driverName?.toLowerCase().includes(filters.search.toLowerCase()) ||
+                         vehicle.assignedWard?.toLowerCase().includes(filters.search.toLowerCase());
     return matchesStatus && matchesType && matchesSearch;
   });
 
@@ -366,8 +252,8 @@ const Vehicle = () => {
                         <span className="text-sm font-semibold text-gray-900">{vehicle.assignedWard}</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">🛣️ Mileage:</span>
-                        <span className="text-sm font-semibold text-gray-900">{vehicle.mileage.toLocaleString()} km</span>
+                        <span className="text-sm text-gray-600">🛣️ Odometer:</span>
+                        <span className="text-sm font-semibold text-gray-900">{vehicle.odometer?.toLocaleString() || 'N/A'} km</span>
                       </div>
                     </div>
                   </div>
@@ -501,12 +387,12 @@ const Vehicle = () => {
                   </div>
                   <div className="grid grid-cols-2 gap-4 mt-4">
                     <div>
-                      <p className="text-sm text-gray-600 font-semibold">Mileage</p>
-                      <p className="text-base font-bold text-gray-900">{selectedVehicle.mileage.toLocaleString()} km</p>
+                      <p className="text-sm text-gray-600 font-semibold">Odometer</p>
+                      <p className="text-base font-bold text-gray-900">{selectedVehicle.odometer?.toLocaleString() || 'N/A'} km</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600 font-semibold">Insurance Expiry</p>
-                      <p className="text-base font-bold text-gray-900">{new Date(selectedVehicle.insuranceExpiry).toLocaleDateString()}</p>
+                      <p className="text-base font-bold text-gray-900">{selectedVehicle.insuranceExpiry ? new Date(selectedVehicle.insuranceExpiry).toLocaleDateString() : 'N/A'}</p>
                     </div>
                   </div>
                 </div>

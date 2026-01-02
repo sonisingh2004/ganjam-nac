@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { getAllFuelRecords } from '../../services/admin/fuelService';
 
 const FuelManagement = () => {
   const [fuelRecords, setFuelRecords] = useState([]);
@@ -35,102 +36,12 @@ const FuelManagement = () => {
   const fetchFuelRecords = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual API endpoint
-      // const response = await fetch('/api/admin/fuel-records', {
-      //   headers: {
-      //     'Authorization': `Bearer ${localStorage.getItem('token')}`
-      //   }
-      // });
-      // const data = await response.json();
-
-      // Mock data
-      const mockData = [
-        {
-          id: 'FR001',
-          vehicle: 'OD-05-1234',
-          driver: 'Ramesh Singh',
-          fuelType: 'diesel',
-          quantity: 45.5,
-          pricePerLiter: 95.50,
-          totalCost: 4345.25,
-          odometer: 25480,
-          previousOdometer: 25200,
-          fillingStation: 'Indian Oil - Bhubaneswar',
-          refuelDate: new Date().toISOString().split('T')[0],
-          receiptNumber: 'REC-2025-001',
-          efficiency: 6.15,
-          notes: 'Regular refueling'
-        },
-        {
-          id: 'FR002',
-          vehicle: 'OD-05-5678',
-          driver: 'Suresh Kumar',
-          fuelType: 'diesel',
-          quantity: 38.2,
-          pricePerLiter: 95.50,
-          totalCost: 3648.10,
-          odometer: 18750,
-          previousOdometer: 18520,
-          fillingStation: 'BPCL - Berhampur',
-          refuelDate: new Date(Date.now() - 86400000).toISOString().split('T')[0],
-          receiptNumber: 'REC-2025-002',
-          efficiency: 6.02,
-          notes: 'Tank was almost empty'
-        },
-        {
-          id: 'FR003',
-          vehicle: 'OD-05-9012',
-          driver: 'Prakash Patel',
-          fuelType: 'diesel',
-          quantity: 52.0,
-          pricePerLiter: 95.50,
-          totalCost: 4966.00,
-          odometer: 31200,
-          previousOdometer: 30880,
-          fillingStation: 'HP Petrol Pump - Ganjam',
-          refuelDate: new Date(Date.now() - 172800000).toISOString().split('T')[0],
-          receiptNumber: 'REC-2025-003',
-          efficiency: 6.15,
-          notes: 'Full tank refuel'
-        },
-        {
-          id: 'FR004',
-          vehicle: 'OD-05-3456',
-          driver: 'Vijay Sharma',
-          fuelType: 'petrol',
-          quantity: 25.5,
-          pricePerLiter: 102.80,
-          totalCost: 2621.40,
-          odometer: 12450,
-          previousOdometer: 12280,
-          fillingStation: 'Indian Oil - Aska',
-          refuelDate: new Date(Date.now() - 259200000).toISOString().split('T')[0],
-          receiptNumber: 'REC-2025-004',
-          efficiency: 6.67,
-          notes: 'Mini truck refuel'
-        },
-        {
-          id: 'FR005',
-          vehicle: 'OD-05-2345',
-          driver: 'Sanjay Das',
-          fuelType: 'diesel',
-          quantity: 41.8,
-          pricePerLiter: 95.50,
-          totalCost: 3991.90,
-          odometer: 28900,
-          previousOdometer: 28630,
-          fillingStation: 'BPCL - Chatrapur',
-          refuelDate: new Date(Date.now() - 345600000).toISOString().split('T')[0],
-          receiptNumber: 'REC-2025-005',
-          efficiency: 6.46,
-          notes: 'Good fuel efficiency'
-        }
-      ];
-
-      setFuelRecords(mockData);
+      const data = await getAllFuelRecords();
+      setFuelRecords(data);
     } catch (error) {
       console.error('Error fetching fuel records:', error);
-      toast.error('Failed to fetch fuel records');
+      toast.error('Failed to load fuel records');
+      setFuelRecords([]);
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { getAttendanceRecords } from '../../services/admin/attendanceService';
 
 const Attendance = () => {
   const [staff, setStaff] = useState([]);
@@ -31,183 +32,17 @@ const Attendance = () => {
   const fetchAttendance = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual API endpoint
-      // const response = await fetch(`/api/admin/attendance?date=${selectedDate}`, {
-      //   headers: {
-      //     'Authorization': `Bearer ${localStorage.getItem('token')}`
-      //   }
-      // });
-      // const data = await response.json();
-      
-      // Mock data for demonstration
-      const mockData = [
-        {
-          id: 'STAFF001',
-          name: 'Ramesh Singh',
-          role: 'driver',
-          assignedWard: 'Ward 5',
-          phone: '+91 98765 43210',
-          status: 'present',
-          checkInTime: '06:15 AM',
-          checkOutTime: null,
-          workingHours: '4.5h',
-          vehicleAssigned: 'OD-05-1234',
-          photo: null
-        },
-        {
-          id: 'STAFF002',
-          name: 'Suresh Kumar',
-          role: 'driver',
-          assignedWard: 'Ward 3',
-          phone: '+91 87654 32109',
-          status: 'present',
-          checkInTime: '06:00 AM',
-          checkOutTime: null,
-          workingHours: '5h',
-          vehicleAssigned: 'OD-05-5678',
-          photo: null
-        },
-        {
-          id: 'STAFF003',
-          name: 'Prakash Patel',
-          role: 'driver',
-          assignedWard: 'Ward 7',
-          phone: '+91 76543 21098',
-          status: 'absent',
-          checkInTime: null,
-          checkOutTime: null,
-          workingHours: '0h',
-          vehicleAssigned: 'OD-05-9012',
-          photo: null
-        },
-        {
-          id: 'STAFF004',
-          name: 'Vijay Sharma',
-          role: 'driver',
-          assignedWard: 'Ward 2',
-          phone: '+91 65432 10987',
-          status: 'on-leave',
-          checkInTime: null,
-          checkOutTime: null,
-          workingHours: '0h',
-          vehicleAssigned: 'OD-05-3456',
-          photo: null,
-          leaveReason: 'Medical Leave'
-        },
-        {
-          id: 'STAFF005',
-          name: 'Anil Jena',
-          role: 'driver',
-          assignedWard: 'Ward 8',
-          phone: '+91 54321 09876',
-          status: 'present',
-          checkInTime: '06:30 AM',
-          checkOutTime: null,
-          workingHours: '4h',
-          vehicleAssigned: 'OD-05-7890',
-          photo: null
-        },
-        {
-          id: 'STAFF006',
-          name: 'Mohan Das',
-          role: 'cleaner',
-          assignedWard: 'Ward 1',
-          phone: '+91 43210 98765',
-          status: 'present',
-          checkInTime: '05:45 AM',
-          checkOutTime: null,
-          workingHours: '5.5h',
-          vehicleAssigned: null,
-          photo: null
-        },
-        {
-          id: 'STAFF007',
-          name: 'Ravi Kumar',
-          role: 'cleaner',
-          assignedWard: 'Ward 2',
-          phone: '+91 32109 87654',
-          status: 'present',
-          checkInTime: '06:00 AM',
-          checkOutTime: null,
-          workingHours: '5h',
-          vehicleAssigned: null,
-          photo: null
-        },
-        {
-          id: 'STAFF008',
-          name: 'Sanjay Behera',
-          role: 'cleaner',
-          assignedWard: 'Ward 3',
-          phone: '+91 21098 76543',
-          status: 'late',
-          checkInTime: '07:30 AM',
-          checkOutTime: null,
-          workingHours: '3.5h',
-          vehicleAssigned: null,
-          photo: null
-        },
-        {
-          id: 'STAFF009',
-          name: 'Vikram Singh',
-          role: 'supervisor',
-          assignedWard: 'Ward 5',
-          phone: '+91 54321 09876',
-          status: 'present',
-          checkInTime: '05:30 AM',
-          checkOutTime: null,
-          workingHours: '6h',
-          vehicleAssigned: null,
-          photo: null
-        },
-        {
-          id: 'STAFF010',
-          name: 'Priya Sharma',
-          role: 'supervisor',
-          assignedWard: 'Ward 3',
-          phone: '+91 87654 32109',
-          status: 'present',
-          checkInTime: '05:45 AM',
-          checkOutTime: null,
-          workingHours: '5.5h',
-          vehicleAssigned: null,
-          photo: null
-        },
-        {
-          id: 'STAFF011',
-          name: 'Deepak Mishra',
-          role: 'cleaner',
-          assignedWard: 'Ward 4',
-          phone: '+91 10987 65432',
-          status: 'half-day',
-          checkInTime: '06:00 AM',
-          checkOutTime: '10:30 AM',
-          workingHours: '4.5h',
-          vehicleAssigned: null,
-          photo: null
-        },
-        {
-          id: 'STAFF012',
-          name: 'Amit Patel',
-          role: 'supervisor',
-          assignedWard: 'Ward 7',
-          phone: '+91 76543 21098',
-          status: 'present',
-          checkInTime: '05:30 AM',
-          checkOutTime: null,
-          workingHours: '6h',
-          vehicleAssigned: null,
-          photo: null
-        }
-      ];
-
-      setStaff(mockData);
+      const data = await getAttendanceRecords(selectedDate);
+      setStaff(data);
     } catch (error) {
       console.error('Error fetching attendance:', error);
-      toast.error('Failed to fetch attendance data');
+      toast.error('Failed to load attendance records');
+      setStaff([]);
     } finally {
       setLoading(false);
     }
   };
+
 
   const handleMarkAttendance = async (e) => {
     e.preventDefault();

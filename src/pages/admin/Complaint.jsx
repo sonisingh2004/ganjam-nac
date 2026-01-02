@@ -1,5 +1,7 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { getAllComplaints } from '../../services/admin/complaintService';
 
 const Complaint = () => {
   const [complaints, setComplaints] = useState([]);
@@ -21,66 +23,26 @@ const Complaint = () => {
   const fetchComplaints = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual API endpoint
-      // const response = await fetch('/api/admin/complaints', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: JSON.stringify(filters)
-      // });
-      // const data = await response.json();
+      const data = await getAllComplaints();
       
-      // Mock data for demonstration
-      const mockData = [
-        {
-          id: 'CMP001',
-          title: 'Waste not collected',
-          description: 'Waste has not been collected for 3 days in Ward 5',
-          status: 'open',
-          priority: 'high',
-          category: 'Collection',
-          location: 'Ward 5, Sector A',
-          citizenName: 'Rajesh Kumar',
-          citizenPhone: '+91 98765 43210',
-          createdAt: '2025-12-20T10:30:00Z',
-          updatedAt: '2025-12-22T14:15:00Z',
-          assignedTo: 'Supervisor 1'
-        },
-        {
-          id: 'CMP002',
-          title: 'Damaged dustbin',
-          description: 'Public dustbin is damaged and needs replacement',
-          status: 'pending',
-          priority: 'medium',
-          category: 'Infrastructure',
-          location: 'Ward 3, Market Area',
-          citizenName: 'Priya Sharma',
-          citizenPhone: '+91 87654 32109',
-          createdAt: '2025-12-21T09:15:00Z',
-          updatedAt: '2025-12-21T09:15:00Z',
-          assignedTo: 'Unassigned'
-        },
-        {
-          id: 'CMP003',
-          title: 'Illegal dumping',
-          description: 'Someone is dumping waste at unauthorized location',
-          status: 'closed',
-          priority: 'high',
-          category: 'Violation',
-          location: 'Ward 7, Behind Temple',
-          citizenName: 'Amit Patel',
-          citizenPhone: '+91 76543 21098',
-          createdAt: '2025-12-19T16:45:00Z',
-          updatedAt: '2025-12-23T11:30:00Z',
-          assignedTo: 'Supervisor 2'
-        }
-      ];
-
-      setComplaints(mockData);
+      // Apply filters
+      let filteredData = data;
+      if (filters.status !== 'all') {
+        filteredData = filteredData.filter(c => c.status === filters.status);
+      }
+      if (filters.search) {
+        filteredData = filteredData.filter(c => 
+          c.citizenName?.toLowerCase().includes(filters.search.toLowerCase()) ||
+          c.location?.toLowerCase().includes(filters.search.toLowerCase()) ||
+          c.description?.toLowerCase().includes(filters.search.toLowerCase())
+        );
+      }
+      
+      setComplaints(filteredData);
     } catch (error) {
       console.error('Error fetching complaints:', error);
+      toast.error('Failed to load complaints');
+      setComplaints([]);
     } finally {
       setLoading(false);
     }

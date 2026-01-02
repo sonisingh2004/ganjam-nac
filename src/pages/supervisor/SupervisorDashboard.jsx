@@ -326,10 +326,12 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import api from "../../api/axiosInstance";
 
-/* ================= MOCK DATA ================= */
+/* ================= FALLBACK DATA ================= */
 
-const collectionTrend = [
+const fallbackCollectionTrend = [
   { day: "Mon", value: 72 },
   { day: "Tue", value: 78 },
   { day: "Wed", value: 85 },
@@ -337,29 +339,23 @@ const collectionTrend = [
   { day: "Fri", value: 90 },
 ];
 
-const wards = [
+const fallbackWards = [
   { name: "Ward 1", percent: 92 },
   { name: "Ward 3", percent: 84 },
   { name: "Ward 5", percent: 76 },
   { name: "Ward 12", percent: 88 },
 ];
 
-const vehicles = [
+const fallbackVehicles = [
   { no: "OD-07-GT-1023", status: "Active" },
-  { no: "OD-07-GT-1048", status: "Inactive" },
-  { no: "OD-07-GT-1099", status: "Maintenance" },
 ];
 
 /* ================= STAT CARD ================= */
 
 const StatCard = ({ title, value, icon, color }) => (
-  <div
-    className={`rounded-3xl p-6 text-white shadow-sm ${color}`}
-  >
+  <div className={`rounded-3xl p-6 text-white shadow-sm ${color}`}>
     <div className="flex justify-between items-center mb-3">
-      <div className="bg-white/20 p-2 rounded-lg">
-        {icon}
-      </div>
+      <div className="bg-white/20 p-2 rounded-lg">{icon}</div>
       <span className="text-xs bg-white/30 px-2 py-1 rounded-full">
         Today
       </span>
@@ -369,10 +365,47 @@ const StatCard = ({ title, value, icon, color }) => (
   </div>
 );
 
-/* ================= MAIN DASHBOARD ================= */
+/* ================= DASHBOARD ================= */
 
 const SupervisorDashboard = () => {
   const navigate = useNavigate();
+
+  // ✅ State
+  const [collectionTrend, setCollectionTrend] = useState(
+    fallbackCollectionTrend
+  );
+  const [wards, setWards] = useState(fallbackWards);
+  const [vehicles, setVehicles] = useState(fallbackVehicles);
+
+  /* ================= API LOAD ================= */
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        // Vehicles from db.json
+        const vehicleRes = await api.get("/vehicles");
+
+        if (vehicleRes.data?.length) {
+          setVehicles(
+            vehicleRes.data.map((v) => ({
+              no: v.number,
+              status: v.status,
+            }))
+          );
+        }
+
+        // OPTIONAL (if added later in db.json)
+        const trendRes = await api.get("/collectionTrend").catch(() => null);
+        if (trendRes?.data?.length) setCollectionTrend(trendRes.data);
+
+        const wardRes = await api.get("/wards").catch(() => null);
+        if (wardRes?.data?.length) setWards(wardRes.data);
+      } catch {
+        // silent fallback → UI unchanged
+      }
+    };
+
+    loadDashboardData();
+  }, []);
 
   return (
     <div className="space-y-8 bg-emerald-50 p-6 rounded-3xl">
@@ -387,9 +420,7 @@ const SupervisorDashboard = () => {
 
       {/* ================= HEADER ================= */}
       <div className="bg-gradient-to-r from-emerald-600 to-green-700 rounded-3xl p-8 text-white shadow">
-        <h1 className="text-3xl font-bold">
-          Supervisor Dashboard
-        </h1>
+        <h1 className="text-3xl font-bold">Supervisor Dashboard</h1>
         <p className="text-sm opacity-90 mt-1">
           Smart Solid Waste Monitoring System
         </p>
@@ -402,7 +433,7 @@ const SupervisorDashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Total Vehicles"
-          value="48"
+          value={vehicles.length}
           icon={<Truck />}
           color="bg-gradient-to-br from-emerald-500 to-green-600"
         />
@@ -452,16 +483,11 @@ const SupervisorDashboard = () => {
 
         {/* VEHICLE STATUS */}
         <div className="bg-white rounded-3xl shadow-sm p-6">
-          <h3 className="font-semibold mb-4">
-            Vehicle Status
-          </h3>
+          <h3 className="font-semibold mb-4">Vehicle Status</h3>
 
-          <ul className="space-y-3 text-sm">
+          <ul className="space-y-3 text-sm h-75 overflow-y-scroll">
             {vehicles.map((v) => (
-              <li
-                key={v.no}
-                className="flex justify-between items-center"
-              >
+              <li key={v.no} className="flex justify-between items-center">
                 <span>{v.no}</span>
                 <span
                   className={`px-3 py-1 rounded-full text-xs text-white ${
@@ -491,9 +517,7 @@ const SupervisorDashboard = () => {
             <div key={w.name}>
               <div className="flex justify-between text-sm mb-1">
                 <span>{w.name}</span>
-                <span className="font-medium">
-                  {w.percent}%
-                </span>
+                <span className="font-medium">{w.percent}%</span>
               </div>
               <div className="h-2 bg-gray-200 rounded">
                 <div
@@ -532,9 +556,7 @@ const SupervisorDashboard = () => {
 
       {/* ================= SYSTEM HEALTH ================= */}
       <div className="bg-gradient-to-r from-emerald-700 to-green-800 text-white rounded-3xl shadow-sm p-6">
-        <h3 className="font-semibold mb-2">
-          System Health
-        </h3>
+        <h3 className="font-semibold mb-2">System Health</h3>
         <p className="text-sm opacity-90 mb-4">
           Overall platform performance
         </p>
@@ -561,4 +583,3 @@ const SupervisorDashboard = () => {
 };
 
 export default SupervisorDashboard;
-

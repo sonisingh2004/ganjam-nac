@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import api from "../../api/axiosInstance";
 import {
   PieChart,
   Pie,
@@ -10,26 +12,7 @@ import {
   Tooltip,
 } from "recharts";
 
-/* ================= DATA ================= */
-
-const vehicleData = [
-  { name: "Active", value: 18 },
-  { name: "Inactive", value: 4 },
-  { name: "Maintenance", value: 2 },
-];
-
-const complaintData = [
-  { name: "Pending", count: 7 },
-  { name: "In Progress", count: 5 },
-  { name: "Resolved", count: 15 },
-];
-
-const wardPerformance = [
-  { ward: "Ward 1", percent: 92 },
-  { ward: "Ward 3", percent: 78 },
-  { ward: "Ward 5", percent: 85 },
-  { ward: "Ward 12", percent: 88 },
-];
+/* ================= COLORS ================= */
 
 const COLORS = {
   Active: "#22c55e",
@@ -43,17 +26,94 @@ const COLORS = {
 /* ================= COMPONENT ================= */
 
 const Analytics = () => {
+  const [vehicleData, setVehicleData] = useState([]);
+  const [complaintData, setComplaintData] = useState([]);
+  const [wardPerformance, setWardPerformance] = useState([]);
+
+  /* ================= LOAD DATA ================= */
+  useEffect(() => {
+    const loadAnalytics = async () => {
+      try {
+        const [vehiclesRes, complaintsRes] = await Promise.all([
+          api.get("/vehicles"),
+          api.get("/complaints"),
+        ]);
+
+        /* -------- VEHICLE STATUS -------- */
+        const vehicleStatusCount = {
+          Active: 0,
+          Inactive: 0,
+          Maintenance: 0,
+        };
+
+        vehiclesRes.data.forEach((v) => {
+          vehicleStatusCount[v.status] =
+            (vehicleStatusCount[v.status] || 0) + 1;
+        });
+
+        setVehicleData(
+          Object.keys(vehicleStatusCount).map((k) => ({
+            name: k,
+            value: vehicleStatusCount[k],
+          }))
+        );
+
+        /* -------- COMPLAINT STATUS -------- */
+        const complaintStatusCount = {
+          Pending: 0,
+          "In Progress": 0,
+          Resolved: 0,
+        };
+
+        complaintsRes.data.forEach((c) => {
+          complaintStatusCount[c.status] =
+            (complaintStatusCount[c.status] || 0) + 1;
+        });
+
+        setComplaintData(
+          Object.keys(complaintStatusCount).map((k) => ({
+            name: k,
+            count: complaintStatusCount[k],
+          }))
+        );
+
+        /* -------- WARD PERFORMANCE (SIMULATED %) -------- */
+        const wardMap = {};
+
+        vehiclesRes.data.forEach((v) => {
+          if (!wardMap[v.ward]) {
+            wardMap[v.ward] = 70 + Math.floor(Math.random() * 25);
+          }
+        });
+
+        setWardPerformance(
+          Object.keys(wardMap).map((w) => ({
+            ward: w,
+            percent: wardMap[w],
+          }))
+        );
+      } catch (err) {
+        console.error("Failed to load analytics");
+      }
+    };
+
+    loadAnalytics();
+  }, []);
+
+  /* ================= KPI CALCULATIONS ================= */
+
   const totalVehicles = vehicleData.reduce(
     (sum, v) => sum + v.value,
     0
   );
-  const resolved = complaintData.find(
-    (c) => c.name === "Resolved"
-  )?.count || 0;
+
   const totalComplaints = complaintData.reduce(
     (sum, c) => sum + c.count,
     0
   );
+
+  const resolved =
+    complaintData.find((c) => c.name === "Resolved")?.count || 0;
 
   const resolutionRate = totalComplaints
     ? Math.round((resolved / totalComplaints) * 100)
@@ -75,9 +135,22 @@ const Analytics = () => {
       {/* ================= KPI SUMMARY ================= */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <SummaryCard title="Total Vehicles" value={totalVehicles} />
-        <SummaryCard title="Active Vehicles" value={vehicleData[0].value} color="text-green-600" />
-        <SummaryCard title="Complaints Today" value={totalComplaints} />
-        <SummaryCard title="Resolution Rate" value={`${resolutionRate}%`} color="text-green-700" />
+        <SummaryCard
+          title="Active Vehicles"
+          value={
+            vehicleData.find((v) => v.name === "Active")?.value || 0
+          }
+          color="text-green-600"
+        />
+        <SummaryCard
+          title="Complaints Today"
+          value={totalComplaints}
+        />
+        <SummaryCard
+          title="Resolution Rate"
+          value={`${resolutionRate}%`}
+          color="text-green-700"
+        />
       </div>
 
       {/* ================= CHART GRID ================= */}

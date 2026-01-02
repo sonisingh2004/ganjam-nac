@@ -1,60 +1,49 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import api from "../../api/axiosInstance";
 
 /* ================= ATTENDANCE ================= */
 const Attendance = () => {
   const [date] = useState(new Date().toISOString().split("T")[0]);
+  const [staff, setStaff] = useState([]);
 
-  const staff = [
-    {
-      id: 1,
-      name: "Ramesh Kumar",
-      role: "Driver",
-      ward: "Ward 5",
-      status: "Present",
-      checkIn: "06:45 AM",
-      checkOut: "02:30 PM",
-      method: "GPS",
-      remarks: "-",
-    },
-    {
-      id: 2,
-      name: "Suresh Das",
-      role: "Driver",
-      ward: "Ward 12",
-      status: "Absent",
-      checkIn: "-",
-      checkOut: "-",
-      method: "-",
-      remarks: "Not reported",
-    },
-    {
-      id: 3,
-      name: "Mahesh Patra",
-      role: "Helper",
-      ward: "Ward 3",
-      status: "Present",
-      checkIn: "07:00 AM",
-      checkOut: "03:10 PM",
-      method: "Biometric",
-      remarks: "-",
-    },
-    {
-      id: 4,
-      name: "Amit Nayak",
-      role: "Driver",
-      ward: "Ward 7",
-      status: "Leave",
-      checkIn: "-",
-      checkOut: "-",
-      method: "Leave",
-      remarks: "Approved leave",
-    },
-  ];
+  /* ================= LOAD ATTENDANCE (AXIOS) ================= */
+  useEffect(() => {
+    const loadAttendance = async () => {
+      try {
+        const res = await api.get("/attendance");
+
+        if (res.data?.length) {
+          setStaff(
+            res.data.map((s) => ({
+              id: s.id,
+              name: s.staff || "Unknown",
+              role: s.role || "Staff",
+              ward: s.ward || "Ward N/A",
+              status: s.status || "Absent",
+              checkIn: s.checkIn || "-",
+              checkOut: s.checkOut || "-",
+              method: s.method || "-",
+              remarks:
+                s.status === "Present"
+                  ? "-"
+                  : s.status === "Leave"
+                  ? "Approved leave"
+                  : "Not reported",
+            }))
+          );
+        }
+      } catch (err) {
+        console.error("Failed to load attendance");
+      }
+    };
+
+    loadAttendance();
+  }, []);
 
   const total = staff.length;
-  const present = staff.filter(s => s.status === "Present").length;
-  const absent = staff.filter(s => s.status === "Absent").length;
-  const leave = staff.filter(s => s.status === "Leave").length;
+  const present = staff.filter((s) => s.status === "Present").length;
+  const absent = staff.filter((s) => s.status === "Absent").length;
+  const leave = staff.filter((s) => s.status === "Leave").length;
 
   return (
     <div className="space-y-8">
@@ -119,7 +108,10 @@ const Attendance = () => {
       {/* ================= MOBILE VIEW ================= */}
       <div className="md:hidden space-y-4">
         {staff.map((s) => (
-          <div key={s.id} className="bg-white rounded-xl shadow p-4 space-y-2">
+          <div
+            key={s.id}
+            className="bg-white rounded-xl shadow p-4 space-y-2"
+          >
             <div className="flex justify-between items-center">
               <h3 className="font-semibold">{s.name}</h3>
               <StatusBadge status={s.status} />
@@ -170,7 +162,9 @@ const StatusBadge = ({ status }) => {
   };
 
   return (
-    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[status]}`}>
+    <span
+      className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[status]}`}
+    >
       {status}
     </span>
   );

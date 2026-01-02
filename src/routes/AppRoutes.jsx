@@ -17,6 +17,7 @@ import SupervisorLayout from "../layout/SupervisorLayout";
 import CitizenDashboard from "../pages/citizen/CitizenDashboard";
 import CitizenPostComplaint from "../pages/citizen/CitizenPostComplaint";
 import CitizenTrackVehicle from "../pages/citizen/CitizenTrackVehicle";
+import OnlineService from "../pages/citizen/OnlineService";
 import Analytics from "../pages/supervisor/Analytics";
 import Attendance from "../pages/supervisor/Attendance";
 import Complaints from "../pages/supervisor/Complaints";
@@ -55,6 +56,7 @@ export default function AppRoutes() {
             element={<CitizenPostComplaint />}
           />
           <Route path="/citizen/track" element={<CitizenTrackVehicle />} />
+          <Route path="/citizen/payments" element={<OnlineService />} />
         </Route>
 
         {/* ================= SUPERVISOR ROUTES ================= */}

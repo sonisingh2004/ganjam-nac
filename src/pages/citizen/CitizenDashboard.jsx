@@ -121,6 +121,9 @@ export default function CitizenDashboard() {
             <button className="w-full text-left px-4 py-3 rounded-2xl bg-gradient-to-r from-sky-500 to-sky-600 text-white font-medium shadow hover:shadow-md">
               Track Vehicle
             </button>
+            <button className="w-full text-left px-4 py-3 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-medium shadow hover:shadow-md">
+              Online Service Booking and Payments
+            </button>
             <button className="w-full text-left px-4 py-3 rounded-2xl bg-gradient-to-r from-purple-500 to-purple-600 text-white font-medium shadow hover:shadow-md">
               View My Complaints
             </button>

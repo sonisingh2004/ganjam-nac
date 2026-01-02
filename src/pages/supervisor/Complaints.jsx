@@ -1,48 +1,54 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import api from "../../api/axiosInstance";
 
 /* ================= MAIN COMPONENT ================= */
 
 const Complaints = () => {
   const [filter, setFilter] = useState("All");
   const [preview, setPreview] = useState(null);
+  const [mapView, setMapView] = useState(null);
+  const [complaints, setComplaints] = useState([]);
 
-  const [complaints, setComplaints] = useState([
-    {
-      id: "CMP-001",
-      ward: "Ward 5",
-      type: "Garbage not collected",
-      image: "https://via.placeholder.com/300",
-      vehicle: "OD-07-GT-1023",
-      driver: "Ramesh Kumar",
-      status: "Pending",
-      date: "2025-07-24",
-      updatedAt: "10:10 AM",
-    },
-    {
-      id: "CMP-002",
-      ward: "Ward 12",
-      type: "Overflowing dustbin",
-      image: "https://via.placeholder.com/300",
-      vehicle: "OD-07-GT-1048",
-      driver: "Suresh Das",
-      status: "In Progress",
-      date: "2025-07-24",
-      updatedAt: "09:40 AM",
-    },
-    {
-      id: "CMP-003",
-      ward: "Ward 3",
-      type: "Missed pickup",
-      image: "https://via.placeholder.com/300",
-      vehicle: "OD-07-GT-1099",
-      driver: "Mahesh Patra",
-      status: "Resolved",
-      date: "2025-07-23",
-      updatedAt: "04:15 PM",
-    },
-  ]);
+  /* ================= LOAD COMPLAINTS (AXIOS) ================= */
+  useEffect(() => {
+    const loadComplaints = async () => {
+      try {
+        const res = await api.get("/complaints");
 
-  /* ================= STATUS FLOW CONTROL ================= */
+        if (res.data?.length) {
+          setComplaints(
+            res.data.map((c, index) => ({
+              id: `CMP-${String(c.id).padStart(3, "0")}`,
+              ward: c.ward || "N/A",
+              type: c.title || "General Issue",
+              image:
+                c.image && c.image !== ""
+                  ? c.image
+                  : "https://via.placeholder.com/300",
+              vehicle: c.vehicle || "Not Assigned",
+              driver: c.driver || "Not Assigned",
+              status: c.status || "Pending",
+              priority: c.priority || "Medium",
+              date: c.date || new Date().toISOString().split("T")[0],
+              updatedAt: new Date().toLocaleTimeString(),
+              sla:
+                c.sla ||
+                new Date(
+                  Date.now() + 4 * 60 * 60 * 1000
+                ).toISOString(),
+              location: c.location || "Berhampur, Odisha",
+            }))
+          );
+        }
+      } catch (err) {
+        console.error("Failed to load complaints");
+      }
+    };
+
+    loadComplaints();
+  }, []);
+
+  /* ================= STATUS FLOW ================= */
 
   const allowedNextStatus = {
     Pending: ["In Progress"],
@@ -50,7 +56,7 @@ const Complaints = () => {
     Resolved: [],
   };
 
-  const updateStatus = (id, newStatus) => {
+  const updateStatus = async (id, newStatus) => {
     if (!window.confirm(`Mark complaint as "${newStatus}"?`)) return;
 
     setComplaints((prev) =>
@@ -64,12 +70,29 @@ const Complaints = () => {
           : c
       )
     );
+
+    // OPTIONAL: persist status change
+    const numericId = Number(id.split("-")[1]);
+    await api.patch(`/complaints/${numericId}`, {
+      status: newStatus,
+    });
   };
 
   const statusColor = (status) => {
     if (status === "Pending") return "bg-red-100 text-red-700";
     if (status === "In Progress") return "bg-yellow-100 text-yellow-700";
     if (status === "Resolved") return "bg-green-100 text-green-700";
+  };
+
+  const priorityColor = (priority) => {
+    if (priority === "High") return "text-red-600 font-semibold";
+    if (priority === "Medium") return "text-orange-600 font-semibold";
+    return "text-green-600 font-semibold";
+  };
+
+  const isSLABreached = (sla, status) => {
+    if (status === "Resolved") return false;
+    return new Date() > new Date(sla);
   };
 
   const filteredComplaints =
@@ -86,7 +109,7 @@ const Complaints = () => {
           Citizen Complaint Management
         </h2>
         <p className="text-sm text-gray-500">
-          Supervisor resolution & monitoring
+          Supervisor resolution & monitoring (ICT Compliant)
         </p>
       </div>
 
@@ -96,10 +119,10 @@ const Complaints = () => {
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-4 py-2 rounded-full text-sm border ${
+            className={`px-4 py-2 rounded-full text-sm border transition ${
               filter === f
                 ? "bg-green-600 text-white"
-                : "bg-white text-gray-600"
+                : "bg-white text-gray-600 hover:bg-gray-100"
             }`}
           >
             {f}
@@ -108,93 +131,114 @@ const Complaints = () => {
       </div>
 
       {/* ================= TABLE ================= */}
-      <div className="overflow-x-auto bg-white shadow rounded-xl">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-3 border">ID</th>
-              <th className="p-3 border">Image</th>
-              <th className="p-3 border">Ward</th>
-              <th className="p-3 border">Issue</th>
-              <th className="p-3 border">Assigned Vehicle</th>
-              <th className="p-3 border">Driver</th>
-              <th className="p-3 border">Date</th>
-              <th className="p-3 border">Status</th>
-              <th className="p-3 border">Last Update</th>
-              <th className="p-3 border">Action</th>
-            </tr>
-          </thead>
+      <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 sticky top-0 z-10">
+              <tr className="text-gray-600 uppercase text-xs tracking-wide">
+                <th className="px-5 py-4">ID</th>
+                <th className="px-5 py-4">Photo</th>
+                <th className="px-5 py-4">Ward</th>
+                <th className="px-5 py-4">Issue</th>
+                <th className="px-5 py-4">Priority</th>
+                <th className="px-5 py-4">Vehicle</th>
+                <th className="px-5 py-4">Status</th>
+                <th className="px-5 py-4">SLA</th>
+                <th className="px-5 py-4">Route</th>
+                <th className="px-5 py-4">Action</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            {filteredComplaints.map((c) => (
-              <tr key={c.id} className="hover:bg-gray-50">
-                <td className="p-3 border font-medium">{c.id}</td>
+            <tbody className="divide-y">
+              {filteredComplaints.map((c) => {
+                const breached = isSLABreached(c.sla, c.status);
 
-                <td className="p-3 border">
-                  <img
-                    src={c.image}
-                    alt="complaint"
-                    onClick={() => setPreview(c.image)}
-                    className="w-16 h-16 rounded border cursor-pointer"
-                  />
-                </td>
-
-                <td className="p-3 border">{c.ward}</td>
-                <td className="p-3 border">{c.type}</td>
-                <td className="p-3 border">{c.vehicle}</td>
-                <td className="p-3 border">{c.driver}</td>
-                <td className="p-3 border">{c.date}</td>
-
-                <td className="p-3 border">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColor(
-                      c.status
-                    )}`}
+                return (
+                  <tr
+                    key={c.id}
+                    className={`hover:bg-gray-50 ${
+                      breached ? "bg-red-50" : ""
+                    }`}
                   >
-                    {c.status}
-                  </span>
-                </td>
+                    <td className="px-5 py-4 font-medium">{c.id}</td>
 
-                <td className="p-3 border text-xs text-gray-500">
-                  {c.updatedAt}
-                </td>
+                    <td className="px-5 py-4">
+                      <img
+                        src={c.image}
+                        onClick={() => setPreview(c.image)}
+                        className="w-14 h-14 rounded-lg object-cover border cursor-pointer"
+                      />
+                    </td>
 
-                <td className="p-3 border">
-                  {allowedNextStatus[c.status].length > 0 && (
-                    <select
-                      onChange={(e) =>
-                        updateStatus(c.id, e.target.value)
-                      }
-                      className="border px-2 py-1 rounded text-xs"
-                      defaultValue=""
-                    >
-                      <option value="" disabled>
-                        Update
-                      </option>
-                      {allowedNextStatus[c.status].map((s) => (
-                        <option key={s}>{s}</option>
-                      ))}
-                    </select>
-                  )}
-                </td>
-              </tr>
-            ))}
+                    <td className="px-5 py-4">{c.ward}</td>
+                    <td className="px-5 py-4">{c.type}</td>
 
-            {filteredComplaints.length === 0 && (
-              <tr>
-                <td
-                  colSpan="10"
-                  className="text-center p-8 text-gray-500"
-                >
-                  No complaints found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                    <td className={`px-5 py-4 ${priorityColor(c.priority)}`}>
+                      {c.priority}
+                    </td>
+
+                    <td className="px-5 py-4">{c.vehicle}</td>
+
+                    <td className="px-5 py-4">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColor(
+                          c.status
+                        )}`}
+                      >
+                        {c.status}
+                      </span>
+                    </td>
+
+                    <td className="px-5 py-4 text-xs">
+                      {breached ? (
+                        <span className="text-red-600 font-semibold">
+                          SLA Breached
+                        </span>
+                      ) : (
+                        <span className="text-green-600">On Time</span>
+                      )}
+                    </td>
+
+                    <td className="px-5 py-4">
+                      <button
+                        onClick={() => setMapView(c.location)}
+                        className="text-green-600 text-xs font-medium hover:underline"
+                      >
+                        View Route
+                      </button>
+                    </td>
+
+                    <td className="px-5 py-4">
+                      {allowedNextStatus[c.status].length > 0 ? (
+                        <select
+                          defaultValue=""
+                          onChange={(e) =>
+                            updateStatus(c.id, e.target.value)
+                          }
+                          className="border rounded-lg px-3 py-1 text-xs"
+                        >
+                          <option value="" disabled>
+                            Update
+                          </option>
+                          {allowedNextStatus[c.status].map((s) => (
+                            <option key={s}>{s}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <span className="text-xs text-green-600 font-medium">
+                          Completed
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {/* ================= IMAGE PREVIEW MODAL ================= */}
+      {/* ================= IMAGE MODAL ================= */}
       {preview && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
           <div className="bg-white p-4 rounded-xl shadow-xl">
@@ -209,10 +253,32 @@ const Complaints = () => {
         </div>
       )}
 
-      {/* ================= NOTE ================= */}
+      {/* ================= MAP MODAL ================= */}
+      {mapView && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
+          <div className="bg-white w-[90%] md:w-[70%] h-[70%] rounded-xl shadow-xl overflow-hidden">
+            <div className="flex justify-between px-4 py-3 border-b">
+              <h3 className="font-semibold">
+                Route View – {mapView}
+              </h3>
+              <button onClick={() => setMapView(null)}>Close</button>
+            </div>
+            <iframe
+              src={`https://www.google.com/maps?q=${encodeURIComponent(
+                mapView
+              )}&output=embed`}
+              className="w-full h-full"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ================= COMPLIANCE NOTE ================= */}
       <p className="text-xs text-gray-500">
-        Complaint status follows a controlled workflow.
-        Direct resolution skipping is restricted for audit compliance.
+        ✔ SLA-based monitoring enabled <br />
+        ✔ Status lifecycle enforced for audit compliance <br />
+        ✔ Geo-tagging & image evidence supported (production)
       </p>
     </div>
   );

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Truck, Search, MapPin } from "lucide-react";
+import api from "../../api/axiosInstance";
 
 /* ================= VEHICLES PAGE ================= */
 
@@ -7,48 +8,39 @@ const Vehicles = () => {
   const [vehicles, setVehicles] = useState([]);
   const [search, setSearch] = useState("");
 
-  /* --------- MOCK DATA (Gov Simulation) --------- */
+  /* --------- LOAD FROM API (NO UI CHANGE) --------- */
   useEffect(() => {
-    setTimeout(() => {
-      setVehicles([
-        {
-          id: 1,
-          number: "OD-07-GT-1023",
-          type: "Tipper",
-          ward: "Ward 5",
-          route: "Zone A",
-          driver: "Ramesh",
-          status: "Active",
-          gps: "Online",
-          trip: "On Route",
-          updatedAt: "10:25 AM",
-        },
-        {
-          id: 2,
-          number: "OD-07-GT-1048",
-          type: "Compactor",
-          ward: "Ward 12",
-          route: "Zone C",
-          driver: "Suresh",
-          status: "Inactive",
-          gps: "Offline",
-          trip: "Idle",
-          updatedAt: "09:40 AM",
-        },
-        {
-          id: 3,
-          number: "OD-07-GT-1099",
-          type: "Auto",
-          ward: "Ward 3",
-          route: "Zone B",
-          driver: "Mahesh",
-          status: "Maintenance",
-          gps: "Offline",
-          trip: "Workshop",
-          updatedAt: "Yesterday",
-        },
-      ]);
-    }, 500);
+    const loadVehicles = async () => {
+      try {
+        const res = await api.get("/vehicles");
+
+        if (res.data?.length) {
+          setVehicles(
+            res.data.map((v) => ({
+              id: v.id,
+              number: v.number,
+              type: v.type || "Tipper",
+              ward: v.ward || "N/A",
+              route: v.route || "Zone A",
+              driver: v.driver || "N/A",
+              status: v.status || "Inactive",
+              gps: v.status === "Active" ? "Online" : "Offline",
+              trip:
+                v.status === "Active"
+                  ? "On Route"
+                  : v.status === "Maintenance"
+                  ? "Workshop"
+                  : "Idle",
+              updatedAt: "Today",
+            }))
+          );
+        }
+      } catch {
+        // silent fail – UI stays same
+      }
+    };
+
+    loadVehicles();
   }, []);
 
   /* --------- SEARCH FILTER --------- */

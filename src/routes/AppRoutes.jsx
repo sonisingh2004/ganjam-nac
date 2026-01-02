@@ -2,8 +2,9 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import Login from "../pages/Login";
+import ProtectedRoute from "./ProtectedRoute";
 
-/* Admin */
+/* ================= ADMIN ================= */
 import AdminLayout from "../layout/AdminLayout";
 import AdminAttendance from "../pages/admin/Attendance";
 import Complaint from "../pages/admin/Complaint";
@@ -15,12 +16,14 @@ import Vehicle from "../pages/admin/Vehicle";
 import Ward from "../pages/admin/Ward";
 import WasteCollection from "../pages/admin/WasteCollection";
 
-/* Supervisor */
+/* ================= CITIZEN ================= */
 import CitizenLayout from "../layout/CitizenLayout";
-import SupervisorLayout from "../layout/SupervisorLayout";
 import CitizenDashboard from "../pages/citizen/CitizenDashboard";
 import CitizenPostComplaint from "../pages/citizen/CitizenPostComplaint";
 import CitizenTrackVehicle from "../pages/citizen/CitizenTrackVehicle";
+
+/* ================= SUPERVISOR ================= */
+import SupervisorLayout from "../layout/SupervisorLayout";
 import Analytics from "../pages/supervisor/Analytics";
 import Attendance from "../pages/supervisor/Attendance";
 import Complaints from "../pages/supervisor/Complaints";
@@ -29,20 +32,24 @@ import QueueFulfillment from "../pages/supervisor/QueueFulfillment";
 import SupervisorDashboard from "../pages/supervisor/SupervisorDashboard";
 import Vehicles from "../pages/supervisor/Vehicles";
 import Wards from "../pages/supervisor/Wards";
-import ProtectedRoute from "./ProtectedRoute";
-
-
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
 
-        {/* LOGIN */}
+        {/* ================= LOGIN ================= */}
         <Route path="/" element={<Login />} />
 
         {/* ================= ADMIN ROUTES ================= */}
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<AdminDashboard />} />
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="complaints" element={<Complaint />} />
@@ -55,22 +62,29 @@ export default function AppRoutes() {
           <Route path="fuel-management" element={<FuelManagement />} />
         </Route>
 
-{/* ================= CITIZEN ROUTES ================= */}
-        <Route element={<CitizenLayout />}>
-          <Route path="/citizen" element={<CitizenDashboard />} />
-          <Route
-            path="/citizen/complaint"
-            element={<CitizenPostComplaint />}
-          />
-          <Route path="/citizen/track" element={<CitizenTrackVehicle />} />
+        {/* ================= CITIZEN ROUTES ================= */}
+        <Route
+          path="/citizen"
+          element={
+            <ProtectedRoute allowedRoles={["citizen"]}>
+              <CitizenLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<CitizenDashboard />} />
+          <Route path="complaint" element={<CitizenPostComplaint />} />
+          <Route path="track" element={<CitizenTrackVehicle />} />
         </Route>
 
         {/* ================= SUPERVISOR ROUTES ================= */}
-        <Route path="/supervisor" element={
-          <ProtectedRoute allowedRoles={["supervisor"]}>
-      <SupervisorLayout />
-    </ProtectedRoute>
-        }>
+        <Route
+          path="/supervisor"
+          element={
+            <ProtectedRoute allowedRoles={["supervisor"]}>
+              <SupervisorLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<SupervisorDashboard />} />
           <Route path="dashboard" element={<SupervisorDashboard />} />
           <Route path="vehicles" element={<Vehicles />} />
@@ -79,7 +93,7 @@ export default function AppRoutes() {
           <Route path="attendance" element={<Attendance />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="live-tracking" element={<LiveTracking />} />
-          <Route path="queue" element={<QueueFulfillment />} />
+          <Route path="queue-fulfillment" element={<QueueFulfillment />} />
         </Route>
 
       </Routes>

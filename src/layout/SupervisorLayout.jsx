@@ -9,9 +9,11 @@ import {
   BarChart3,
   Navigation,
   LogOut,
+  ListChecks,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify"; // ✅ LOGIC ADD ONLY
 
 const SupervisorLayout = () => {
   const [open, setOpen] = useState(false);
@@ -26,12 +28,23 @@ const SupervisorLayout = () => {
     { name: "Complaints", path: "/supervisor/complaints", icon: <FileWarning size={18} /> },
     { name: "Attendance", path: "/supervisor/attendance", icon: <UserCheck size={18} /> },
     { name: "Analytics", path: "/supervisor/analytics", icon: <BarChart3 size={18} /> },
+    {
+      name: "Queue Fulfillment",
+      path: "/supervisor/queue-fulfillment",
+      icon: <ListChecks size={18} />,
+    },
     { name: "Live Tracking", path: "/supervisor/live-tracking", icon: <Navigation size={18} /> },
   ];
 
+  // ✅ FIXED LOGOUT (logic only)
   const handleLogout = () => {
+    toast.success("Logged out successfully");
+
     logout();
-    navigate("/");
+
+    setTimeout(() => {
+      navigate("/");
+    }, 300);
   };
 
   return (
@@ -128,9 +141,7 @@ const SupervisorLayout = () => {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-white/20">
-          
-        </div>
+        <div className="p-4 border-t border-white/20" />
       </aside>
 
       {/* ================= TOP HEADER ================= */}

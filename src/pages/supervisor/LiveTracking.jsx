@@ -6,70 +6,128 @@ import {
 } from "@react-google-maps/api";
 import { useEffect, useRef, useState } from "react";
 import { X, Map, Navigation } from "lucide-react";
+import { useLocation } from "react-router-dom";
+import api from "../../api/axiosInstance";
 
 /* ================= MAP CENTER ================= */
 const center = { lat: 19.3149, lng: 84.7941 };
 
-/* ================= INITIAL VEHICLE DATA ================= */
-const initialVehicles = [
-  {
-    id: 1,
-    number: "OD-07-GT-1023",
-    driver: "Ramesh",
-    ward: "Ward 5",
-    status: "Active",
-    lastUpdated: "10:28 AM",
-    path: [{ lat: 19.3149, lng: 84.7941 }],
-  },
-  {
-    id: 2,
-    number: "OD-07-GT-1048",
-    driver: "Suresh",
-    ward: "Ward 12",
-    status: "Maintenance",
-    lastUpdated: "09:55 AM",
-    path: [{ lat: 19.3205, lng: 84.8012 }],
-  },
-];
-
 /* ================= STATUS COLOR ================= */
 const getColor = (status) => {
-  if (status === "Active") return "#22c55e";       // Green
-  if (status === "Maintenance") return "#facc15"; // Yellow
-  return "#ef4444";                               // Red
+  if (status === "Active") return "#22c55e";
+  if (status === "Maintenance") return "#facc15";
+  return "#ef4444";
 };
 
+/* ================= BEARING CALCULATION ================= */
+const getBearing = (from, to) => {
+  const lat1 = (from.lat * Math.PI) / 180;
+  const lon1 = (from.lng * Math.PI) / 180;
+  const lat2 = (to.lat * Math.PI) / 180;
+  const lon2 = (to.lng * Math.PI) / 180;
+
+  const y = Math.sin(lon2 - lon1) * Math.cos(lat2);
+  const x =
+    Math.cos(lat1) * Math.sin(lat2) -
+    Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1);
+
+  return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
+};
+
+/* ================= COMPONENT ================= */
 const LiveTracking = () => {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
   });
 
+  const location = useLocation();
+  const focusedVehicleNo = location.state?.vehicleNo;
+
   const mapRef = useRef(null);
+  const blinkRef = useRef(true);
+
   const [mapType, setMapType] = useState("roadmap");
-  const [vehicles, setVehicles] = useState(initialVehicles);
+  const [vehicles, setVehicles] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
 
-  /* ================= LIVE MOVEMENT (ACTIVE ONLY) ================= */
+  /* ================= LOAD VEHICLES (AXIOS + WARD FILTER) ================= */
+  useEffect(() => {
+    const loadVehicles = async () => {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const supervisorWard = user?.ward;
+
+      const res = await api.get("/vehicles");
+
+      let data = res.data;
+
+      // 3️⃣ Ward-only vehicles
+      if (supervisorWard) {
+        data = data.filter((v) => v.ward === supervisorWard);
+      }
+
+      const prepared = data.map((v) => ({
+        id: v.id,
+        number: v.number,
+        driver: v.driver || "N/A",
+        ward: v.ward,
+        status: v.status,
+        speed: v.status === "Active" ? 25 + Math.random() * 20 : 0, // 2️⃣ speed-based
+        lastUpdated: new Date().toLocaleTimeString(),
+        path: [
+          {
+            lat: center.lat + (Math.random() - 0.5) * 0.01,
+            lng: center.lng + (Math.random() - 0.5) * 0.01,
+          },
+        ],
+        rotation: 0,
+      }));
+
+      setVehicles(prepared);
+
+      if (focusedVehicleNo) {
+        const found = prepared.find(
+          (v) => v.number === focusedVehicleNo
+        );
+        if (found) setSelectedVehicle(found);
+      }
+    };
+
+    loadVehicles();
+  }, [focusedVehicleNo]);
+
+  /* ================= BLINK ANIMATION ================= */
+  useEffect(() => {
+    const blink = setInterval(() => {
+      blinkRef.current = !blinkRef.current;
+    }, 600);
+    return () => clearInterval(blink);
+  }, []);
+
+  /* ================= LIVE GPS MOVEMENT ================= */
   useEffect(() => {
     const interval = setInterval(() => {
       setVehicles((prev) =>
         prev.map((v) => {
+          // 4️⃣ Pause when GPS offline / maintenance
           if (v.status !== "Active") return v;
 
           const last = v.path[v.path.length - 1];
+          const step = v.speed / 100000; // realistic movement
+
           const next = {
-            lat: last.lat + (Math.random() - 0.5) * 0.0005,
-            lng: last.lng + (Math.random() - 0.5) * 0.0005,
+            lat: last.lat + (Math.random() - 0.5) * step,
+            lng: last.lng + (Math.random() - 0.5) * step,
           };
 
           return {
             ...v,
+            rotation: getBearing(last, next), // 1️⃣ rotation
             lastUpdated: new Date().toLocaleTimeString(),
-            path: [...v.path.slice(-20), next],
+            path: [...v.path.slice(-30), next],
           };
         })
       );
-    }, 3000);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, []);
@@ -96,26 +154,35 @@ const LiveTracking = () => {
         mapTypeId={mapType}
         mapContainerClassName="w-full h-full"
       >
-        {vehicles.map((v) => (
-          <div key={v.id}>
-            <Polyline
-              path={v.path}
-              options={{
-                strokeColor: getColor(v.status),
-                strokeWeight: 4,
-              }}
-            />
+        {vehicles.map((v) => {
+          const showMarker =
+            v.status !== "Active" || blinkRef.current;
 
-            <Marker
-              position={v.path[v.path.length - 1]}
-              icon={{
-                url: "https://maps.google.com/mapfiles/ms/icons/truck.png",
-                scaledSize: new window.google.maps.Size(32, 32),
-              }}
-              onClick={() => setSelectedVehicle(v)}
-            />
-          </div>
-        ))}
+          if (!showMarker) return null; // 5️⃣ blinking
+
+          return (
+            <div key={v.id}>
+              <Polyline
+                path={v.path}
+                options={{
+                  strokeColor: getColor(v.status),
+                  strokeWeight: 4,
+                }}
+              />
+
+              <Marker
+                position={v.path[v.path.length - 1]}
+                onClick={() => setSelectedVehicle(v)}
+                icon={{
+                  url: "https://maps.google.com/mapfiles/kml/shapes/truck.png",
+                  scaledSize: new window.google.maps.Size(36, 36),
+                  anchor: new window.google.maps.Point(18, 18),
+                  rotation: v.rotation,
+                }}
+              />
+            </div>
+          );
+        })}
       </GoogleMap>
 
       {/* ================= MAP CONTROLS ================= */}
@@ -126,8 +193,7 @@ const LiveTracking = () => {
               mapType === "roadmap" ? "satellite" : "roadmap"
             )
           }
-          className="bg-white shadow p-2 rounded-lg hover:bg-gray-100"
-          title="Toggle Map View"
+          className="bg-white shadow p-2 rounded-lg"
         >
           <Map size={18} />
         </button>
@@ -137,24 +203,10 @@ const LiveTracking = () => {
             mapRef.current.panTo(center);
             mapRef.current.setZoom(14);
           }}
-          className="bg-white shadow p-2 rounded-lg hover:bg-gray-100"
-          title="Re-center"
+          className="bg-white shadow p-2 rounded-lg"
         >
           <Navigation size={18} />
         </button>
-      </div>
-
-      {/* ================= LEGEND ================= */}
-      <div className="absolute bottom-4 left-4 bg-white shadow rounded-lg p-3 text-xs space-y-1 z-40">
-        <p className="flex items-center gap-2">
-          <span className="w-3 h-3 bg-green-500 rounded-full" /> Active
-        </p>
-        <p className="flex items-center gap-2">
-          <span className="w-3 h-3 bg-yellow-400 rounded-full" /> Maintenance
-        </p>
-        <p className="flex items-center gap-2">
-          <span className="w-3 h-3 bg-red-500 rounded-full" /> Inactive
-        </p>
       </div>
 
       {/* ================= VEHICLE PANEL ================= */}
@@ -173,6 +225,7 @@ const LiveTracking = () => {
             <Info label="Vehicle No" value={selectedVehicle.number} />
             <Info label="Driver" value={selectedVehicle.driver} />
             <Info label="Ward" value={selectedVehicle.ward} />
+            <Info label="Speed" value={`${selectedVehicle.speed.toFixed(1)} km/h`} />
             <Info label="Status" value={selectedVehicle.status} badge />
             <Info
               label="Last GPS Update"

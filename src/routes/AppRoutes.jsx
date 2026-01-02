@@ -24,6 +24,7 @@ import CitizenTrackVehicle from "../pages/citizen/CitizenTrackVehicle";
 
 /* ================= SUPERVISOR ================= */
 import SupervisorLayout from "../layout/SupervisorLayout";
+import OnlineService from "../pages/citizen/OnlineService";
 import Analytics from "../pages/supervisor/Analytics";
 import Attendance from "../pages/supervisor/Attendance";
 import Complaints from "../pages/supervisor/Complaints";
@@ -74,6 +75,7 @@ export default function AppRoutes() {
           <Route index element={<CitizenDashboard />} />
           <Route path="complaint" element={<CitizenPostComplaint />} />
           <Route path="track" element={<CitizenTrackVehicle />} />
+          <Route path="payments" element={<OnlineService/>} />
         </Route>
 
         {/* ================= SUPERVISOR ROUTES ================= */}

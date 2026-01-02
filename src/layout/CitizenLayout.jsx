@@ -35,6 +35,11 @@ export default function CitizenLayout() {
             <span className="text-lg">🚛</span>
             <span>Track Vehicle</span>
           </NavLink>
+
+          <NavLink to="/citizen/payments" className={linkClass}>
+            <span className="text-lg">💳</span>
+            <span>Online Service Booking and Payments</span>
+          </NavLink>
         </nav>
 
         {/* Bottom user info (optional) */}

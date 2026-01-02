@@ -1,7 +1,8 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getAttendanceRecords } from '../../services/admin/attendanceService';
+import api from '../../api/api';
+
 
 const Attendance = () => {
   const [staff, setStaff] = useState([]);
@@ -32,11 +33,28 @@ const Attendance = () => {
   const fetchAttendance = async () => {
     try {
       setLoading(true);
-      const data = await getAttendanceRecords(selectedDate);
-      setStaff(data);
+      const response = await api.get('/attendance');
+      
+      // Map db.json structure to UI expected structure
+      const mappedData = response.data.map(a => ({
+        id: a.id,
+        name: a.staff || a.name || 'N/A',
+        role: a.role?.toLowerCase() || 'driver',
+        assignedWard: a.ward || a.assignedWard || 'N/A',
+        phone: a.phone || '+91 98765 43210',
+        status: a.status?.toLowerCase().replace('leave', 'on-leave') || 'present',
+        checkInTime: a.checkIn || a.checkInTime || '-',
+        checkOutTime: a.checkOut || a.checkOutTime || '-',
+        workingHours: a.workingHours || (a.checkIn !== '-' && a.checkOut !== '-' ? '8h' : '-'),
+        attendanceMethod: a.method || a.attendanceMethod || 'Manual',
+        notes: a.notes || '',
+        overtime: a.overtime || 0,
+        date: selectedDate
+      }));
+      
+      setStaff(mappedData);
     } catch (error) {
-      console.error('Error fetching attendance:', error);
-      toast.error('Failed to load attendance records');
+      console.warn('API not available:', error.message);
       setStaff([]);
     } finally {
       setLoading(false);
@@ -47,7 +65,19 @@ const Attendance = () => {
   const handleMarkAttendance = async (e) => {
     e.preventDefault();
     try {
-      // TODO: API call to mark attendance
+      // Map UI format to db.json format
+      const attendanceToAdd = {
+        staff: attendanceData.name || attendanceData.staffId,
+        role: attendanceData.role || 'Driver',
+        ward: attendanceData.assignedWard || 'Ward 1',
+        status: attendanceData.status?.charAt(0).toUpperCase() + attendanceData.status?.slice(1).replace('on-leave', 'Leave') || 'Present',
+        checkIn: attendanceData.checkInTime || '-',
+        checkOut: attendanceData.checkOutTime || '-',
+        method: attendanceData.attendanceMethod || 'Manual',
+        notes: attendanceData.notes || ''
+      };
+
+      await api.post('/attendance', attendanceToAdd);
       toast.success('Attendance marked successfully');
       setShowMarkAttendanceModal(false);
       setAttendanceData({

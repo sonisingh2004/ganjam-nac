@@ -1,164 +1,946 @@
 {
   "users": [
-    { "id": 1, "role": "admin", "username": "admin", "password": "admin@123", "name": "Admin" },
-    { "id": 2, "role": "supervisor", "username": "ward5sup", "password": "ward5@123", "name": "Ward 5 Supervisor" },
-    { "id": 3, "role": "supervisor", "username": "ward3sup", "password": "ward3@123", "name": "Ward 3 Supervisor" },
-    { "id": 4, "role": "supervisor", "username": "ward12sup", "password": "ward12@123", "name": "Ward 12 Supervisor" },
-    { "id": 5, "role": "admin", "username": "admin2", "password": "admin@456", "name": "System Admin" }
+    {
+      "id": "1",
+      "role": "admin",
+      "username": "admin",
+      "password": "admin@123",
+      "name": "Admin"
+    },
+    {
+      "id": "2",
+      "role": "supervisor",
+      "username": "ward5sup",
+      "password": "ward5@123",
+      "name": "Ward 5 Supervisor"
+    },
+    {
+      "id": "3",
+      "role": "supervisor",
+      "username": "ward3sup",
+      "password": "ward3@123",
+      "name": "Ward 3 Supervisor"
+    },
+    {
+      "id": "4",
+      "role": "supervisor",
+      "username": "ward12sup",
+      "password": "ward12@123",
+      "name": "Ward 12 Supervisor"
+    },
+    {
+      "id": "5",
+      "role": "admin",
+      "username": "admin2",
+      "password": "admin@456",
+      "name": "System Admin"
+    },
+    {
+      "id": "c094",
+      "role": "supervisor",
+      "username": "soni2004",
+      "password": "soni2004",
+      "name": "soni"
+    }
   ],
-
   "citizens": [
-    { "id": 1, "phone": "9999999999" },
-    { "id": 2, "phone": "9888888888" },
-    { "id": 3, "phone": "9777777777" },
-    { "id": 4, "phone": "9666666666" },
-    { "id": 5, "phone": "9555555555" },
-    { "id": 6, "phone": "9444444444" },
-    { "id": 7, "phone": "9333333333" },
-    { "id": 8, "phone": "9222222222" },
-    { "id": 9, "phone": "9111111111" },
-    { "id": 10, "phone": "9000000000" }
+    {
+      "id": "1",
+      "phone": "9999999999"
+    },
+    {
+      "id": "2",
+      "phone": "9888888888"
+    },
+    {
+      "id": "3",
+      "phone": "9777777777"
+    },
+    {
+      "id": "4",
+      "phone": "9666666666"
+    },
+    {
+      "id": "5",
+      "phone": "9555555555"
+    },
+    {
+      "id": "6",
+      "phone": "9444444444"
+    },
+    {
+      "id": "7",
+      "phone": "9333333333"
+    },
+    {
+      "id": "8",
+      "phone": "9222222222"
+    },
+    {
+      "id": "9",
+      "phone": "9111111111"
+    },
+    {
+      "id": "10",
+      "phone": "9000000000"
+    }
   ],
-
   "vehicles": [
-    { "id": 1, "number": "OD-07-GT-1023", "driver": "Ramesh", "ward": "Ward 5", "status": "Active" },
-    { "id": 2, "number": "OD-07-GT-1048", "driver": "Suresh", "ward": "Ward 12", "status": "Inactive" },
-    { "id": 3, "number": "OD-07-GT-1099", "driver": "Mahesh", "ward": "Ward 3", "status": "Maintenance" },
-    { "id": 4, "number": "OD-07-GT-1101", "driver": "Amit", "ward": "Ward 7", "status": "Active" },
-    { "id": 5, "number": "OD-07-GT-1102", "driver": "Sunil", "ward": "Ward 9", "status": "Active" },
-    { "id": 6, "number": "OD-07-GT-1103", "driver": "Raju", "ward": "Ward 1", "status": "Inactive" },
-    { "id": 7, "number": "OD-07-GT-1104", "driver": "Manoj", "ward": "Ward 11", "status": "Active" },
-    { "id": 8, "number": "OD-07-GT-1105", "driver": "Bikash", "ward": "Ward 8", "status": "Maintenance" },
-    { "id": 9, "number": "OD-07-GT-1106", "driver": "Santosh", "ward": "Ward 6", "status": "Active" },
-    { "id": 10, "number": "OD-07-GT-1107", "driver": "Niranjan", "ward": "Ward 4", "status": "Active" }
+    {
+      "id": "2",
+      "number": "OD-07-GT-1048",
+      "registrationNumber": "OD-07-GT-1048",
+      "driver": "Suresh",
+      "driverName": "Suresh",
+      "driverPhone": "+91 87654 32109",
+      "ward": "Ward 12",
+      "assignedWard": "Ward 12",
+      "status": "Inactive",
+      "type": "tipper",
+      "model": "Ashok Leyland 1616",
+      "capacity": "3 tons",
+      "fuelType": "diesel",
+      "fuelLevel": 45,
+      "speed": 0,
+      "odometer": 18750,
+      "maintenanceStatus": "good",
+      "lastService": "2025-12-20",
+      "nextService": "2026-01-20",
+      "location": {
+        "lat": 20.3021,
+        "lng": 85.8321
+      },
+      "route": "Zone B",
+      "averageSpeed": 28
+    },
+    {
+      "id": "3",
+      "number": "OD-07-GT-1099",
+      "registrationNumber": "OD-07-GT-1099",
+      "driver": "Mahesh",
+      "driverName": "Mahesh",
+      "driverPhone": "+91 76543 21098",
+      "ward": "Ward 3",
+      "assignedWard": "Ward 3",
+      "status": "Maintenance",
+      "type": "compactor",
+      "model": "Eicher Pro 1080",
+      "capacity": "4.5 tons",
+      "fuelType": "diesel",
+      "fuelLevel": 60,
+      "speed": 0,
+      "odometer": 31200,
+      "maintenanceStatus": "service-due",
+      "lastService": "2025-12-10",
+      "nextService": "2026-01-10",
+      "location": {
+        "lat": 20.289,
+        "lng": 85.8165
+      },
+      "route": "Zone C",
+      "averageSpeed": 30
+    },
+    {
+      "id": "4",
+      "number": "OD-07-GT-1101",
+      "registrationNumber": "OD-07-GT-1101",
+      "driver": "Amit",
+      "driverName": "Amit",
+      "driverPhone": "+91 65432 10987",
+      "ward": "Ward 7",
+      "assignedWard": "Ward 7",
+      "status": "Active",
+      "type": "tipper",
+      "model": "Tata 909",
+      "capacity": "2.5 tons",
+      "fuelType": "diesel",
+      "fuelLevel": 85,
+      "speed": 38,
+      "odometer": 22800,
+      "maintenanceStatus": "good",
+      "lastService": "2025-12-18",
+      "nextService": "2026-01-18",
+      "location": {
+        "lat": 20.3005,
+        "lng": 85.82
+      },
+      "route": "Zone D",
+      "averageSpeed": 29
+    },
+    {
+      "id": "5",
+      "number": "OD-07-GT-1102",
+      "registrationNumber": "OD-07-GT-1102",
+      "driver": "Sunil",
+      "driverName": "Sunil",
+      "driverPhone": "+91 54321 09876",
+      "ward": "Ward 9",
+      "assignedWard": "Ward 9",
+      "status": "Active",
+      "type": "compactor",
+      "model": "Mahindra Blazo",
+      "capacity": "6 tons",
+      "fuelType": "diesel",
+      "fuelLevel": 90,
+      "speed": 40,
+      "odometer": 35600,
+      "maintenanceStatus": "good",
+      "lastService": "2025-12-22",
+      "nextService": "2026-01-22",
+      "location": {
+        "lat": 20.295,
+        "lng": 85.828
+      },
+      "route": "Zone E",
+      "averageSpeed": 33
+    },
+    {
+      "id": "6",
+      "number": "OD-07-GT-1103",
+      "registrationNumber": "OD-07-GT-1103",
+      "driver": "Raju",
+      "driverName": "Raju",
+      "driverPhone": "+91 43210 98765",
+      "ward": "Ward 1",
+      "assignedWard": "Ward 1",
+      "status": "Inactive",
+      "type": "mini-truck",
+      "model": "Mahindra Bolero Pickup",
+      "capacity": "1.5 tons",
+      "fuelType": "diesel",
+      "fuelLevel": 30,
+      "speed": 0,
+      "odometer": 12450,
+      "maintenanceStatus": "good",
+      "lastService": "2025-12-25",
+      "nextService": "2026-01-25",
+      "location": {
+        "lat": 20.2945,
+        "lng": 85.829
+      },
+      "route": "Zone F",
+      "averageSpeed": 25
+    },
+    {
+      "id": "7",
+      "number": "OD-07-GT-1104",
+      "registrationNumber": "OD-07-GT-1104",
+      "driver": "Manoj",
+      "driverName": "Manoj",
+      "driverPhone": "+91 32109 87654",
+      "ward": "Ward 11",
+      "assignedWard": "Ward 11",
+      "status": "Active",
+      "type": "tipper",
+      "model": "Eicher Pro 2049",
+      "capacity": "4 tons",
+      "fuelType": "diesel",
+      "fuelLevel": 70,
+      "speed": 32,
+      "odometer": 19800,
+      "maintenanceStatus": "good",
+      "lastService": "2025-12-28",
+      "nextService": "2026-01-28",
+      "location": {
+        "lat": 20.301,
+        "lng": 85.825
+      },
+      "route": "Zone G",
+      "averageSpeed": 27
+    },
+    {
+      "id": "8",
+      "number": "OD-07-GT-1105",
+      "registrationNumber": "OD-07-GT-1105",
+      "driver": "Bikash",
+      "driverName": "Bikash",
+      "driverPhone": "+91 21098 76543",
+      "ward": "Ward 8",
+      "assignedWard": "Ward 8",
+      "status": "Maintenance",
+      "type": "compactor",
+      "model": "BharatBenz 1617",
+      "capacity": "5.5 tons",
+      "fuelType": "diesel",
+      "fuelLevel": 20,
+      "speed": 0,
+      "odometer": 42300,
+      "maintenanceStatus": "service-due",
+      "lastService": "2025-11-28",
+      "nextService": "2025-12-28",
+      "location": {
+        "lat": 20.298,
+        "lng": 85.822
+      },
+      "route": "Zone H",
+      "averageSpeed": 31
+    },
+    {
+      "id": "9",
+      "number": "OD-07-GT-1106",
+      "registrationNumber": "OD-07-GT-1106",
+      "driver": "Santosh",
+      "driverName": "Santosh",
+      "driverPhone": "+91 10987 65432",
+      "ward": "Ward 6",
+      "assignedWard": "Ward 6",
+      "status": "Active",
+      "type": "tipper",
+      "model": "Tata 1212",
+      "capacity": "3.5 tons",
+      "fuelType": "diesel",
+      "fuelLevel": 65,
+      "speed": 36,
+      "odometer": 26700,
+      "maintenanceStatus": "good",
+      "lastService": "2025-12-12",
+      "nextService": "2026-01-12",
+      "location": {
+        "lat": 20.302,
+        "lng": 85.819
+      },
+      "route": "Zone I",
+      "averageSpeed": 30
+    },
+    {
+      "id": "10",
+      "number": "OD-07-GT-1107",
+      "registrationNumber": "OD-07-GT-1107",
+      "driver": "Niranjan",
+      "driverName": "Niranjan",
+      "driverPhone": "+91 09876 54321",
+      "ward": "Ward 4",
+      "assignedWard": "Ward 4",
+      "status": "Active",
+      "type": "compactor",
+      "model": "Volvo FL",
+      "capacity": "7 tons",
+      "fuelType": "diesel",
+      "fuelLevel": 80,
+      "speed": 42,
+      "odometer": 38900,
+      "maintenanceStatus": "good",
+      "lastService": "2025-12-16",
+      "nextService": "2026-01-16",
+      "location": {
+        "lat": 20.297,
+        "lng": 85.826
+      },
+      "route": "Zone J",
+      "averageSpeed": 34
+    }
   ],
-
   "complaints": [
-    { "id": 1, "title": "Garbage not collected", "ward": "Ward 3", "status": "Pending", "image": "" },
-    { "id": 2, "title": "Overflowing dustbin", "ward": "Ward 5", "status": "In Progress", "image": "" },
-    { "id": 3, "title": "Missed pickup", "ward": "Ward 12", "status": "Resolved", "image": "" },
-    { "id": 4, "title": "Illegal dumping", "ward": "Ward 7", "status": "Pending", "image": "" },
-    { "id": 5, "title": "Bad odor issue", "ward": "Ward 9", "status": "In Progress", "image": "" },
-    { "id": 6, "title": "Broken dustbin", "ward": "Ward 1", "status": "Resolved", "image": "" },
-    { "id": 7, "title": "Garbage vehicle delay", "ward": "Ward 11", "status": "Pending", "image": "" },
-    { "id": 8, "title": "No door collection", "ward": "Ward 8", "status": "Resolved", "image": "" },
-    { "id": 9, "title": "Waste burning", "ward": "Ward 6", "status": "Pending", "image": "" },
-    { "id": 10, "title": "Overflow near market", "ward": "Ward 4", "status": "In Progress", "image": "" }
+    {
+      "id": "CMP001",
+      "title": "Missed Garbage Collection",
+      "citizenName": "Rajesh Kumar",
+      "citizenPhone": "+91 98765 43210",
+      "ward": "Ward 5",
+      "location": "Sector 12, Block A",
+      "category": "Missed Collection",
+      "description": "Garbage not collected for 2 days in our locality. The bins are overflowing and causing bad smell.",
+      "status": "pending",
+      "priority": "high",
+      "createdAt": "2025-12-31T10:30:00.000Z",
+      "updatedAt": "2025-12-31T10:30:00.000Z",
+      "assignedTo": "Ramesh Patel (Supervisor)",
+      "resolvedDate": null,
+      "notes": "Follow up required"
+    },
+    {
+      "id": "CMP002",
+      "title": "Overflowing Public Bin",
+      "citizenName": "Priya Sharma",
+      "citizenPhone": "+91 87654 32109",
+      "ward": "Ward 3",
+      "location": "Main Road, Near Temple",
+      "category": "Overflowing Bin",
+      "description": "Public bin near the temple is overflowing with garbage. Urgent action needed.",
+      "status": "in-progress",
+      "priority": "medium",
+      "createdAt": "2026-01-01T08:15:00.000Z",
+      "updatedAt": "2026-01-01T14:30:00.000Z",
+      "assignedTo": "Suresh Kumar (Supervisor)",
+      "resolvedDate": null,
+      "notes": "Vehicle dispatched to location"
+    },
+    {
+      "id": "CMP003",
+      "title": "Illegal Dumping Site",
+      "citizenName": "Amit Patel",
+      "citizenPhone": "+91 76543 21098",
+      "ward": "Ward 7",
+      "location": "Behind Market Complex",
+      "category": "Illegal Dumping",
+      "description": "People are dumping garbage in open area behind the market. This has become a regular dumping site.",
+      "status": "pending",
+      "priority": "high",
+      "createdAt": "2025-12-29T16:45:00.000Z",
+      "updatedAt": "2025-12-29T16:45:00.000Z",
+      "assignedTo": "Vijay Singh (Supervisor)",
+      "resolvedDate": null,
+      "notes": "Inspection scheduled"
+    }
   ],
-
   "attendance": [
-  {
-    "id": 1,
-    "staff": "Suresh",
-    "role": "Driver",
-    "ward": "Ward 12",
-    "status": "Present",
-    "checkIn": "06:45 AM",
-    "checkOut": "02:30 PM",
-    "method": "GPS"
-  },
-  {
-    "id": 2,
-    "staff": "Ramesh",
-    "role": "Driver",
-    "ward": "Ward 5",
-    "status": "Present",
-    "checkIn": "06:50 AM",
-    "checkOut": "02:40 PM",
-    "method": "Biometric"
-  },
-  {
-    "id": 3,
-    "staff": "Mahesh",
-    "role": "Helper",
-    "ward": "Ward 3",
-    "status": "Absent",
-    "checkIn": "-",
-    "checkOut": "-",
-    "method": "-"
-  },
-  {
-    "id": 4,
-    "staff": "Amit",
-    "role": "Driver",
-    "ward": "Ward 7",
-    "status": "Leave",
-    "checkIn": "-",
-    "checkOut": "-",
-    "method": "Leave"
-  },
-  {
-    "id": 5,
-    "staff": "Sunil",
-    "role": "Helper",
-    "ward": "Ward 9",
-    "status": "Present",
-    "checkIn": "07:05 AM",
-    "checkOut": "03:15 PM",
-    "method": "GPS"
-  },
-  {
-    "id": 6,
-    "staff": "Raju",
-    "role": "Driver",
-    "ward": "Ward 1",
-    "status": "Absent",
-    "checkIn": "-",
-    "checkOut": "-",
-    "method": "-"
-  },
-  {
-    "id": 7,
-    "staff": "Manoj",
-    "role": "Helper",
-    "ward": "Ward 11",
-    "status": "Present",
-    "checkIn": "06:55 AM",
-    "checkOut": "02:50 PM",
-    "method": "Biometric"
-  },
-  {
-    "id": 8,
-    "staff": "Bikash",
-    "role": "Driver",
-    "ward": "Ward 8",
-    "status": "Leave",
-    "checkIn": "-",
-    "checkOut": "-",
-    "method": "Leave"
-  },
-  {
-    "id": 9,
-    "staff": "Santosh",
-    "role": "Helper",
-    "ward": "Ward 6",
-    "status": "Present",
-    "checkIn": "07:10 AM",
-    "checkOut": "03:00 PM",
-    "method": "GPS"
-  },
-  {
-    "id": 10,
-    "staff": "Niranjan",
-    "role": "Driver",
-    "ward": "Ward 4",
-    "status": "Present",
-    "checkIn": "06:40 AM",
-    "checkOut": "02:20 PM",
-    "method": "Biometric"
-  }
-],
-
+    {
+      "id": "1",
+      "staff": "Suresh",
+      "role": "Driver",
+      "ward": "Ward 12",
+      "status": "Present",
+      "checkIn": "06:45 AM",
+      "checkOut": "02:30 PM",
+      "method": "GPS"
+    },
+    {
+      "id": "2",
+      "staff": "Ramesh",
+      "role": "Driver",
+      "ward": "Ward 5",
+      "status": "Present",
+      "checkIn": "06:50 AM",
+      "checkOut": "02:40 PM",
+      "method": "Biometric"
+    },
+    {
+      "id": "3",
+      "staff": "Mahesh",
+      "role": "Helper",
+      "ward": "Ward 3",
+      "status": "Absent",
+      "checkIn": "-",
+      "checkOut": "-",
+      "method": "-"
+    },
+    {
+      "id": "4",
+      "staff": "Amit",
+      "role": "Driver",
+      "ward": "Ward 7",
+      "status": "Leave",
+      "checkIn": "-",
+      "checkOut": "-",
+      "method": "Leave"
+    },
+    {
+      "id": "5",
+      "staff": "Sunil",
+      "role": "Helper",
+      "ward": "Ward 9",
+      "status": "Present",
+      "checkIn": "07:05 AM",
+      "checkOut": "03:15 PM",
+      "method": "GPS"
+    },
+    {
+      "id": "6",
+      "staff": "Raju",
+      "role": "Driver",
+      "ward": "Ward 1",
+      "status": "Absent",
+      "checkIn": "-",
+      "checkOut": "-",
+      "method": "-"
+    },
+    {
+      "id": "7",
+      "staff": "Manoj",
+      "role": "Helper",
+      "ward": "Ward 11",
+      "status": "Present",
+      "checkIn": "06:55 AM",
+      "checkOut": "02:50 PM",
+      "method": "Biometric"
+    },
+    {
+      "id": "8",
+      "staff": "Bikash",
+      "role": "Driver",
+      "ward": "Ward 8",
+      "status": "Leave",
+      "checkIn": "-",
+      "checkOut": "-",
+      "method": "Leave"
+    },
+    {
+      "id": "9",
+      "staff": "Santosh",
+      "role": "Helper",
+      "ward": "Ward 6",
+      "status": "Present",
+      "checkIn": "07:10 AM",
+      "checkOut": "03:00 PM",
+      "method": "GPS"
+    },
+    {
+      "id": "10",
+      "staff": "Niranjan",
+      "role": "Driver",
+      "ward": "Ward 4",
+      "status": "Present",
+      "checkIn": "06:40 AM",
+      "checkOut": "02:20 PM",
+      "method": "Biometric"
+    }
+  ],
   "queueFulfillment": [
-    { "id": "QF-2025-001", "category": "MCC", "cube": "Cube-01", "status": "Pending", "date": "24 Jul 2025", "supervisor": "Ramesh Kumar" },
-    { "id": "QF-2025-002", "category": "MRF", "cube": "Cube-02", "status": "Verified", "date": "24 Jul 2025", "supervisor": "Ramesh Kumar" },
-    { "id": "QF-2025-003", "category": "MCC", "cube": "Cube-03", "status": "Fulfilled", "date": "23 Jul 2025", "supervisor": "Mahesh Patra" },
-    { "id": "QF-2025-004", "category": "MRF", "cube": "Cube-04", "status": "Pending", "date": "23 Jul 2025", "supervisor": "Suresh Das" },
-    { "id": "QF-2025-005", "category": "MCC", "cube": "Cube-05", "status": "Verified", "date": "22 Jul 2025", "supervisor": "Amit Nayak" },
-    { "id": "QF-2025-006", "category": "MRF", "cube": "Cube-06", "status": "Fulfilled", "date": "22 Jul 2025", "supervisor": "Sunil Kumar" },
-    { "id": "QF-2025-007", "category": "MCC", "cube": "Cube-07", "status": "Pending", "date": "21 Jul 2025", "supervisor": "Raju Das" },
-    { "id": "QF-2025-008", "category": "MRF", "cube": "Cube-08", "status": "Verified", "date": "21 Jul 2025", "supervisor": "Manoj Behera" },
-    { "id": "QF-2025-009", "category": "MCC", "cube": "Cube-09", "status": "Fulfilled", "date": "20 Jul 2025", "supervisor": "Bikash Rout" },
-    { "id": "QF-2025-010", "category": "MRF", "cube": "Cube-10", "status": "Pending", "date": "20 Jul 2025", "supervisor": "Santosh Mishra" }
-  ]
+    {
+      "id": "QF-2025-001",
+      "category": "MCC",
+      "cube": "Cube-01",
+      "status": "Pending",
+      "date": "24 Jul 2025",
+      "supervisor": "Ramesh Kumar"
+    },
+    {
+      "id": "QF-2025-002",
+      "category": "MRF",
+      "cube": "Cube-02",
+      "status": "Verified",
+      "date": "24 Jul 2025",
+      "supervisor": "Ramesh Kumar"
+    },
+    {
+      "id": "QF-2025-003",
+      "category": "MCC",
+      "cube": "Cube-03",
+      "status": "Fulfilled",
+      "date": "23 Jul 2025",
+      "supervisor": "Mahesh Patra"
+    },
+    {
+      "id": "QF-2025-004",
+      "category": "MRF",
+      "cube": "Cube-04",
+      "status": "Pending",
+      "date": "23 Jul 2025",
+      "supervisor": "Suresh Das"
+    },
+    {
+      "id": "QF-2025-005",
+      "category": "MCC",
+      "cube": "Cube-05",
+      "status": "Verified",
+      "date": "22 Jul 2025",
+      "supervisor": "Amit Nayak"
+    },
+    {
+      "id": "QF-2025-006",
+      "category": "MRF",
+      "cube": "Cube-06",
+      "status": "Fulfilled",
+      "date": "22 Jul 2025",
+      "supervisor": "Sunil Kumar"
+    },
+    {
+      "id": "QF-2025-007",
+      "category": "MCC",
+      "cube": "Cube-07",
+      "status": "Pending",
+      "date": "21 Jul 2025",
+      "supervisor": "Raju Das"
+    },
+    {
+      "id": "QF-2025-008",
+      "category": "MRF",
+      "cube": "Cube-08",
+      "status": "Verified",
+      "date": "21 Jul 2025",
+      "supervisor": "Manoj Behera"
+    },
+    {
+      "id": "QF-2025-009",
+      "category": "MCC",
+      "cube": "Cube-09",
+      "status": "Fulfilled",
+      "date": "20 Jul 2025",
+      "supervisor": "Bikash Rout"
+    },
+    {
+      "id": "QF-2025-010",
+      "category": "MRF",
+      "cube": "Cube-10",
+      "status": "Pending",
+      "date": "20 Jul 2025",
+      "supervisor": "Santosh Mishra"
+    },
+    {
+      "id": "QF-2026-011",
+      "category": "MCC",
+      "cube": "Cube-01",
+      "status": "Pending",
+      "date": "02 Jan 2026",
+      "supervisor": "Ramesh Kumar"
+    }
+  ],
+  "wards": [
+    {
+      "id": "WARD001",
+      "wardNumber": 5,
+      "wardName": "Ward 6",
+      "area": "12.5 sq km",
+      "population": 15000,
+      "households": 3200,
+      "supervisor": "Ramesh Patel",
+      "supervisorPhone": "+91 98765 43210",
+      "vehicles": 3,
+      "bins": 45,
+      "collectionFrequency": "Daily",
+      "status": "in-progress",
+      "coverage": 95
+    },
+    {
+      "id": "WARD002",
+      "wardNumber": 3,
+      "wardName": "Ward 3",
+      "area": "8.2 sq km",
+      "population": 12000,
+      "households": 2500,
+      "supervisor": "Suresh Kumar",
+      "supervisorPhone": "+91 87654 32109",
+      "vehicles": 2,
+      "bins": 38,
+      "collectionFrequency": "Daily",
+      "status": "in-progress",
+      "coverage": 88
+    },
+    {
+      "id": "4474",
+      "name": "ward 1",
+      "area": "5.2",
+      "population": "12500",
+      "households": "1",
+      "supervisorName": "sds",
+      "supervisorPhone": "7418523698",
+      "wasteGenerationPerDay": "8.5",
+      "collectionFrequency": "alternate"
+    },
+    {
+      "id": "349e",
+      "wardName": "ward  2",
+      "area": "8.8",
+      "population": 12500,
+      "households": 2850,
+      "supervisor": "xcx78",
+      "supervisorPhone": "7894152638",
+      "vehicles": 0,
+      "bins": 0,
+      "collectionFrequency": "Daily",
+      "status": "active",
+      "coverage": 0
+    }
+  ],
+  "fuelRecords": [
+    {
+      "id": "FR001",
+      "vehicle": "OD-05-1234",
+      "driver": "Ramesh Singh",
+      "fuelType": "diesel",
+      "quantity": 45.5,
+      "pricePerLiter": 95.5,
+      "totalCost": 4345.25,
+      "odometer": 28500,
+      "previousOdometer": 28200,
+      "fillingStation": "Indian Oil - Bhubaneswar",
+      "refuelDate": "2026-01-02",
+      "receiptNumber": "REC-2026-001",
+      "efficiency": 6.59,
+      "notes": "Regular refuel"
+    }
+  ],
+  "wasteCollections": [
+    {
+      "id": "WC001",
+      "ward": "Ward 5",
+      "wardName": "Ward 5",
+      "vehicle": "OD-05-1234",
+      "driver": "Ramesh Singh",
+      "collectionDate": "2026-01-02",
+      "startTime": "06:00",
+      "endTime": "14:30",
+      "wasteQuantity": 850,
+      "wasteType": "Mixed",
+      "status": "completed",
+      "householdsCovered": 245,
+      "routeEfficiency": 92
+    }
+  ],
+  "supervisors": [
+    {
+      "id": "37bc",
+      "name": "soni",
+      "username": "soni2004",
+      "email": "sonisingh50934@gmail.com",
+      "mobile": "8986815104",
+      "password": "soni2004",
+      "status": "active",
+      "createdAt": "2026-01-02T12:31:46.544Z"
+    }
+  ],
+  "dashboard": {
+    "stats": {
+      "waste": 125.5,
+      "vehicles": 18,
+      "activeStaff": 45,
+      "complaints": 23,
+      "wards": 12,
+      "citizens": 8250
+    },
+    "performance": {
+      "resolvedComplaints": 87,
+      "totalComplaints": 100,
+      "collectionRate": 94,
+      "complaintsTrend": [
+        72,
+        68,
+        75,
+        81,
+        78,
+        85,
+        87
+      ],
+      "collectionTrend": [
+        88,
+        90,
+        89,
+        92,
+        91,
+        93,
+        94
+      ]
+    },
+    "pending": {
+      "pendingComplaints": 234,
+      "avgResponseTime": "2.4h"
+    },
+    "wardCoverage": {
+      "wards": [
+        {
+          "name": "Ward 1",
+          "status": "completed",
+          "completion": 100,
+          "collectedToday": 12.5
+        },
+        {
+          "name": "Ward 2",
+          "status": "completed",
+          "completion": 100,
+          "collectedToday": 10.8
+        },
+        {
+          "name": "Ward 3",
+          "status": "in-progress",
+          "completion": 75,
+          "collectedToday": 8.5
+        },
+        {
+          "name": "Ward 4",
+          "status": "in-progress",
+          "completion": 60,
+          "collectedToday": 7.2
+        },
+        {
+          "name": "Ward 5",
+          "status": "pending",
+          "completion": 25,
+          "collectedToday": 3.5
+        },
+        {
+          "name": "Ward 6",
+          "status": "completed",
+          "completion": 100,
+          "collectedToday": 11.3
+        }
+      ]
+    },
+    "staffPerformance": {
+      "present": 45,
+      "absent": 2,
+      "onLeave": 1,
+      "attendanceRate": 94,
+      "tasksAssigned": 52,
+      "tasksCompleted": 38,
+      "tasksInProgress": 14
+    },
+    "routeCompletion": {
+      "overallCompletion": 73,
+      "completedRoutes": 11,
+      "totalRoutes": 15,
+      "routes": [
+        {
+          "name": "Route A1",
+          "vehicle": "MH-12-AB-1234",
+          "status": "completed",
+          "completion": 100
+        },
+        {
+          "name": "Route A2",
+          "vehicle": "MH-12-AB-1235",
+          "status": "completed",
+          "completion": 100
+        },
+        {
+          "name": "Route B1",
+          "vehicle": "MH-12-CD-5678",
+          "status": "in-progress",
+          "completion": 65
+        },
+        {
+          "name": "Route B2",
+          "vehicle": "MH-12-CD-5679",
+          "status": "in-progress",
+          "completion": 45
+        },
+        {
+          "name": "Route C1",
+          "vehicle": "MH-12-EF-9012",
+          "status": "pending",
+          "completion": 0
+        }
+      ]
+    },
+    "fuelManagement": {
+      "todayUsage": 285,
+      "monthUsage": 4630,
+      "totalCost": 1687611,
+      "avgCostPerLiter": 105,
+      "alerts": [
+        {
+          "type": "warning",
+          "message": "High fuel consumption detected",
+          "vehicle": "MH-12-CD-5678"
+        },
+        {
+          "type": "info",
+          "message": "Refueling scheduled",
+          "vehicle": "MH-12-AB-1234"
+        }
+      ]
+    },
+    "vehicles": {
+      "all": 18,
+      "overSpeeding": 0,
+      "running": 12,
+      "standing": 3,
+      "stopped": 2,
+      "dataNotRetrieving": 1
+    },
+    "complaints": {
+      "pending": 5,
+      "open": 12,
+      "closed": 58,
+      "outOfScope": 3
+    },
+    "recentActivities": [
+      {
+        "type": "collection",
+        "message": "Waste collected from Ward 5 - 2.5 tons",
+        "time": "10 mins ago"
+      },
+      {
+        "type": "complaint",
+        "message": "New complaint registered - Missed collection",
+        "time": "25 mins ago"
+      },
+      {
+        "type": "vehicle",
+        "message": "Vehicle MH-12-AB-1234 route completed",
+        "time": "45 mins ago"
+      },
+      {
+        "type": "staff",
+        "message": "Morning shift attendance completed - 45/48 present",
+        "time": "1 hour ago"
+      },
+      {
+        "type": "payment",
+        "message": "Payment received - ₹1,850",
+        "time": "2 hours ago"
+      }
+    ],
+    "vehicleLocations": [
+      {
+        "id": "VEH001",
+        "registrationNumber": "OD-05-1234",
+        "type": "compactor",
+        "status": "running",
+        "location": {
+          "lat": 20.2961,
+          "lng": 85.8245
+        },
+        "speed": 35,
+        "assignedWard": "Ward 5",
+        "driverName": "Ramesh Singh",
+        "driverPhone": "+91 98765 43210",
+        "fuelLevel": 75,
+        "lastUpdated": "2026-01-02T00:00:00.000Z"
+      },
+      {
+        "id": "VEH002",
+        "registrationNumber": "OD-05-5678",
+        "type": "tipper",
+        "status": "standing",
+        "location": {
+          "lat": 20.3021,
+          "lng": 85.8321
+        },
+        "speed": 0,
+        "assignedWard": "Ward 3",
+        "driverName": "Suresh Kumar",
+        "driverPhone": "+91 87654 32109",
+        "fuelLevel": 45,
+        "lastUpdated": "2026-01-02T00:00:00.000Z"
+      },
+      {
+        "id": "VEH003",
+        "registrationNumber": "OD-05-9012",
+        "type": "compactor",
+        "status": "stopped",
+        "location": {
+          "lat": 20.289,
+          "lng": 85.8156
+        },
+        "speed": 0,
+        "assignedWard": "Ward 7",
+        "driverName": "Prakash Patel",
+        "driverPhone": "+91 76543 21098",
+        "fuelLevel": 20,
+        "lastUpdated": "2026-01-02T00:00:00.000Z"
+      },
+      {
+        "id": "VEH004",
+        "registrationNumber": "OD-05-3456",
+        "type": "mini-truck",
+        "status": "running",
+        "location": {
+          "lat": 20.3105,
+          "lng": 85.8412
+        },
+        "speed": 52,
+        "assignedWard": "Ward 2",
+        "driverName": "Vijay Sharma",
+        "driverPhone": "+91 65432 10987",
+        "fuelLevel": 60,
+        "lastUpdated": "2026-01-02T00:00:00.000Z"
+      },
+      {
+        "id": "VEH005",
+        "registrationNumber": "OD-05-2345",
+        "type": "tipper",
+        "status": "running",
+        "location": {
+          "lat": 20.2785,
+          "lng": 85.8398
+        },
+        "speed": 28,
+        "assignedWard": "Ward 1",
+        "driverName": "Sanjay Das",
+        "driverPhone": "+91 43210 98765",
+        "fuelLevel": 80,
+        "lastUpdated": "2026-01-02T00:00:00.000Z"
+      }
+    ]
+  }
 }

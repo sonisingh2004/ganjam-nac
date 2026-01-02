@@ -1,7 +1,8 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getAllSupervisors } from '../../services/admin/supervisorService';
+import api from '../../api/api';
+
 
 const SupervisorManagement = () => {
   const [supervisors, setSupervisors] = useState([]);
@@ -24,11 +25,11 @@ const SupervisorManagement = () => {
   const fetchSupervisors = async () => {
     try {
       setLoading(true);
-      const data = await getAllSupervisors();
-      setSupervisors(data);
+      const response = await api.get('/supervisors');
+      setSupervisors(response.data);
     } catch (error) {
-      console.error('Error fetching supervisors:', error);
-      toast.error('Failed to fetch supervisors');
+      console.warn('API not available:', error.message);
+      setSupervisors([]);
     } finally {
       setLoading(false);
     }
@@ -45,7 +46,7 @@ const SupervisorManagement = () => {
     toast.success('Password generated!');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!formData.name || !formData.username || !formData.email || !formData.mobile || !formData.password) {
@@ -66,37 +67,68 @@ const SupervisorManagement = () => {
       return;
     }
 
-    const stored = localStorage.getItem('supervisors');
-    let supervisorsList = stored ? JSON.parse(stored) : [];
+    try {
+      if (selectedSupervisor) {
+        // Update existing supervisor
+        const updatedSupervisor = { ...formData, id: selectedSupervisor.id, createdAt: selectedSupervisor.createdAt };
+        await api.patch(`/supervisors/${selectedSupervisor.id}`, updatedSupervisor);
+        
+        // Update user credentials
+        try {
+          const usersResponse = await api.get('/users');
+          const existingUser = usersResponse.data.find(u => u.username === selectedSupervisor.username);
+          if (existingUser) {
+            await api.patch(`/users/${existingUser.id}`, {
+              username: formData.username,
+              password: formData.password,
+              name: formData.name,
+              role: 'supervisor'
+            });
+          }
+        } catch (err) {
+          console.warn('Could not update user credentials:', err);
+        }
+        
+        setSupervisors(supervisors.map(s => 
+          s.id === selectedSupervisor.id ? updatedSupervisor : s
+        ));
+        toast.success('Supervisor updated successfully!');
+      } else {
+        // Check for duplicate username
+        if (supervisors.some(s => s.username === formData.username)) {
+          toast.error('Username already exists');
+          return;
+        }
 
-    if (selectedSupervisor) {
-      // Update existing supervisor
-      supervisorsList = supervisorsList.map(s => 
-        s.id === selectedSupervisor.id 
-          ? { ...formData, id: selectedSupervisor.id, createdAt: selectedSupervisor.createdAt }
-          : s
-      );
-      toast.success('Supervisor updated successfully!');
-    } else {
-      // Check for duplicate username
-      if (supervisorsList.some(s => s.username === formData.username)) {
-        toast.error('Username already exists');
-        return;
+        // Add new supervisor
+        const newSupervisor = {
+          ...formData,
+          createdAt: new Date().toISOString()
+        };
+        const response = await api.post('/supervisors', newSupervisor);
+        
+        // Add user credentials for login
+        try {
+          const newUser = {
+            role: 'supervisor',
+            username: formData.username,
+            password: formData.password,
+            name: formData.name
+          };
+          await api.post('/users', newUser);
+        } catch (err) {
+          console.warn('Could not create user credentials:', err);
+        }
+        
+        setSupervisors([...supervisors, response.data]);
+        toast.success('Supervisor created successfully with login credentials!');
       }
 
-      // Add new supervisor
-      const newSupervisor = {
-        ...formData,
-        id: `SUP${Date.now()}`,
-        createdAt: new Date().toISOString()
-      };
-      supervisorsList.push(newSupervisor);
-      toast.success('Supervisor created successfully!');
+      handleCloseModal();
+    } catch (error) {
+      console.error('Error saving supervisor:', error);
+      toast.error('Failed to save supervisor');
     }
-
-    localStorage.setItem('supervisors', JSON.stringify(supervisorsList));
-    setSupervisors(supervisorsList);
-    handleCloseModal();
   };
 
   const handleEdit = (supervisor) => {
@@ -112,14 +144,30 @@ const SupervisorManagement = () => {
     setShowModal(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this supervisor?')) {
-      const stored = localStorage.getItem('supervisors');
-      let supervisorsList = stored ? JSON.parse(stored) : [];
-      supervisorsList = supervisorsList.filter(s => s.id !== id);
-      localStorage.setItem('supervisors', JSON.stringify(supervisorsList));
-      setSupervisors(supervisorsList);
-      toast.success('Supervisor deleted successfully!');
+      try {
+        const supervisorToDelete = supervisors.find(s => s.id === id);
+        
+        await api.delete(`/supervisors/${id}`);
+        
+        // Also delete user credentials
+        try {
+          const usersResponse = await api.get('/users');
+          const userToDelete = usersResponse.data.find(u => u.username === supervisorToDelete?.username);
+          if (userToDelete) {
+            await api.delete(`/users/${userToDelete.id}`);
+          }
+        } catch (err) {
+          console.warn('Could not delete user credentials:', err);
+        }
+        
+        setSupervisors(supervisors.filter(s => s.id !== id));
+        toast.success('Supervisor deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting supervisor:', error);
+        toast.error('Failed to delete supervisor');
+      }
     }
   };
 

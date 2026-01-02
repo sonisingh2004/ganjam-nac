@@ -1,7 +1,8 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getAllWasteCollections } from '../../services/admin/wasteCollectionService';
+import api from '../../api/api';
+
 
 const WasteCollection = () => {
   const [collections, setCollections] = useState([]);
@@ -33,11 +34,30 @@ const WasteCollection = () => {
   const fetchCollections = async () => {
     try {
       setLoading(true);
-      const data = await getAllWasteCollections();
-      setCollections(data);
+      const response = await api.get('/wasteCollections');
+      
+      // Map db.json structure to UI expected structure
+      const mappedData = response.data.map(w => ({
+        id: w.id,
+        ward: w.ward || w.wardName || 'N/A',
+        vehicle: w.vehicle || 'N/A',
+        driver: w.driver || 'N/A',
+        route: w.route || 'Route ' + (w.ward?.split(' ')[1] || '1'),
+        wasteType: w.wasteType || 'Mixed Waste',
+        quantity: parseFloat(w.quantity || w.wasteQuantity || 0),
+        targetQuantity: parseFloat(w.targetQuantity || w.wasteQuantity || 10),
+        collectionDate: w.collectionDate || new Date().toISOString().split('T')[0],
+        status: w.status || 'pending',
+        notes: w.notes || '',
+        startTime: w.startTime || '',
+        endTime: w.endTime || '',
+        householdsCovered: w.householdsCovered || 0,
+        routeEfficiency: w.routeEfficiency || 0
+      }));
+      
+      setCollections(mappedData);
     } catch (error) {
-      console.error('Error fetching waste collections:', error);
-      toast.error('Failed to load waste collections');
+      console.warn('API not available, using mock data:', error.message);
       setCollections([]);
     } finally {
       setLoading(false);
@@ -78,30 +98,35 @@ const WasteCollection = () => {
     return [...new Set(collections.map(c => c.ward))].sort();
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (selectedCollection) {
-      // Update existing collection
-      setCollections(collections.map(c => 
-        c.id === selectedCollection.id 
-          ? { ...c, ...formData, id: selectedCollection.id }
-          : c
-      ));
-      toast.success('Waste collection updated successfully!');
-    } else {
-      // Add new collection
-      const newCollection = {
-        ...formData,
-        id: `WC${String(collections.length + 1).padStart(3, '0')}`,
-        quantity: 0,
-        completionTime: null
-      };
-      setCollections([...collections, newCollection]);
-      toast.success('Waste collection added successfully!');
+    try {
+      if (selectedCollection) {
+        // Update existing collection
+        const updatedCollection = { ...formData, id: selectedCollection.id };
+        await api.patch(`/wasteCollections/${selectedCollection.id}`, updatedCollection);
+        setCollections(collections.map(c => 
+          c.id === selectedCollection.id ? updatedCollection : c
+        ));
+        toast.success('Waste collection updated successfully!');
+      } else {
+        // Add new collection
+        const newCollection = {
+          ...formData,
+          quantity: 0,
+          completionTime: null
+        };
+        const response = await api.post('/wasteCollections', newCollection);
+        setCollections([...collections, response.data]);
+        toast.success('Waste collection added successfully!');
+      }
+      
+      handleCloseModal();
+    } catch (error) {
+      console.error('Error saving waste collection:', error);
+      toast.error('Failed to save waste collection');
     }
-    
-    handleCloseModal();
   };
 
   const handleEdit = (collection) => {
@@ -120,10 +145,16 @@ const WasteCollection = () => {
     setShowModal(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this collection record?')) {
-      setCollections(collections.filter(c => c.id !== id));
-      toast.success('Waste collection deleted successfully!');
+      try {
+        await api.delete(`/wasteCollections/${id}`);
+        setCollections(collections.filter(c => c.id !== id));
+        toast.success('Waste collection deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting waste collection:', error);
+        toast.error('Failed to delete waste collection');
+      }
     }
   };
 
@@ -149,8 +180,8 @@ const WasteCollection = () => {
       completed: collections.filter(c => c.status === 'completed').length,
       inProgress: collections.filter(c => c.status === 'in-progress').length,
       pending: collections.filter(c => c.status === 'pending').length,
-      totalWaste: collections.reduce((sum, c) => sum + c.quantity, 0).toFixed(1),
-      targetWaste: collections.reduce((sum, c) => sum + c.targetQuantity, 0).toFixed(1)
+      totalWaste: collections.reduce((sum, c) => sum + (parseFloat(c.quantity) || 0), 0).toFixed(1),
+      targetWaste: collections.reduce((sum, c) => sum + (parseFloat(c.targetQuantity) || 0), 0).toFixed(1)
     };
   };
 

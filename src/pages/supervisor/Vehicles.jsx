@@ -14,12 +14,13 @@ const Vehicles = () => {
     const loadVehicles = async () => {
       try {
         const res = await api.get("/vehicles");
+        console.log("Vehicles API response:", res.data);
 
         if (res.data?.length) {
           setVehicles(
             res.data.map((v) => ({
               id: v.id,
-              number: v.number,
+              number: v.number || "N/A",
               type: v.type || "Tipper",
               ward: v.ward || "N/A",
               route: v.route || "Zone A",
@@ -36,8 +37,8 @@ const Vehicles = () => {
             }))
           );
         }
-      } catch {
-        // silent fail – UI stays same
+      } catch (err) {
+        console.error("Failed to load vehicles:", err);
       }
     };
 

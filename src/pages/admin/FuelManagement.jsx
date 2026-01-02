@@ -1,7 +1,8 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getAllFuelRecords } from '../../services/admin/fuelService';
+import api from '../../api/api';
+
 
 const FuelManagement = () => {
   const [fuelRecords, setFuelRecords] = useState([]);
@@ -36,11 +37,10 @@ const FuelManagement = () => {
   const fetchFuelRecords = async () => {
     try {
       setLoading(true);
-      const data = await getAllFuelRecords();
-      setFuelRecords(data);
+      const response = await api.get('/fuelRecords');
+      setFuelRecords(response.data);
     } catch (error) {
-      console.error('Error fetching fuel records:', error);
-      toast.error('Failed to load fuel records');
+      console.warn('API not available:', error.message);
       setFuelRecords([]);
     } finally {
       setLoading(false);
@@ -71,40 +71,44 @@ const FuelManagement = () => {
     return [...new Set(fuelRecords.map(r => r.vehicle))].sort();
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     const totalCost = parseFloat(formData.quantity) * parseFloat(formData.pricePerLiter);
     
-    if (selectedRecord) {
-      // Update existing record
-      setFuelRecords(fuelRecords.map(r => 
-        r.id === selectedRecord.id 
-          ? { 
-              ...r, 
-              ...formData, 
-              totalCost: totalCost.toFixed(2),
-              id: selectedRecord.id,
-              efficiency: 0,
-              previousOdometer: selectedRecord.previousOdometer
-            }
-          : r
-      ));
-      toast.success('Fuel record updated successfully!');
-    } else {
-      // Add new record
-      const newRecord = {
-        ...formData,
-        id: `FR${String(fuelRecords.length + 1).padStart(3, '0')}`,
-        totalCost: totalCost.toFixed(2),
-        previousOdometer: 0,
-        efficiency: 0
-      };
-      setFuelRecords([...fuelRecords, newRecord]);
-      toast.success('Fuel record added successfully!');
+    try {
+      if (selectedRecord) {
+        // Update existing record
+        const updatedRecord = {
+          ...formData,
+          totalCost: totalCost.toFixed(2),
+          id: selectedRecord.id,
+          efficiency: 0,
+          previousOdometer: selectedRecord.previousOdometer
+        };
+        await api.patch(`/fuelRecords/${selectedRecord.id}`, updatedRecord);
+        setFuelRecords(fuelRecords.map(r => 
+          r.id === selectedRecord.id ? updatedRecord : r
+        ));
+        toast.success('Fuel record updated successfully!');
+      } else {
+        // Add new record
+        const newRecord = {
+          ...formData,
+          totalCost: totalCost.toFixed(2),
+          previousOdometer: 0,
+          efficiency: 0
+        };
+        const response = await api.post('/fuelRecords', newRecord);
+        setFuelRecords([...fuelRecords, response.data]);
+        toast.success('Fuel record added successfully!');
+      }
+      
+      handleCloseModal();
+    } catch (error) {
+      console.error('Error saving fuel record:', error);
+      toast.error('Failed to save fuel record');
     }
-    
-    handleCloseModal();
   };
 
   const handleEdit = (record) => {
@@ -125,10 +129,16 @@ const FuelManagement = () => {
     setShowModal(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this fuel record?')) {
-      setFuelRecords(fuelRecords.filter(r => r.id !== id));
-      toast.success('Fuel record deleted successfully!');
+      try {
+        await api.delete(`/fuelRecords/${id}`);
+        setFuelRecords(fuelRecords.filter(r => r.id !== id));
+        toast.success('Fuel record deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting fuel record:', error);
+        toast.error('Failed to delete fuel record');
+      }
     }
   };
 

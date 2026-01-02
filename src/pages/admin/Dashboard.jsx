@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import api from '../../api/api';
 import ComplaintsStatus from '../../components/admin/ComplaintsStatus';
 import FuelManagement from '../../components/admin/FuelManagement';
 import MapView from '../../components/admin/MapView';
@@ -13,7 +14,7 @@ import StatsCard from '../../components/admin/StatsCard';
 import TodaysPerformance from '../../components/admin/TodaysPerformance';
 import VehiclesStatus from '../../components/admin/VehiclesStatus';
 import WardCoverage from '../../components/admin/WardCoverage';
-import { getDashboardData } from '../../services/admin/dashboardService';
+
 
 
 const AdminDashboard = () => {
@@ -94,26 +95,22 @@ const AdminDashboard = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const fetchDashboardData = async (silent = false) => {
+  const fetchDashboardData = async (silent = false, showToast = false) => {
     try {
       if (!silent) setLoading(true);
       setError(null);
       
-      // Fetch data using axios service
-      const data = await getDashboardData();
+      // Fetch data using axios
+      const response = await api.get('/dashboard');
+      setDashboardData(response.data);
       
-      setDashboardData(data);
-      
-      if (!silent) {
-        toast.success('Dashboard data loaded successfully!');
+      if (showToast) {
+        toast.success('Dashboard data refreshed successfully!');
       }
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-      setError('Failed to load dashboard data. Using cached data.');
-      
-      if (!silent) {
-        toast.error('Failed to load dashboard data. Please try again.');
-      }
+      console.warn('API not available:', error.message);
+      toast.error('Failed to load dashboard data');
+      setError('Using offline data.');
     } finally {
       setLoading(false);
     }
@@ -157,16 +154,16 @@ const AdminDashboard = () => {
                 <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                 Real-time monitoring of waste management operations across all wards
               </p>
-              {error && (
+              {/* {error && (
                 <p className="text-orange-600 text-sm mt-2 flex items-center gap-2">
                   <span>⚠️</span>
                   {error}
                 </p>
-              )}
+              )} */}
             </div>
             <div className="flex items-center gap-3">
               <button
-                onClick={() => fetchDashboardData()}
+                onClick={() => fetchDashboardData(false, true)}
                 className="bg-white hover:bg-emerald-50 px-4 py-2 rounded-xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl hover:scale-105"
                 title="Refresh Dashboard"
               >

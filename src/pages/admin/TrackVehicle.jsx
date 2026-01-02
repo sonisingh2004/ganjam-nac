@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import api from '../../api/api';
 import MapView from '../../components/admin/MapView';
 
 const TrackVehicle = () => {
@@ -26,115 +27,44 @@ const TrackVehicle = () => {
   const fetchVehicleLocations = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual API endpoint
-      // const response = await fetch('/api/admin/vehicles/locations', {
-      //   headers: {
-      //     'Authorization': `Bearer ${localStorage.getItem('token')}`
-      //   }
-      // });
-      // const data = await response.json();
+      const response = await api.get('/vehicles');
       
-      // Mock data with GPS coordinates for Ganjam area
-      const mockData = [
-        {
-          id: 'VEH001',
-          registrationNumber: 'OD-05-1234',
-          type: 'compactor',
-          status: 'running',
-          location: { lat: 20.2961, lng: 85.8245 },
-          speed: 35,
-          assignedWard: 'Ward 5',
-          driverName: 'Ramesh Singh',
-          driverPhone: '+91 98765 43210',
-          fuelLevel: 75,
-          lastUpdated: new Date().toISOString(),
-          routeProgress: 65,
-          wasteCollected: 5.5,
-          targetWaste: 8.5
-        },
-        {
-          id: 'VEH002',
-          registrationNumber: 'OD-05-5678',
-          type: 'tipper',
-          status: 'standing',
-          location: { lat: 20.3021, lng: 85.8321 },
-          speed: 0,
-          assignedWard: 'Ward 3',
-          driverName: 'Suresh Kumar',
-          driverPhone: '+91 87654 32109',
-          fuelLevel: 45,
-          lastUpdated: new Date().toISOString(),
-          routeProgress: 40,
-          wasteCollected: 3.2,
-          targetWaste: 7.4
-        },
-        {
-          id: 'VEH003',
-          registrationNumber: 'OD-05-9012',
-          type: 'compactor',
-          status: 'stopped',
-          location: { lat: 20.2890, lng: 85.8156 },
-          speed: 0,
-          assignedWard: 'Ward 7',
-          driverName: 'Prakash Patel',
-          driverPhone: '+91 76543 21098',
-          fuelLevel: 20,
-          lastUpdated: new Date().toISOString(),
-          routeProgress: 85,
-          wasteCollected: 8.7,
-          targetWaste: 10.2
-        },
-        {
-          id: 'VEH004',
-          registrationNumber: 'OD-05-3456',
-          type: 'mini-truck',
-          status: 'running',
-          location: { lat: 20.3105, lng: 85.8412 },
-          speed: 52,
-          assignedWard: 'Ward 2',
-          driverName: 'Vijay Sharma',
-          driverPhone: '+91 65432 10987',
-          fuelLevel: 60,
-          lastUpdated: new Date().toISOString(),
-          routeProgress: 30,
-          wasteCollected: 1.8,
-          targetWaste: 6.3
-        },
-        {
-          id: 'VEH005',
-          registrationNumber: 'OD-05-7890',
-          type: 'compactor',
-          status: 'dataNotRetrieving',
-          location: null,
-          speed: null,
-          assignedWard: 'Ward 8',
-          driverName: 'Anil Jena',
-          driverPhone: '+91 54321 09876',
-          fuelLevel: null,
-          lastUpdated: new Date(Date.now() - 30 * 60000).toISOString(), // 30 min ago
-          routeProgress: 0,
-          wasteCollected: 0,
-          targetWaste: 9.4
-        },
-        {
-          id: 'VEH006',
-          registrationNumber: 'OD-05-2345',
-          type: 'tipper',
-          status: 'running',
-          location: { lat: 20.2785, lng: 85.8398 },
-          speed: 28,
-          assignedWard: 'Ward 1',
-          driverName: 'Sanjay Das',
-          driverPhone: '+91 43210 98765',
-          fuelLevel: 80,
-          lastUpdated: new Date().toISOString(),
-          routeProgress: 95,
-          wasteCollected: 11.8,
-          targetWaste: 12.8
+      // Map db.json structure to UI expected structure
+      const mappedData = response.data.map(v => {
+        // Determine status based on speed and data availability
+        let status = 'stopped';
+        if (!v.location || v.speed === null || v.speed === undefined) {
+          status = 'dataNotRetrieving';
+        } else if (v.speed > 0) {
+          status = 'running';
+        } else if (v.fuelLevel > 0 && v.speed === 0) {
+          status = 'standing';
         }
-      ];
+        
+        // Override with db.json status if it matches our expected values
+        if (['running', 'standing', 'stopped', 'dataNotRetrieving'].includes(v.status?.toLowerCase())) {
+          status = v.status.toLowerCase();
+        }
+        
+        return {
+          id: v.id,
+          registrationNumber: v.registrationNumber || v.number || 'N/A',
+          type: v.type || 'compactor',
+          status: status,
+          location: v.location || null,
+          speed: v.speed !== undefined ? v.speed : null,
+          assignedWard: v.assignedWard || v.ward || 'N/A',
+          driverName: v.driverName || v.driver || 'N/A',
+          driverPhone: v.driverPhone || '+91 98765 43210',
+          fuelLevel: v.fuelLevel !== undefined ? v.fuelLevel : null,
+          lastUpdated: v.lastUpdated || new Date().toISOString(),
+          routeProgress: v.routeProgress || Math.floor(Math.random() * 100), // Generate if not available
+          wasteCollected: v.wasteCollected || (Math.random() * 10).toFixed(1),
+          targetWaste: v.targetWaste || 8.5
+        };
+      });
 
-      setVehicles(mockData);
+      setVehicles(mappedData);
     } catch (error) {
       console.error('Error fetching vehicle locations:', error);
       toast.error('Failed to fetch vehicle locations');

@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getAllComplaints } from '../../services/admin/complaintService';
+import api from '../../api/api';
 
 const Complaint = () => {
   const [complaints, setComplaints] = useState([]);
@@ -23,7 +23,8 @@ const Complaint = () => {
   const fetchComplaints = async () => {
     try {
       setLoading(true);
-      const data = await getAllComplaints();
+      const response = await api.get('/complaints');
+      const data = response.data;
       
       // Apply filters
       let filteredData = data;
@@ -40,8 +41,7 @@ const Complaint = () => {
       
       setComplaints(filteredData);
     } catch (error) {
-      console.error('Error fetching complaints:', error);
-      toast.error('Failed to load complaints');
+      console.warn('API not available:', error.message);
       setComplaints([]);
     } finally {
       setLoading(false);
@@ -50,21 +50,15 @@ const Complaint = () => {
 
   const handleStatusChange = async (complaintId, newStatus) => {
     try {
-      // TODO: API call to update status
-      // await fetch(`/api/admin/complaints/${complaintId}/status`, {
-      //   method: 'PATCH',
-      //   headers: {
-      //     'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: JSON.stringify({ status: newStatus })
-      // });
+      await api.patch(`/complaints/${complaintId}`, { status: newStatus });
       
       setComplaints(complaints.map(c => 
         c.id === complaintId ? { ...c, status: newStatus } : c
       ));
+      toast.success('Complaint status updated successfully');
     } catch (error) {
       console.error('Error updating status:', error);
+      toast.error('Failed to update complaint status');
     }
   };
 
@@ -90,9 +84,9 @@ const Complaint = () => {
 
   const filteredComplaints = complaints.filter(complaint => {
     const matchesStatus = filters.status === 'all' || complaint.status === filters.status;
-    const matchesSearch = complaint.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-                          complaint.id.toLowerCase().includes(filters.search.toLowerCase()) ||
-                          complaint.location.toLowerCase().includes(filters.search.toLowerCase());
+    const matchesSearch = complaint.title?.toLowerCase().includes(filters.search.toLowerCase()) ||
+                          complaint.id?.toLowerCase().includes(filters.search.toLowerCase()) ||
+                          complaint.location?.toLowerCase().includes(filters.search.toLowerCase());
     return matchesStatus && matchesSearch;
   });
 
@@ -256,7 +250,7 @@ const Complaint = () => {
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm">
                       <span className={`font-semibold ${getPriorityColor(complaint.priority)}`}>
-                        {complaint.priority.toUpperCase()}
+                        {complaint.priority?.toUpperCase() || 'N/A'}
                       </span>
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap">
@@ -330,7 +324,7 @@ const Complaint = () => {
                   <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-100">
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Priority</label>
                     <p className={`font-bold text-lg ${getPriorityColor(selectedComplaint.priority)}`}>
-                      {selectedComplaint.priority.toUpperCase()}
+                      {selectedComplaint.priority?.toUpperCase() || 'N/A'}
                     </p>
                   </div>
                 </div>
@@ -370,7 +364,7 @@ const Complaint = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                   <span className={`inline-block text-xs font-semibold px-3 py-1 rounded-full ${getStatusColor(selectedComplaint.status)}`}>
-                    {selectedComplaint.status.toUpperCase()}
+                    {selectedComplaint.status?.toUpperCase() || 'N/A'}
                   </span>
                 </div>
               </div>

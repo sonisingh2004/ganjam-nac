@@ -18,10 +18,10 @@ const Complaints = () => {
 
         if (res.data?.length) {
           setComplaints(
-            res.data.map((c, index) => ({
-              id: `CMP-${String(c.id).padStart(3, "0")}`,
+            res.data.map((c) => ({
+              id: c.id,
               ward: c.ward || "N/A",
-              type: c.title || "General Issue",
+              type: c.title || c.category || "General Issue",
               image:
                 c.image && c.image !== ""
                   ? c.image
@@ -30,19 +30,22 @@ const Complaints = () => {
               driver: c.driver || "Not Assigned",
               status: c.status || "Pending",
               priority: c.priority || "Medium",
-              date: c.date || new Date().toISOString().split("T")[0],
-              updatedAt: new Date().toLocaleTimeString(),
+              date: c.createdAt ? new Date(c.createdAt).toLocaleDateString() : new Date().toISOString().split("T")[0],
+              updatedAt: c.updatedAt ? new Date(c.updatedAt).toLocaleTimeString() : new Date().toLocaleTimeString(),
               sla:
                 c.sla ||
                 new Date(
                   Date.now() + 4 * 60 * 60 * 1000
                 ).toISOString(),
               location: c.location || "Berhampur, Odisha",
+              citizenName: c.citizenName || "Unknown",
+              citizenPhone: c.citizenPhone || "N/A",
+              description: c.description || "No description provided"
             }))
           );
         }
       } catch (err) {
-        console.error("Failed to load complaints");
+        console.error("Failed to load complaints:", err);
       }
     };
 
@@ -53,8 +56,12 @@ const Complaints = () => {
 
   const allowedNextStatus = {
     Pending: ["In Progress"],
+    pending: ["in-progress"],
     "In Progress": ["Resolved"],
+    "in-progress": ["closed"],
     Resolved: [],
+    closed: [],
+    open: ["in-progress"]
   };
 
   const updateStatus = async (id, newStatus) => {
@@ -72,22 +79,29 @@ const Complaints = () => {
       )
     );
 
-    // OPTIONAL: persist status change
-    const numericId = Number(id.split("-")[1]);
-    await api.patch(`/complaints/${numericId}`, {
-      status: newStatus,
-    });
+    // Persist status change to server
+    try {
+      await api.patch(`/complaints/${id}`, {
+        status: newStatus,
+        updatedAt: new Date().toISOString()
+      });
+    } catch (err) {
+      console.error("Failed to update status:", err);
+    }
   };
 
   const statusColor = (status) => {
-    if (status === "Pending") return "bg-red-100 text-red-700";
-    if (status === "In Progress") return "bg-yellow-100 text-yellow-700";
-    if (status === "Resolved") return "bg-green-100 text-green-700";
+    const lowerStatus = status?.toLowerCase();
+    if (lowerStatus === "pending" || lowerStatus === "open") return "bg-red-100 text-red-700";
+    if (lowerStatus === "in progress" || lowerStatus === "in-progress") return "bg-yellow-100 text-yellow-700";
+    if (lowerStatus === "resolved" || lowerStatus === "closed") return "bg-green-100 text-green-700";
+    return "bg-gray-100 text-gray-700";
   };
 
   const priorityColor = (priority) => {
-    if (priority === "High") return "text-red-600 font-semibold";
-    if (priority === "Medium") return "text-orange-600 font-semibold";
+    const lowerPriority = priority?.toLowerCase();
+    if (lowerPriority === "high") return "text-red-600 font-semibold";
+    if (lowerPriority === "medium") return "text-orange-600 font-semibold";
     return "text-green-600 font-semibold";
   };
 
@@ -99,7 +113,7 @@ const Complaints = () => {
   const filteredComplaints =
     filter === "All"
       ? complaints
-      : complaints.filter((c) => c.status === filter);
+      : complaints.filter((c) => c.status?.toLowerCase() === filter.toLowerCase());
 
   return (
     <div className="space-y-6">

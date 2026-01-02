@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getAllVehicles } from '../../services/admin/vehicleService';
+import api from '../../api/api';
 
 const Vehicle = () => {
   const [vehicles, setVehicles] = useState([]);
@@ -33,8 +33,9 @@ const Vehicle = () => {
   const fetchVehicles = async () => {
     try {
       setLoading(true);
-      const data = await getAllVehicles();
-      setVehicles(data);
+      const response = await api.get('/vehicles');
+      console.log('Admin vehicles API response:', response.data);
+      setVehicles(response.data);
     } catch (error) {
       console.error('Error fetching vehicles:', error);
       toast.error('Failed to load vehicles');
@@ -49,16 +50,35 @@ const Vehicle = () => {
   const handleAddVehicle = async (e) => {
     e.preventDefault();
     try {
-      // TODO: API call to add vehicle
-      // await fetch('/api/admin/vehicles', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: JSON.stringify(newVehicle)
-      // });
+      // Create complete vehicle object with both field name conventions
+      const completeVehicle = {
+        registrationNumber: newVehicle.registrationNumber,
+        number: newVehicle.registrationNumber, // For supervisor compatibility
+        type: newVehicle.type,
+        model: newVehicle.model,
+        capacity: newVehicle.capacity,
+        fuelType: newVehicle.fuelType,
+        assignedWard: newVehicle.assignedWard,
+        ward: newVehicle.assignedWard, // For supervisor compatibility
+        driverName: newVehicle.driverName,
+        driver: newVehicle.driverName, // For supervisor compatibility
+        driverPhone: newVehicle.driverPhone,
+        status: 'Inactive', // Default status
+        speed: 0,
+        fuelLevel: 100,
+        odometer: 0,
+        maintenanceStatus: 'good',
+        lastService: new Date().toISOString().split('T')[0],
+        nextService: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days from now
+        location: {
+          lat: 20.2961,
+          lng: 85.8245
+        },
+        route: 'Zone A',
+        averageSpeed: 0
+      };
       
+      const response = await api.post('/vehicles', completeVehicle);
       toast.success('Vehicle added successfully');
       setShowAddModal(false);
       setNewVehicle({
@@ -80,12 +100,25 @@ const Vehicle = () => {
 
   const handleUpdateStatus = async (vehicleId, newStatus) => {
     try {
-      // TODO: API call to update status
+      await api.patch(`/vehicles/${vehicleId}`, { status: newStatus });
       toast.success('Vehicle status updated');
       fetchVehicles();
     } catch (error) {
       console.error('Error updating status:', error);
       toast.error('Failed to update status');
+    }
+  };
+
+  const handleDeleteVehicle = async (vehicleId) => {
+    if (!window.confirm('Are you sure you want to delete this vehicle?')) return;
+    
+    try {
+      await api.delete(`/vehicles/${vehicleId}`);
+      toast.success('Vehicle deleted successfully');
+      fetchVehicles();
+    } catch (error) {
+      console.error('Error deleting vehicle:', error);
+      toast.error('Failed to delete vehicle');
     }
   };
 
@@ -210,7 +243,7 @@ const Vehicle = () => {
                     </div>
                     <div className="flex flex-col items-end space-y-2">
                       <span className={`${getStatusBadge(vehicle.status)} text-white text-xs font-bold px-3 py-1 rounded-full shadow-md`}>
-                        {vehicle.status.replace(/([A-Z])/g, ' $1').trim()}
+                        {vehicle.status?.replace(/([A-Z])/g, ' $1').trim() || 'Unknown'}
                       </span>
                       <span className="text-2xl">{getMaintenanceIcon(vehicle.maintenanceStatus)}</span>
                     </div>
@@ -289,6 +322,13 @@ const Vehicle = () => {
                     >
                       Track Live
                     </button>
+                    <button
+                      onClick={() => handleDeleteVehicle(vehicle.id)}
+                      className="bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white px-4 py-2 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
+                      title="Delete Vehicle"
+                    >
+                      🗑️
+                    </button>
                   </div>
                 </div>
               </div>
@@ -332,7 +372,7 @@ const Vehicle = () => {
                   <div>
                     <p className="text-sm text-gray-600 font-semibold">Status</p>
                     <span className={`${getStatusBadge(selectedVehicle.status)} text-white text-sm font-bold px-3 py-1 rounded-full inline-block mt-1`}>
-                      {selectedVehicle.status}
+                      {selectedVehicle.status || 'Unknown'}
                     </span>
                   </div>
                 </div>

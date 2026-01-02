@@ -1,7 +1,8 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getAllWards } from '../../services/admin/wardService';
+import api from '../../api/api';
+
 
 const Ward = () => {
   const [wards, setWards] = useState([]);
@@ -32,10 +33,41 @@ const Ward = () => {
   const fetchWards = async () => {
     try {
       setLoading(true);
-      const data = await getAllWards();
+      const response = await api.get('/wards');
+      const data = response.data;
+      
+      // Map db.json structure to UI expected structure
+      const mappedData = data.map(w => {
+        const coverage = w.coverage || 0;
+        // Determine status based on coverage percentage
+        const status = coverage >= 100 ? 'completed' : 
+                      coverage > 0 ? 'in-progress' : 
+                      'pending';
+        
+        return {
+          id: w.id,
+          name: w.wardName || w.name || 'N/A',
+          area: w.area || 'N/A',
+          population: w.population || 0,
+          households: w.households || 0,
+          supervisorName: w.supervisor || w.supervisorName || 'N/A',
+          supervisorPhone: w.supervisorPhone || 'N/A',
+          status: status,
+          completion: coverage,
+          collectedToday: (coverage / 100 * 8).toFixed(1),
+          targetDaily: 8,
+          assignedVehicles: Array.isArray(w.vehicles) ? w.vehicles : (typeof w.vehicles === 'number' ? Array(w.vehicles).fill('Vehicle') : []),
+          assignedStaff: w.staff || 10,
+          binLocations: w.bins || 0,
+          complaints: w.complaints || 0,
+          lastCollectionTime: new Date().toISOString(),
+          collectionFrequency: w.collectionFrequency?.toLowerCase() || 'daily',
+          wasteGenerationPerDay: 8
+        };
+      });
       
       // Apply filters
-      let filteredData = data;
+      let filteredData = mappedData;
       if (filters.status !== 'all') {
         filteredData = filteredData.filter(w => w.status === filters.status);
       }
@@ -48,22 +80,58 @@ const Ward = () => {
       
       setWards(filteredData);
     } catch (error) {
-      console.error('Error fetching wards:', error);
-      toast.error('Failed to load wards');
+      console.warn('API not available:', error.message);
       setWards([]);
     } finally {
       setLoading(false);
     }
   };
 
-
-
   const handleAddWard = async (e) => {
     e.preventDefault();
     try {
-      // TODO: API call to add ward
-      toast.success('Ward added successfully');
+      // Create complete ward object with proper structure for db.json
+      const wardToAdd = {
+        wardName: newWard.name,
+        area: newWard.area,
+        population: parseInt(newWard.population),
+        households: parseInt(newWard.households),
+        supervisor: newWard.supervisorName,
+        supervisorPhone: newWard.supervisorPhone,
+        vehicles: 0,
+        bins: 0,
+        collectionFrequency: newWard.collectionFrequency.charAt(0).toUpperCase() + newWard.collectionFrequency.slice(1),
+        status: 'active',
+        coverage: 0
+      };
+
+      const response = await api.post('/wards', wardToAdd);
+      
+      // Map the response to UI expected format
+      const mappedWard = {
+        id: response.data.id,
+        name: response.data.wardName || response.data.name || newWard.name,
+        area: response.data.area || newWard.area,
+        population: response.data.population || parseInt(newWard.population),
+        households: response.data.households || parseInt(newWard.households),
+        supervisorName: response.data.supervisor || response.data.supervisorName || newWard.supervisorName,
+        supervisorPhone: response.data.supervisorPhone || newWard.supervisorPhone,
+        status: 'pending',
+        completion: 0,
+        collectedToday: 0,
+        targetDaily: 8,
+        assignedVehicles: [],
+        assignedStaff: 10,
+        binLocations: 0,
+        complaints: 0,
+        lastCollectionTime: new Date().toISOString(),
+        collectionFrequency: newWard.collectionFrequency,
+        wasteGenerationPerDay: parseFloat(newWard.wasteGenerationPerDay)
+      };
+      
+      setWards([...wards, mappedWard]);
       setShowAddModal(false);
+      toast.success('Ward added successfully');
       setNewWard({
         name: '',
         area: '',
@@ -74,10 +142,23 @@ const Ward = () => {
         wasteGenerationPerDay: '',
         collectionFrequency: 'daily'
       });
-      fetchWards();
+      fetchWards(); // Refresh to get updated data
     } catch (error) {
       console.error('Error adding ward:', error);
       toast.error('Failed to add ward');
+    }
+  };
+
+  const handleDeleteWard = async (wardId) => {
+    if (!window.confirm('Are you sure you want to delete this ward?')) return;
+    
+    try {
+      await api.delete(`/wards/${wardId}`);
+      toast.success('Ward deleted successfully');
+      fetchWards();
+    } catch (error) {
+      console.error('Error deleting ward:', error);
+      toast.error('Failed to delete ward');
     }
   };
 
@@ -101,8 +182,8 @@ const Ward = () => {
 
   const filteredWards = wards.filter(ward => {
     const matchesStatus = filters.status === 'all' || ward.status === filters.status;
-    const matchesSearch = ward.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-                         ward.supervisorName.toLowerCase().includes(filters.search.toLowerCase());
+    const matchesSearch = ward.name?.toLowerCase().includes(filters.search.toLowerCase()) ||
+                         ward.supervisorName?.toLowerCase().includes(filters.search.toLowerCase());
     return matchesStatus && matchesSearch;
   });
 
@@ -336,6 +417,13 @@ const Ward = () => {
                       className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white py-2 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
                     >
                       View Map
+                    </button>
+                    <button
+                      onClick={() => handleDeleteWard(ward.id)}
+                      className="bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white px-4 py-2 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
+                      title="Delete Ward"
+                    >
+                      🗑️
                     </button>
                   </div>
                 </div>

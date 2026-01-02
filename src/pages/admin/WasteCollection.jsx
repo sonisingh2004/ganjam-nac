@@ -239,72 +239,66 @@ const WasteCollection = () => {
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-gradient-to-br from-white to-emerald-50 rounded-3xl shadow-2xl p-8 mb-8 border-2 border-emerald-100 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-emerald-200/20 to-teal-200/20 rounded-full blur-3xl -mr-32 -mt-32"></div>
-          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <span className="text-3xl">🗑️</span>
-              </div>
-              <div>
-                <h1 className="text-3xl font-black bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                  Waste Collection Management
-                </h1>
-                <p className="text-gray-600 mt-1 font-medium">Track and manage daily waste collection activities</p>
-              </div>
+        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-gray-100">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                Waste Collection Management
+              </h1>
+              <p className="text-gray-600 mt-1">Track and manage daily waste collection activities</p>
             </div>
             <button
               onClick={() => setShowModal(true)}
-              className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-2xl font-bold shadow-2xl transition-all transform hover:scale-105 hover:shadow-emerald-500/50 flex items-center gap-2 whitespace-nowrap"
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
             >
-              <span className="text-xl">+</span>
-              <span>Add Collection</span>
+              <span className="mr-2">➕</span>
+              Add Collection
             </button>
           </div>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl p-6 border-2 border-gray-100 hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-white rounded-xl shadow-lg p-5 border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2">Total Collections</p>
-                <p className="text-3xl font-black text-gray-900">{stats.total}</p>
+                <p className="text-sm text-gray-600 font-semibold">Total Collections</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">{stats.total}</p>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-gray-400 to-gray-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:rotate-12 transition-transform">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
                 <span className="text-white text-2xl">📊</span>
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl shadow-xl p-6 border-2 border-emerald-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
+          <div className="bg-white rounded-xl shadow-lg p-5 border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-emerald-600 font-bold uppercase tracking-wider mb-2">Completed</p>
-                <p className="text-3xl font-black text-emerald-700">{stats.completed}</p>
+                <p className="text-sm text-gray-600 font-semibold">Completed</p>
+                <p className="text-2xl font-bold text-emerald-600 mt-1">{stats.completed}</p>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:rotate-12 transition-transform">
-                <span className="text-white text-2xl font-bold">✓</span>
+              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
+                <span className="text-white text-2xl">✅</span>
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-xl p-6 border-2 border-blue-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
+          <div className="bg-white rounded-xl shadow-lg p-5 border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-blue-600 font-bold uppercase tracking-wider mb-2">In Progress</p>
-                <p className="text-3xl font-black text-blue-700">{stats.inProgress}</p>
+                <p className="text-sm text-gray-600 font-semibold">In Progress</p>
+                <p className="text-2xl font-bold text-blue-600 mt-1">{stats.inProgress}</p>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:rotate-12 transition-transform">
-                <span className="text-white text-2xl">⏳</span>
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-400 rounded-xl flex items-center justify-center">
+                <span className="text-white text-2xl">🔄</span>
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl shadow-xl p-6 border-2 border-orange-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
+          <div className="bg-white rounded-xl shadow-lg p-5 border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-orange-600 font-bold uppercase tracking-wider mb-2">Pending</p>
-                <p className="text-3xl font-black text-orange-700">{stats.pending}</p>
+                <p className="text-sm text-gray-600 font-semibold">Pending</p>
+                <p className="text-2xl font-bold text-orange-600 mt-1">{stats.pending}</p>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:rotate-12 transition-transform">
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center">
                 <span className="text-white text-2xl">⏰</span>
               </div>
             </div>
@@ -312,48 +306,36 @@ const WasteCollection = () => {
         </div>
 
         {/* Waste Collection Progress */}
-        <div className="bg-gradient-to-br from-white to-emerald-50 rounded-3xl shadow-2xl p-8 mb-8 border-2 border-emerald-100">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-2xl">📈</span>
-            </div>
-            <h2 className="text-2xl font-black text-gray-900">Today's Collection Progress</h2>
-          </div>
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-base font-bold text-gray-700">Total Waste Collected</span>
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-100">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Today's Collection Progress</h2>
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-semibold text-gray-700">Total Waste Collected</span>
               <div className="flex items-center gap-2">
-                <span className="text-2xl font-black text-emerald-600">{stats.totalWaste}</span>
-                <span className="text-gray-400 font-bold">/</span>
-                <span className="text-xl font-bold text-gray-600">{stats.targetWaste} tons</span>
+                <span className="text-xl font-bold text-emerald-600">{stats.totalWaste}</span>
+                <span className="text-gray-400">/</span>
+                <span className="text-lg font-semibold text-gray-600">{stats.targetWaste} tons</span>
               </div>
             </div>
-            <div className="relative w-full bg-gray-200 rounded-2xl h-6 shadow-inner overflow-hidden">
+            <div className="relative w-full bg-gray-200 rounded-xl h-4 overflow-hidden">
               <div 
-                className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 rounded-2xl transition-all duration-1000 ease-out shadow-lg"
+                className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl transition-all duration-1000"
                 style={{ width: `${Math.min((stats.totalWaste / stats.targetWaste) * 100, 100)}%` }}
-              >
-                <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
-              </div>
+              ></div>
             </div>
           </div>
-          <div className="flex items-center justify-between bg-emerald-100 rounded-xl p-4">
-            <span className="text-sm font-bold text-emerald-800">Target Achievement</span>
-            <span className="text-2xl font-black text-emerald-700">
+          <div className="flex items-center justify-between bg-emerald-50 rounded-xl p-4">
+            <span className="text-sm font-semibold text-emerald-800">Target Achievement</span>
+            <span className="text-xl font-bold text-emerald-700">
               {((stats.totalWaste / stats.targetWaste) * 100).toFixed(1)}%
             </span>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 border-2 border-gray-100">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-xl">🔍</span>
-            </div>
-            <h3 className="text-xl font-black text-gray-900">Filter Collections</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="bg-white rounded-xl shadow-lg p-5 mb-6 border border-gray-100">
+          <h3 className="text-lg font-bold text-gray-900 mb-4">Filter Collections</h3>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Search</label>
               <input
@@ -365,11 +347,11 @@ const WasteCollection = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Status</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Status</label>
               <select
                 value={filters.status}
                 onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md font-medium"
+                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               >
                 <option value="all">All Status</option>
                 <option value="completed">✓ Completed</option>
@@ -379,11 +361,11 @@ const WasteCollection = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Ward</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Ward</label>
               <select
                 value={filters.ward}
                 onChange={(e) => setFilters({ ...filters, ward: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md font-medium"
+                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               >
                 <option value="all">All Wards</option>
                 {getUniqueWards().map(ward => (
@@ -392,59 +374,54 @@ const WasteCollection = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Date</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Date</label>
               <input
                 type="date"
                 value={filters.date}
                 onChange={(e) => setFilters({ ...filters, date: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md font-medium"
+                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               />
             </div>
           </div>
         </div>
 
         {/* Collections Table */}
-        <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-gray-100">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-xl">📋</span>
-            </div>
-            <h2 className="text-2xl font-black text-gray-900">Waste Collection Records</h2>
-          </div>
+        <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Waste Collection Records</h2>
           
           {loading ? (
             <div className="flex flex-col justify-center items-center h-64 gap-4">
-              <div className="animate-spin rounded-full h-20 w-20 border-b-4 border-emerald-500"></div>
+              <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-emerald-500"></div>
               <p className="text-gray-600 font-semibold">Loading collections...</p>
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-2xl border-2 border-gray-100">
+            <div className="overflow-x-auto rounded-xl border border-gray-200">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-gradient-to-r from-emerald-500 to-teal-600">
-                    <th className="px-6 py-4 text-left text-xs font-black text-white uppercase tracking-wider">ID</th>
-                    <th className="px-6 py-4 text-left text-xs font-black text-white uppercase tracking-wider">Ward</th>
-                    <th className="px-6 py-4 text-left text-xs font-black text-white uppercase tracking-wider">Vehicle</th>
-                    <th className="px-6 py-4 text-left text-xs font-black text-white uppercase tracking-wider">Route</th>
-                    <th className="px-6 py-4 text-left text-xs font-black text-white uppercase tracking-wider">Waste Type</th>
-                    <th className="px-6 py-4 text-left text-xs font-black text-white uppercase tracking-wider">Collected</th>
-                    <th className="px-6 py-4 text-left text-xs font-black text-white uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-left text-xs font-black text-white uppercase tracking-wider">Actions</th>
+                  <tr className="bg-gradient-to-r from-emerald-500 to-teal-500">
+                    <th className="px-6 py-4 text-left text-sm font-bold text-white">ID</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-white">Ward</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-white">Vehicle</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-white">Route</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-white">Waste Type</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-white">Collected</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-white">Status</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-white">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y-2 divide-gray-100 bg-white">
+                <tbody className="divide-y divide-gray-200 bg-white">
                   {filteredCollections.map((collection, index) => (
-                    <tr key={collection.id} className={`hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 transition-all duration-200 ${index % 2 === 0 ? 'bg-gray-50/50' : 'bg-white'}`}>
-                      <td className="px-6 py-5 whitespace-nowrap">
-                        <span className="text-sm font-black text-gray-900 bg-gray-100 px-3 py-1 rounded-lg">{collection.id}</span>
+                    <tr key={collection.id} className={`hover:bg-emerald-50 transition-colors ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm font-bold text-gray-900">{collection.id}</span>
                       </td>
-                      <td className="px-6 py-5 whitespace-nowrap">
-                        <span className="text-sm font-bold text-gray-900">{collection.ward}</span>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm font-semibold text-gray-900">{collection.ward}</span>
                       </td>
-                      <td className="px-6 py-5 whitespace-nowrap">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <div>
-                          <div className="text-sm font-black text-gray-900">{collection.vehicle}</div>
-                          <div className="text-xs text-gray-600 font-semibold mt-1">{collection.driver}</div>
+                          <div className="text-sm font-bold text-gray-900">{collection.vehicle}</div>
+                          <div className="text-xs text-gray-600 mt-1">{collection.driver}</div>
                         </div>
                       </td>
                       <td className="px-6 py-5 whitespace-nowrap">

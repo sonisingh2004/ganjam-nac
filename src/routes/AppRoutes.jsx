@@ -9,6 +9,7 @@ import AdminAttendance from "../pages/admin/Attendance";
 import Complaint from "../pages/admin/Complaint";
 import AdminDashboard from "../pages/admin/Dashboard";
 import FuelManagement from "../pages/admin/FuelManagement";
+import SupervisorManagement from "../pages/admin/Supervisor";
 import TrackVehicle from "../pages/admin/TrackVehicle";
 import Vehicle from "../pages/admin/Vehicle";
 import Ward from "../pages/admin/Ward";
@@ -48,6 +49,7 @@ export default function AppRoutes() {
           <Route path="vehicles" element={<Vehicle />} />
           <Route path="attendance" element={<AdminAttendance />} />
           <Route path="wards" element={<Ward />} />
+          <Route path="supervisors" element={<SupervisorManagement />} />
           <Route path="track-vehicles" element={<TrackVehicle />} />
           <Route path="waste-collection" element={<WasteCollection />} />
           <Route path="fuel-management" element={<FuelManagement />} />

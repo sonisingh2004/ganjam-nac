@@ -17,6 +17,7 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
     { name: 'Complaints', path: '/admin/complaints', icon: '📋' },
     { name: 'Vehicles', path: '/admin/vehicles', icon: '🚛' },
     { name: 'Wards', path: '/admin/wards', icon: '🏘️' },
+    { name: 'Supervisors', path: '/admin/supervisors', icon: '🔑' },
     { name: 'Track Vehicles', path: '/admin/track-vehicles', icon: '📍' },
     { name: 'Attendance', path: '/admin/attendance', icon: '✅' },
     { name: 'Waste Collection', path: '/admin/waste-collection', icon: '♻️' },

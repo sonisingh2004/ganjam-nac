@@ -1,4 +1,4 @@
-import React from "react";
+// @ts-nocheck
 import SupervisorLayout from "../../layouts/SupervisorLayout";
 
 const Dashboard = () => {

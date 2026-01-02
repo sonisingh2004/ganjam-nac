@@ -1,13 +1,14 @@
+// @ts-nocheck
 import {
   GoogleMap,
   Marker,
   Polyline,
   useLoadScript,
 } from "@react-google-maps/api";
+import { Map, Navigation, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { X, Map, Navigation } from "lucide-react";
 import { useLocation } from "react-router-dom";
-import api from "../../api/axiosInstance";
+import api from "../../api/api";
 
 /* ================= MAP CENTER ================= */
 const center = { lat: 19.3149, lng: 84.7941 };

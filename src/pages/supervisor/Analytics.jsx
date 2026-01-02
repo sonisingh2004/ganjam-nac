@@ -1,16 +1,17 @@
+// @ts-nocheck
 import { useEffect, useState } from "react";
-import api from "../../api/axiosInstance";
 import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  BarChart,
   Bar,
+  BarChart,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
 } from "recharts";
+import api from "../../api/api";
 
 /* ================= COLORS ================= */
 

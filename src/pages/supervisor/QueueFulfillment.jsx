@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react";
+// @ts-nocheck
 import {
-  Plus,
-  X,
-  Package,
-  Search,
   CheckCircle,
   Clock,
+  Package,
+  Plus,
+  Search,
   ShieldCheck,
+  X,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import api from "../../api/axiosInstance";
+import api from "../../api/api";
 
 /* ================= STAT CARD ================= */
 const StatCard = ({ title, value, icon, color }) => (

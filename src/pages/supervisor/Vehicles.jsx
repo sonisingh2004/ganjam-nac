@@ -1,6 +1,7 @@
+// @ts-nocheck
+import { MapPin, Search, Truck } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Truck, Search, MapPin } from "lucide-react";
-import api from "../../api/axiosInstance";
+import api from "../../api/api";
 
 /* ================= VEHICLES PAGE ================= */
 

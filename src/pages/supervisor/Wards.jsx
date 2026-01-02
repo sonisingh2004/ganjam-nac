@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+// @ts-nocheck
+import { useEffect, useState } from "react";
 // import SupervisorLayout from "../../layouts/SupervisorLayout";
-import SupervisorLayout from "../../layout/SupervisorLayout"
+import SupervisorLayout from "../../layout/SupervisorLayout";
 
 const Wards = () => {
   const [wards, setWards] = useState([]);

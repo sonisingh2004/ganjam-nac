@@ -310,6 +310,9 @@
 
 // export default SupervisorDashboard;
 
+// @ts-nocheck
+// src/pages/supervisor/SupervisorDashboard.jsx
+
 import {
   Activity,
   AlertCircle,
@@ -351,6 +354,66 @@ const fallbackVehicles = [
   { no: "OD-07-GT-1023", status: "Active" },
 ];
 
+/* ================= KPI CONFIG ================= */
+
+const KPI_CONFIG = [
+  {
+    title: "Total Vehicles",
+    key: "vehicles",
+    icon: <Truck />,
+    color: "bg-gradient-to-br from-emerald-500 to-green-600",
+  },
+  {
+    title: "Active Complaints",
+    value: 12,
+    icon: <AlertCircle />,
+    color: "bg-gradient-to-br from-orange-500 to-orange-600",
+  },
+  {
+    title: "Defects Reported",
+    value: 6,
+    icon: <Wrench />,
+    color: "bg-gradient-to-br from-yellow-500 to-orange-500",
+  },
+  {
+    title: "Collection Rate",
+    value: "92%",
+    icon: <ClipboardList />,
+    color: "bg-gradient-to-br from-green-500 to-emerald-600",
+  },
+];
+
+/* ================= QUICK ACTIONS ================= */
+
+const QUICK_ACTIONS = [
+  {
+    label: "Report Defect",
+    icon: <Wrench />,
+    path: "/supervisor/defects",
+    color: "from-emerald-600 to-green-700",
+  },
+  {
+    label: "View Complaints",
+    icon: <AlertCircle />,
+    path: "/supervisor/complaints",
+    color: "from-orange-500 to-orange-600",
+  },
+  {
+    label: "Live Tracking",
+    icon: <Activity />,
+    path: "/supervisor/live-tracking",
+    color: "from-green-500 to-emerald-600",
+  },
+];
+
+/* ================= SYSTEM HEALTH ================= */
+
+const SYSTEM_HEALTH = [
+  "✔ API Services Online",
+  "✔ GPS Tracking Active",
+  "⚠ 1 Maintenance Alert",
+];
+
 /* ================= STAT CARD ================= */
 
 const StatCard = ({ title, value, icon, color }) => (
@@ -371,7 +434,6 @@ const StatCard = ({ title, value, icon, color }) => (
 const SupervisorDashboard = () => {
   const navigate = useNavigate();
 
-  // ✅ State
   const [collectionTrend, setCollectionTrend] = useState(
     fallbackCollectionTrend
   );
@@ -382,9 +444,7 @@ const SupervisorDashboard = () => {
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
-        // Vehicles from db.json
         const vehicleRes = await api.get("/vehicles");
-
         if (vehicleRes.data?.length) {
           setVehicles(
             vehicleRes.data.map((v) => ({
@@ -393,33 +453,21 @@ const SupervisorDashboard = () => {
             }))
           );
         }
-
-        // OPTIONAL (if added later in db.json)
-        const trendRes = await api.get("/collectionTrend").catch(() => null);
-        if (trendRes?.data?.length) setCollectionTrend(trendRes.data);
-
-        const wardRes = await api.get("/wards").catch(() => null);
-        if (wardRes?.data?.length) setWards(wardRes.data);
-      } catch {
-        // silent fallback → UI unchanged
-      }
+      } catch {}
     };
-
     loadDashboardData();
   }, []);
 
   return (
     <div className="space-y-8 bg-emerald-50 p-6 rounded-3xl">
 
-      {/* ================= ALERT BAR ================= */}
+      {/* ALERT BAR */}
       <div className="bg-emerald-100 border border-emerald-300 text-emerald-800 rounded-xl px-6 py-4 flex items-center gap-3">
         <Bell size={20} />
-        <p className="text-sm">
-          2 vehicles scheduled for maintenance today.
-        </p>
+        <p className="text-sm">2 vehicles scheduled for maintenance today.</p>
       </div>
 
-      {/* ================= HEADER ================= */}
+      {/* HEADER */}
       <div className="bg-gradient-to-r from-emerald-600 to-green-700 rounded-3xl p-8 text-white shadow">
         <h1 className="text-3xl font-bold">Supervisor Dashboard</h1>
         <p className="text-sm opacity-90 mt-1">
@@ -430,35 +478,22 @@ const SupervisorDashboard = () => {
         </p>
       </div>
 
-      {/* ================= KPI CARDS ================= */}
+      {/* KPI CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard
-          title="Total Vehicles"
-          value={vehicles.length}
-          icon={<Truck />}
-          color="bg-gradient-to-br from-emerald-500 to-green-600"
-        />
-        <StatCard
-          title="Active Complaints"
-          value="12"
-          icon={<AlertCircle />}
-          color="bg-gradient-to-br from-orange-500 to-orange-600"
-        />
-        <StatCard
-          title="Defects Reported"
-          value="6"
-          icon={<Wrench />}
-          color="bg-gradient-to-br from-yellow-500 to-orange-500"
-        />
-        <StatCard
-          title="Collection Rate"
-          value="92%"
-          icon={<ClipboardList />}
-          color="bg-gradient-to-br from-green-500 to-emerald-600"
-        />
+        {KPI_CONFIG.map((kpi, index) => (
+          <StatCard
+            key={index}
+            title={kpi.title}
+            value={
+              kpi.key === "vehicles" ? vehicles.length : kpi.value
+            }
+            icon={kpi.icon}
+            color={kpi.color}
+          />
+        ))}
       </div>
 
-      {/* ================= CHART + VEHICLE STATUS ================= */}
+      {/* CHART + VEHICLE STATUS */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {/* COLLECTION TREND */}
@@ -486,7 +521,7 @@ const SupervisorDashboard = () => {
         <div className="bg-white rounded-3xl shadow-sm p-6">
           <h3 className="font-semibold mb-4">Vehicle Status</h3>
 
-          <ul className="space-y-3 text-sm h-75 overflow-y-scroll">
+          <ul className="space-y-3 text-sm h-72 overflow-y-auto">
             {vehicles.map((v) => (
               <li key={v.no} className="flex justify-between items-center">
                 <span>{v.no}</span>
@@ -507,7 +542,7 @@ const SupervisorDashboard = () => {
         </div>
       </div>
 
-      {/* ================= WARD PERFORMANCE ================= */}
+      {/* WARD PERFORMANCE */}
       <div className="bg-white rounded-3xl shadow-sm p-6">
         <h3 className="font-semibold mb-4">
           Ward-wise Collection Performance
@@ -531,31 +566,20 @@ const SupervisorDashboard = () => {
         </div>
       </div>
 
-      {/* ================= QUICK ACTIONS ================= */}
+      {/* QUICK ACTIONS */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <button
-          onClick={() => navigate("/supervisor/defects")}
-          className="bg-gradient-to-r from-emerald-600 to-green-700 text-white rounded-xl px-6 py-4 flex items-center gap-3 shadow hover:opacity-90"
-        >
-          <Wrench /> Report Defect
-        </button>
-
-        <button
-          onClick={() => navigate("/supervisor/complaints")}
-          className="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl px-6 py-4 flex items-center gap-3 shadow hover:opacity-90"
-        >
-          <AlertCircle /> View Complaints
-        </button>
-
-        <button
-          onClick={() => navigate("/supervisor/live-tracking")}
-          className="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl px-6 py-4 flex items-center gap-3 shadow hover:opacity-90"
-        >
-          <Activity /> Live Tracking
-        </button>
+        {QUICK_ACTIONS.map((a, i) => (
+          <button
+            key={i}
+            onClick={() => navigate(a.path)}
+            className={`bg-gradient-to-r ${a.color} text-white rounded-xl px-6 py-4 flex items-center gap-3 shadow hover:opacity-90`}
+          >
+            {a.icon} {a.label}
+          </button>
+        ))}
       </div>
 
-      {/* ================= SYSTEM HEALTH ================= */}
+      {/* SYSTEM HEALTH */}
       <div className="bg-gradient-to-r from-emerald-700 to-green-800 text-white rounded-3xl shadow-sm p-6">
         <h3 className="font-semibold mb-2">System Health</h3>
         <p className="text-sm opacity-90 mb-4">
@@ -563,15 +587,14 @@ const SupervisorDashboard = () => {
         </p>
 
         <div className="flex flex-wrap gap-4 text-sm">
-          <span className="bg-white/20 px-4 py-2 rounded-full">
-            ✔ API Services Online
-          </span>
-          <span className="bg-white/20 px-4 py-2 rounded-full">
-            ✔ GPS Tracking Active
-          </span>
-          <span className="bg-white/20 px-4 py-2 rounded-full">
-            ⚠ 1 Maintenance Alert
-          </span>
+          {SYSTEM_HEALTH.map((item, i) => (
+            <span
+              key={i}
+              className="bg-white/20 px-4 py-2 rounded-full"
+            >
+              {item}
+            </span>
+          ))}
         </div>
 
         <p className="text-xs opacity-80 mt-3">

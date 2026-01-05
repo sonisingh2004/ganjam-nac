@@ -13,7 +13,7 @@ import {
 } from "recharts";
 import api from "../../api/api";
 
-/* ================= COLORS ================= */
+/* ================= CONFIG ================= */
 
 const COLORS = {
   Active: "#22c55e",
@@ -24,6 +24,16 @@ const COLORS = {
   Resolved: "#22c55e",
 };
 
+const VEHICLE_STATUSES = ["Active", "Inactive", "Maintenance"];
+const COMPLAINT_STATUSES = ["Pending", "In Progress", "Resolved"];
+
+const KPI_CONFIG = [
+  { title: "Total Vehicles", key: "totalVehicles" },
+  { title: "Active Vehicles", key: "activeVehicles", color: "text-green-600" },
+  { title: "Complaints Today", key: "totalComplaints" },
+  { title: "Resolution Rate", key: "resolutionRate", color: "text-green-700" },
+];
+
 /* ================= COMPONENT ================= */
 
 const Analytics = () => {
@@ -32,6 +42,7 @@ const Analytics = () => {
   const [wardPerformance, setWardPerformance] = useState([]);
 
   /* ================= LOAD DATA ================= */
+
   useEffect(() => {
     const loadAnalytics = async () => {
       try {
@@ -41,11 +52,10 @@ const Analytics = () => {
         ]);
 
         /* -------- VEHICLE STATUS -------- */
-        const vehicleStatusCount = {
-          Active: 0,
-          Inactive: 0,
-          Maintenance: 0,
-        };
+        const vehicleStatusCount = VEHICLE_STATUSES.reduce((acc, s) => {
+          acc[s] = 0;
+          return acc;
+        }, {});
 
         vehiclesRes.data.forEach((v) => {
           vehicleStatusCount[v.status] =
@@ -53,18 +63,17 @@ const Analytics = () => {
         });
 
         setVehicleData(
-          Object.keys(vehicleStatusCount).map((k) => ({
-            name: k,
-            value: vehicleStatusCount[k],
+          VEHICLE_STATUSES.map((s) => ({
+            name: s,
+            value: vehicleStatusCount[s],
           }))
         );
 
         /* -------- COMPLAINT STATUS -------- */
-        const complaintStatusCount = {
-          Pending: 0,
-          "In Progress": 0,
-          Resolved: 0,
-        };
+        const complaintStatusCount = COMPLAINT_STATUSES.reduce((acc, s) => {
+          acc[s] = 0;
+          return acc;
+        }, {});
 
         complaintsRes.data.forEach((c) => {
           complaintStatusCount[c.status] =
@@ -72,9 +81,9 @@ const Analytics = () => {
         });
 
         setComplaintData(
-          Object.keys(complaintStatusCount).map((k) => ({
-            name: k,
-            count: complaintStatusCount[k],
+          COMPLAINT_STATUSES.map((s) => ({
+            name: s,
+            count: complaintStatusCount[s],
           }))
         );
 
@@ -101,15 +110,14 @@ const Analytics = () => {
     loadAnalytics();
   }, []);
 
-  /* ================= KPI CALCULATIONS ================= */
+  /* ================= KPI VALUES ================= */
 
-  const totalVehicles = vehicleData.reduce(
-    (sum, v) => sum + v.value,
-    0
-  );
+  const totalVehicles = vehicleData.reduce((s, v) => s + v.value, 0);
+  const activeVehicles =
+    vehicleData.find((v) => v.name === "Active")?.value || 0;
 
   const totalComplaints = complaintData.reduce(
-    (sum, c) => sum + c.count,
+    (s, c) => s + c.count,
     0
   );
 
@@ -117,13 +125,20 @@ const Analytics = () => {
     complaintData.find((c) => c.name === "Resolved")?.count || 0;
 
   const resolutionRate = totalComplaints
-    ? Math.round((resolved / totalComplaints) * 100)
-    : 0;
+    ? `${Math.round((resolved / totalComplaints) * 100)}%`
+    : "0%";
+
+  const KPI_VALUES = {
+    totalVehicles,
+    activeVehicles,
+    totalComplaints,
+    resolutionRate,
+  };
 
   return (
     <div className="space-y-8">
 
-      {/* ================= HEADER ================= */}
+      {/* HEADER */}
       <div>
         <h1 className="text-xl font-semibold text-gray-800">
           Analytics Overview
@@ -133,28 +148,19 @@ const Analytics = () => {
         </p>
       </div>
 
-      {/* ================= KPI SUMMARY ================= */}
+      {/* KPI SUMMARY */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <SummaryCard title="Total Vehicles" value={totalVehicles} />
-        <SummaryCard
-          title="Active Vehicles"
-          value={
-            vehicleData.find((v) => v.name === "Active")?.value || 0
-          }
-          color="text-green-600"
-        />
-        <SummaryCard
-          title="Complaints Today"
-          value={totalComplaints}
-        />
-        <SummaryCard
-          title="Resolution Rate"
-          value={`${resolutionRate}%`}
-          color="text-green-700"
-        />
+        {KPI_CONFIG.map((kpi) => (
+          <SummaryCard
+            key={kpi.title}
+            title={kpi.title}
+            value={KPI_VALUES[kpi.key]}
+            color={kpi.color}
+          />
+        ))}
       </div>
 
-      {/* ================= CHART GRID ================= */}
+      {/* CHART GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
         {/* VEHICLE STATUS PIE */}
@@ -176,9 +182,9 @@ const Analytics = () => {
                     `${name} ${(percent * 100).toFixed(0)}%`
                   }
                 >
-                  {vehicleData.map((v, index) => (
+                  {vehicleData.map((v) => (
                     <Cell
-                      key={index}
+                      key={v.name}
                       fill={COLORS[v.name]}
                     />
                   ))}
@@ -202,9 +208,9 @@ const Analytics = () => {
                 <YAxis />
                 <Tooltip />
                 <Bar dataKey="count" radius={[6, 6, 0, 0]}>
-                  {complaintData.map((c, index) => (
+                  {complaintData.map((c) => (
                     <Cell
-                      key={index}
+                      key={c.name}
                       fill={COLORS[c.name]}
                     />
                   ))}
@@ -216,7 +222,7 @@ const Analytics = () => {
 
       </div>
 
-      {/* ================= WARD PERFORMANCE ================= */}
+      {/* WARD PERFORMANCE */}
       <div className="bg-white rounded-xl shadow p-6">
         <h3 className="font-semibold mb-4">
           Ward-wise Collection Performance
@@ -242,7 +248,7 @@ const Analytics = () => {
         </div>
       </div>
 
-      {/* ================= FOOT NOTE ================= */}
+      {/* FOOT NOTE */}
       <p className="text-xs text-gray-500">
         Data shown is system-generated and updated periodically.
         This analytics module supports operational review and

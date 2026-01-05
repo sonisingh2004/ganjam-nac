@@ -2,6 +2,43 @@
 import { useEffect, useState } from "react";
 import api from "../../api/api";
 
+/* ================= CONFIG ================= */
+
+const FILTERS = ["All", "Pending", "In Progress", "Resolved"];
+
+const TABLE_HEADERS = [
+  "ID",
+  "Photo",
+  "Ward",
+  "Issue",
+  "Priority",
+  "Vehicle",
+  "Status",
+  "SLA",
+  "Route",
+  "Action",
+];
+
+const STATUS_FLOW = {
+  Pending: ["In Progress"],
+  "In Progress": ["Resolved"],
+  Resolved: [],
+};
+
+const STATUS_COLOR = {
+  pending: "bg-red-100 text-red-700",
+  open: "bg-red-100 text-red-700",
+  "in progress": "bg-yellow-100 text-yellow-700",
+  resolved: "bg-green-100 text-green-700",
+  closed: "bg-green-100 text-green-700",
+};
+
+const PRIORITY_COLOR = {
+  high: "text-red-600 font-semibold",
+  medium: "text-orange-600 font-semibold",
+  low: "text-green-600 font-semibold",
+};
+
 /* ================= MAIN COMPONENT ================= */
 
 const Complaints = () => {
@@ -10,7 +47,8 @@ const Complaints = () => {
   const [mapView, setMapView] = useState(null);
   const [complaints, setComplaints] = useState([]);
 
-  /* ================= LOAD COMPLAINTS (AXIOS) ================= */
+  /* ================= LOAD COMPLAINTS ================= */
+
   useEffect(() => {
     const loadComplaints = async () => {
       try {
@@ -30,17 +68,17 @@ const Complaints = () => {
               driver: c.driver || "Not Assigned",
               status: c.status || "Pending",
               priority: c.priority || "Medium",
-              date: c.createdAt ? new Date(c.createdAt).toLocaleDateString() : new Date().toISOString().split("T")[0],
-              updatedAt: c.updatedAt ? new Date(c.updatedAt).toLocaleTimeString() : new Date().toLocaleTimeString(),
+              date: c.createdAt
+                ? new Date(c.createdAt).toLocaleDateString()
+                : new Date().toISOString().split("T")[0],
+              updatedAt: c.updatedAt
+                ? new Date(c.updatedAt).toLocaleTimeString()
+                : new Date().toLocaleTimeString(),
               sla:
                 c.sla ||
-                new Date(
-                  Date.now() + 4 * 60 * 60 * 1000
-                ).toISOString(),
+                new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
               location: c.location || "Berhampur, Odisha",
-              citizenName: c.citizenName || "Unknown",
-              citizenPhone: c.citizenPhone || "N/A",
-              description: c.description || "No description provided"
+              description: c.description || "No description provided",
             }))
           );
         }
@@ -52,17 +90,7 @@ const Complaints = () => {
     loadComplaints();
   }, []);
 
-  /* ================= STATUS FLOW ================= */
-
-  const allowedNextStatus = {
-    Pending: ["In Progress"],
-    pending: ["in-progress"],
-    "In Progress": ["Resolved"],
-    "in-progress": ["closed"],
-    Resolved: [],
-    closed: [],
-    open: ["in-progress"]
-  };
+  /* ================= HELPERS ================= */
 
   const updateStatus = async (id, newStatus) => {
     if (!window.confirm(`Mark complaint as "${newStatus}"?`)) return;
@@ -70,55 +98,37 @@ const Complaints = () => {
     setComplaints((prev) =>
       prev.map((c) =>
         c.id === id
-          ? {
-              ...c,
-              status: newStatus,
-              updatedAt: new Date().toLocaleTimeString(),
-            }
+          ? { ...c, status: newStatus, updatedAt: new Date().toLocaleTimeString() }
           : c
       )
     );
 
-    // Persist status change to server
     try {
       await api.patch(`/complaints/${id}`, {
         status: newStatus,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       });
     } catch (err) {
       console.error("Failed to update status:", err);
     }
   };
 
-  const statusColor = (status) => {
-    const lowerStatus = status?.toLowerCase();
-    if (lowerStatus === "pending" || lowerStatus === "open") return "bg-red-100 text-red-700";
-    if (lowerStatus === "in progress" || lowerStatus === "in-progress") return "bg-yellow-100 text-yellow-700";
-    if (lowerStatus === "resolved" || lowerStatus === "closed") return "bg-green-100 text-green-700";
-    return "bg-gray-100 text-gray-700";
-  };
-
-  const priorityColor = (priority) => {
-    const lowerPriority = priority?.toLowerCase();
-    if (lowerPriority === "high") return "text-red-600 font-semibold";
-    if (lowerPriority === "medium") return "text-orange-600 font-semibold";
-    return "text-green-600 font-semibold";
-  };
-
-  const isSLABreached = (sla, status) => {
-    if (status === "Resolved") return false;
-    return new Date() > new Date(sla);
-  };
+  const isSLABreached = (sla, status) =>
+    status !== "Resolved" && new Date() > new Date(sla);
 
   const filteredComplaints =
     filter === "All"
       ? complaints
-      : complaints.filter((c) => c.status?.toLowerCase() === filter.toLowerCase());
+      : complaints.filter(
+          (c) => c.status?.toLowerCase() === filter.toLowerCase()
+        );
+
+  /* ================= UI ================= */
 
   return (
     <div className="space-y-6">
 
-      {/* ================= HEADER ================= */}
+      {/* HEADER */}
       <div>
         <h2 className="text-2xl font-semibold">
           Citizen Complaint Management
@@ -128,9 +138,9 @@ const Complaints = () => {
         </p>
       </div>
 
-      {/* ================= FILTERS ================= */}
+      {/* FILTER BUTTONS */}
       <div className="flex gap-2">
-        {["All", "Pending", "In Progress", "Resolved"].map((f) => (
+        {FILTERS.map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
@@ -145,28 +155,24 @@ const Complaints = () => {
         ))}
       </div>
 
-      {/* ================= TABLE ================= */}
+      {/* TABLE */}
       <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 sticky top-0 z-10">
               <tr className="text-gray-600 uppercase text-xs tracking-wide">
-                <th className="px-5 py-4">ID</th>
-                <th className="px-5 py-4">Photo</th>
-                <th className="px-5 py-4">Ward</th>
-                <th className="px-5 py-4">Issue</th>
-                <th className="px-5 py-4">Priority</th>
-                <th className="px-5 py-4">Vehicle</th>
-                <th className="px-5 py-4">Status</th>
-                <th className="px-5 py-4">SLA</th>
-                <th className="px-5 py-4">Route</th>
-                <th className="px-5 py-4">Action</th>
+                {TABLE_HEADERS.map((h) => (
+                  <th key={h} className="px-5 py-4">
+                    {h}
+                  </th>
+                ))}
               </tr>
             </thead>
 
             <tbody className="divide-y">
               {filteredComplaints.map((c) => {
                 const breached = isSLABreached(c.sla, c.status);
+                const nextStatuses = STATUS_FLOW[c.status] || [];
 
                 return (
                   <tr
@@ -188,7 +194,7 @@ const Complaints = () => {
                     <td className="px-5 py-4">{c.ward}</td>
                     <td className="px-5 py-4">{c.type}</td>
 
-                    <td className={`px-5 py-4 ${priorityColor(c.priority)}`}>
+                    <td className={`px-5 py-4 ${PRIORITY_COLOR[c.priority?.toLowerCase()]}`}>
                       {c.priority}
                     </td>
 
@@ -196,9 +202,9 @@ const Complaints = () => {
 
                     <td className="px-5 py-4">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColor(
-                          c.status
-                        )}`}
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          STATUS_COLOR[c.status?.toLowerCase()]
+                        }`}
                       >
                         {c.status}
                       </span>
@@ -224,7 +230,7 @@ const Complaints = () => {
                     </td>
 
                     <td className="px-5 py-4">
-                      {allowedNextStatus[c.status].length > 0 ? (
+                      {nextStatuses.length ? (
                         <select
                           defaultValue=""
                           onChange={(e) =>
@@ -235,7 +241,7 @@ const Complaints = () => {
                           <option value="" disabled>
                             Update
                           </option>
-                          {allowedNextStatus[c.status].map((s) => (
+                          {nextStatuses.map((s) => (
                             <option key={s}>{s}</option>
                           ))}
                         </select>
@@ -253,7 +259,7 @@ const Complaints = () => {
         </div>
       </div>
 
-      {/* ================= IMAGE MODAL ================= */}
+      {/* IMAGE MODAL */}
       {preview && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
           <div className="bg-white p-4 rounded-xl shadow-xl">
@@ -268,14 +274,12 @@ const Complaints = () => {
         </div>
       )}
 
-      {/* ================= MAP MODAL ================= */}
+      {/* MAP MODAL */}
       {mapView && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
           <div className="bg-white w-[90%] md:w-[70%] h-[70%] rounded-xl shadow-xl overflow-hidden">
             <div className="flex justify-between px-4 py-3 border-b">
-              <h3 className="font-semibold">
-                Route View – {mapView}
-              </h3>
+              <h3 className="font-semibold">Route View – {mapView}</h3>
               <button onClick={() => setMapView(null)}>Close</button>
             </div>
             <iframe
@@ -289,7 +293,7 @@ const Complaints = () => {
         </div>
       )}
 
-      {/* ================= COMPLIANCE NOTE ================= */}
+      {/* FOOT NOTE */}
       <p className="text-xs text-gray-500">
         ✔ SLA-based monitoring enabled <br />
         ✔ Status lifecycle enforced for audit compliance <br />

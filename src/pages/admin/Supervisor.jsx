@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import api from '../../api/api';
+import StatsCard from '../../components/admin/StatsCard';
 
 
 const SupervisorManagement = () => {
@@ -190,6 +191,27 @@ const SupervisorManagement = () => {
       : 'bg-red-100 text-red-700 border-red-200';
   };
 
+  const statsCards = [
+    {
+      title: "Total Supervisors",
+      value: supervisors.length,
+      icon: "👥",
+      gradient: "from-blue-500 to-indigo-500"
+    },
+    {
+      title: "Active",
+      value: supervisors.filter(s => s.status === 'active').length,
+      icon: "✅",
+      gradient: "from-emerald-500 to-teal-500"
+    },
+    {
+      title: "Inactive",
+      value: supervisors.filter(s => s.status === 'inactive').length,
+      icon: "⏳",
+      gradient: "from-orange-500 to-amber-500"
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
@@ -214,43 +236,9 @@ const SupervisorManagement = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow-lg p-5 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 font-semibold">Total Supervisors</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">{supervisors.length}</p>
-              </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
-                <span className="text-white text-2xl">👥</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-lg p-5 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 font-semibold">Active</p>
-                <p className="text-2xl font-bold text-emerald-600 mt-1">
-                  {supervisors.filter(s => s.status === 'active').length}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
-                <span className="text-white text-2xl">✅</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-lg p-5 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 font-semibold">Inactive</p>
-                <p className="text-2xl font-bold text-orange-600 mt-1">
-                  {supervisors.filter(s => s.status === 'inactive').length}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center">
-                <span className="text-white text-2xl">⏳</span>
-              </div>
-            </div>
-          </div>
+          {statsCards.map((stat, index) => (
+            <StatsCard key={index} {...stat} showButton={false} />
+          ))}
         </div>
 
         {/* Supervisors Table */}

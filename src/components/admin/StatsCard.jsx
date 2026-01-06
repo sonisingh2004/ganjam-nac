@@ -1,5 +1,7 @@
 // @ts-nocheck
-const StatsCard = ({ title, value, icon, gradient }) => {
+import { Link } from 'react-router-dom';
+
+const StatsCard = ({ title, value, icon, gradient, link, showButton = true }) => {
   return (
     <div className={`relative bg-gradient-to-br ${gradient} rounded-2xl shadow-xl p-5 sm:p-7 text-white hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 cursor-pointer group overflow-hidden`}>
       {/* Animated gradient overlay */}
@@ -21,12 +23,23 @@ const StatsCard = ({ title, value, icon, gradient }) => {
           </div>
           <div className="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-500"></div>
         </div>
-        <button className="text-sm bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl transition-all backdrop-blur-sm font-semibold hover:shadow-lg hover:scale-105 active:scale-95 flex items-center gap-2">
-          View Details 
-          <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-          </svg>
-        </button>
+        {showButton && (
+          link ? (
+            <Link to={link} className="text-sm bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl transition-all backdrop-blur-sm font-semibold hover:shadow-lg hover:scale-105 active:scale-95 flex items-center gap-2">
+              View Details 
+              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+          ) : (
+            <div className="text-sm bg-white/20 px-4 py-2 rounded-xl backdrop-blur-sm font-semibold flex items-center gap-2 opacity-50">
+              View Details 
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </div>
+          )
+        )}
       </div>
     </div>
   );

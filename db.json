@@ -340,11 +340,11 @@
       "location": "Sector 12, Block A",
       "category": "Missed Collection",
       "description": "Garbage not collected for 2 days in our locality. The bins are overflowing and causing bad smell.",
-      "status": "pending",
+      "status": "in-progress",
       "priority": "high",
       "createdAt": "2025-12-31T10:30:00.000Z",
       "updatedAt": "2025-12-31T10:30:00.000Z",
-      "assignedTo": "Ramesh Patel (Supervisor)",
+      "assignedTo": "soni (Supervisor)",
       "resolvedDate": null,
       "notes": "Follow up required"
     },
@@ -679,7 +679,7 @@
       "createdAt": "2026-01-02T12:31:46.544Z"
     }
   ],
-  "dashboard": {
+  "adminDashboard": {
     "stats": {
       "waste": 125.5,
       "vehicles": 18,

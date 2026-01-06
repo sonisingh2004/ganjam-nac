@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import api from '../../api/api';
 import MapView from '../../components/admin/MapView';
+import StatsCard from '../../components/admin/StatsCard';
 
 const TrackVehicle = () => {
   const [vehicles, setVehicles] = useState([]);
@@ -113,6 +114,33 @@ const TrackVehicle = () => {
     return `${hours}h ago`;
   };
 
+  const statsCards = [
+    {
+      title: "Running",
+      value: vehicles.filter(v => v.status === 'running').length,
+      icon: "▶️",
+      gradient: "from-emerald-500 to-teal-500"
+    },
+    {
+      title: "Standing",
+      value: vehicles.filter(v => v.status === 'standing').length,
+      icon: "⏸️",
+      gradient: "from-blue-500 to-indigo-500"
+    },
+    {
+      title: "Stopped",
+      value: vehicles.filter(v => v.status === 'stopped').length,
+      icon: "⏹️",
+      gradient: "from-orange-500 to-amber-500"
+    },
+    {
+      title: "Offline",
+      value: vehicles.filter(v => v.status === 'dataNotRetrieving').length,
+      icon: "❓",
+      gradient: "from-gray-400 to-gray-500"
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
@@ -139,58 +167,9 @@ const TrackVehicle = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-gray-600 font-semibold">Running</p>
-                <p className="text-2xl font-bold text-emerald-600 mt-1">
-                  {vehicles.filter(v => v.status === 'running').length}
-                </p>
-              </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">▶️</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-gray-600 font-semibold">Standing</p>
-                <p className="text-2xl font-bold text-blue-600 mt-1">
-                  {vehicles.filter(v => v.status === 'standing').length}
-                </p>
-              </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">⏸️</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-gray-600 font-semibold">Stopped</p>
-                <p className="text-2xl font-bold text-orange-600 mt-1">
-                  {vehicles.filter(v => v.status === 'stopped').length}
-                </p>
-              </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">⏹️</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-gray-600 font-semibold">Offline</p>
-                <p className="text-2xl font-bold text-gray-600 mt-1">
-                  {vehicles.filter(v => v.status === 'dataNotRetrieving').length}
-                </p>
-              </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">❓</span>
-              </div>
-            </div>
-          </div>
+          {statsCards.map((stat, index) => (
+            <StatsCard key={index} {...stat} showButton={false} />
+          ))}
         </div>
 
         {/* Filters */}

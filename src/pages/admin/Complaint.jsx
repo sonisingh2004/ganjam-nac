@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import api from '../../api/api';
+import StatsCard from '../../components/admin/StatsCard';
 
 const Complaint = () => {
   const [complaints, setComplaints] = useState([]);
@@ -14,11 +15,56 @@ const Complaint = () => {
   });
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [supervisors, setSupervisors] = useState([]);
+  const [selectedSupervisor, setSelectedSupervisor] = useState('');
 
   // Fetch complaints from API
   useEffect(() => {
     fetchComplaints();
+    fetchSupervisors();
   }, [filters]);
+
+  const fetchSupervisors = async () => {
+    try {
+      const [supervisorsRes, wardsRes] = await Promise.all([
+        api.get('/supervisors'),
+        api.get('/wards')
+      ]);
+      
+      const supervisorsList = supervisorsRes.data || [];
+      const wardsList = wardsRes.data || [];
+      
+      // Combine supervisors from supervisors table and wards
+      const allSupervisors = [...supervisorsList];
+      
+      // Add supervisors from wards that don't exist in supervisors table
+      wardsList.forEach(ward => {
+        if (ward.supervisor || ward.supervisorName) {
+          const supervisorName = ward.supervisor || ward.supervisorName;
+          const supervisorPhone = ward.supervisorPhone || '';
+          
+          // Check if this supervisor already exists
+          const exists = allSupervisors.some(s => 
+            s.name === supervisorName || s.mobile === supervisorPhone
+          );
+          
+          if (!exists && supervisorName && supervisorName.trim() !== '') {
+            allSupervisors.push({
+              id: ward.id + '_sup',
+              name: supervisorName,
+              mobile: supervisorPhone,
+              source: 'ward'
+            });
+          }
+        }
+      });
+      
+      setSupervisors(allSupervisors);
+    } catch (error) {
+      console.warn('Error fetching supervisors:', error.message);
+      setSupervisors([]);
+    }
+  };
 
   const fetchComplaints = async () => {
     try {
@@ -62,6 +108,41 @@ const Complaint = () => {
     }
   };
 
+  const handleAssignSupervisor = async () => {
+    if (!selectedSupervisor) {
+      toast.error('Please select a supervisor');
+      return;
+    }
+
+    try {
+      const supervisor = supervisors.find(s => s.id === selectedSupervisor);
+      const assignedToText = `${supervisor.name} (Supervisor)`;
+      
+      await api.patch(`/complaints/${selectedComplaint.id}`, {
+        assignedTo: assignedToText,
+        status: 'in-progress'
+      });
+
+      setComplaints(complaints.map(c =>
+        c.id === selectedComplaint.id
+          ? { ...c, assignedTo: assignedToText, status: 'in-progress' }
+          : c
+      ));
+
+      setSelectedComplaint({
+        ...selectedComplaint,
+        assignedTo: assignedToText,
+        status: 'in-progress'
+      });
+
+      toast.success('Supervisor assigned successfully');
+      setSelectedSupervisor('');
+    } catch (error) {
+      console.error('Error assigning supervisor:', error);
+      toast.error('Failed to assign supervisor');
+    }
+  };
+
   const getStatusColor = (status) => {
     const colors = {
       open: 'bg-red-100 text-red-800',
@@ -97,6 +178,33 @@ const Complaint = () => {
     closed: complaints.filter(c => c.status === 'closed').length
   };
 
+  const statsCards = [
+    {
+      title: "Total Complaints",
+      value: stats.total,
+      icon: "📋",
+      gradient: "from-blue-500 to-cyan-600"
+    },
+    {
+      title: "Open",
+      value: stats.open,
+      icon: "⚠️",
+      gradient: "from-rose-500 to-pink-600"
+    },
+    {
+      title: "Pending",
+      value: stats.pending,
+      icon: "⏰",
+      gradient: "from-amber-500 to-orange-600"
+    },
+    {
+      title: "Closed",
+      value: stats.closed,
+      icon: "✅",
+      gradient: "from-emerald-500 to-teal-600"
+    }
+  ];
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -120,42 +228,16 @@ const Complaint = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-        <div className="bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl shadow-xl p-5 sm:p-6 text-white hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium opacity-90">Total Complaints</p>
-            <svg className="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          </div>
-          <p className="text-3xl sm:text-4xl font-extrabold">{stats.total}</p>
-        </div>
-        <div className="bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl shadow-xl p-5 sm:p-6 text-white hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium opacity-90">Open</p>
-            <svg className="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-          </div>
-          <p className="text-3xl sm:text-4xl font-extrabold">{stats.open}</p>
-        </div>
-        <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-xl p-5 sm:p-6 text-white hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium opacity-90">Pending</p>
-            <svg className="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <p className="text-3xl sm:text-4xl font-extrabold">{stats.pending}</p>
-        </div>
-        <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl p-5 sm:p-6 text-white hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium opacity-90">Closed</p>
-            <svg className="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <p className="text-3xl sm:text-4xl font-extrabold">{stats.closed}</p>
-        </div>
+        {statsCards.map((stat, index) => (
+          <StatsCard
+            key={index}
+            title={stat.title}
+            value={stat.value}
+            icon={stat.icon}
+            gradient={stat.gradient}
+            showButton={false}
+          />
+        ))}
       </div>
 
       {/* Filters */}
@@ -347,7 +429,24 @@ const Complaint = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Assigned To</label>
-                  <p className="text-gray-900">{selectedComplaint.assignedTo}</p>
+                  <p className="text-gray-900">{selectedComplaint.assignedTo || 'Not assigned yet'}</p>
+                </div>
+
+                {/* Assign Supervisor Section */}
+                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-200">
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">Assign Supervisor</label>
+                  <select
+                    value={selectedSupervisor}
+                    onChange={(e) => setSelectedSupervisor(e.target.value)}
+                    className="w-full px-4 py-3 border-2 border-emerald-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all bg-white"
+                  >
+                    <option value="">Select Supervisor</option>
+                    {supervisors.map((supervisor) => (
+                      <option key={supervisor.id} value={supervisor.id}>
+                        {supervisor.name} - {supervisor.mobile}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -378,7 +477,11 @@ const Complaint = () => {
                   Close
                 </button>
                 <button
-                  className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all shadow-md hover:shadow-lg"
+                  onClick={handleAssignSupervisor}
+                  disabled={!selectedSupervisor}
+                  className={`px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg ${
+                    !selectedSupervisor ? 'opacity-50 cursor-not-allowed' : 'hover:from-emerald-600 hover:to-teal-700'
+                  }`}
                 >
                   Assign Supervisor
                 </button>

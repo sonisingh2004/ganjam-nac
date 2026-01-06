@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import api from '../../api/api';
+import AttendanceCard from '../../components/admin/AttendanceCard';
+import StatsCard from '../../components/admin/StatsCard';
 
 
 const Attendance = () => {
@@ -94,6 +96,15 @@ const Attendance = () => {
     }
   };
 
+  const handleViewDetails = (member) => {
+    setSelectedStaff(member);
+    setShowModal(true);
+  };
+
+  const handleEdit = () => {
+    toast.info('Edit attendance feature coming soon!');
+  };
+
   const getStatusColor = (status) => {
     const colors = {
       present: { bg: 'bg-emerald-500', text: 'text-emerald-600', badge: 'from-emerald-500 to-teal-500' },
@@ -103,26 +114,6 @@ const Attendance = () => {
       'half-day': { bg: 'bg-purple-500', text: 'text-purple-600', badge: 'from-purple-500 to-pink-500' }
     };
     return colors[status] || colors.present;
-  };
-
-  const getStatusIcon = (status) => {
-    const icons = {
-      present: '✅',
-      absent: '❌',
-      'on-leave': '🏖️',
-      late: '⏰',
-      'half-day': '⏱️'
-    };
-    return icons[status] || '✅';
-  };
-
-  const getRoleIcon = (role) => {
-    const icons = {
-      driver: '🚗',
-      cleaner: '🧹',
-      supervisor: '👔'
-    };
-    return icons[role] || '👤';
   };
 
   const filteredStaff = staff.filter(member => {
@@ -150,6 +141,45 @@ const Attendance = () => {
   const attendanceRate = staff.length > 0 
     ? ((attendanceStats.present / staff.length) * 100).toFixed(1) 
     : 0;
+
+  const statsCards = [
+    {
+      title: "Total Staff",
+      value: attendanceStats.total,
+      icon: "👥",
+      gradient: "from-gray-500 to-gray-600"
+    },
+    {
+      title: "Present",
+      value: attendanceStats.present,
+      icon: "✅",
+      gradient: "from-emerald-500 to-teal-500"
+    },
+    {
+      title: "Absent",
+      value: attendanceStats.absent,
+      icon: "❌",
+      gradient: "from-red-500 to-rose-500"
+    },
+    {
+      title: "On Leave",
+      value: attendanceStats.onLeave,
+      icon: "🏖️",
+      gradient: "from-blue-500 to-indigo-500"
+    },
+    {
+      title: "Late",
+      value: attendanceStats.late,
+      icon: "⏰",
+      gradient: "from-orange-500 to-amber-500"
+    },
+    {
+      title: "Rate",
+      value: `${attendanceRate}%`,
+      icon: "📊",
+      gradient: "from-emerald-500 to-teal-500"
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-4 sm:p-6 lg:p-8">
@@ -183,72 +213,9 @@ const Attendance = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-gray-600 font-semibold">Total Staff</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">{attendanceStats.total}</p>
-              </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-gray-500 to-gray-600 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">👥</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-gray-600 font-semibold">Present</p>
-                <p className="text-2xl font-bold text-emerald-600 mt-1">{attendanceStats.present}</p>
-              </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">✅</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-gray-600 font-semibold">Absent</p>
-                <p className="text-2xl font-bold text-red-600 mt-1">{attendanceStats.absent}</p>
-              </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-rose-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">❌</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-gray-600 font-semibold">On Leave</p>
-                <p className="text-2xl font-bold text-blue-600 mt-1">{attendanceStats.onLeave}</p>
-              </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">🏖️</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-gray-600 font-semibold">Late</p>
-                <p className="text-2xl font-bold text-orange-600 mt-1">{attendanceStats.late}</p>
-              </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">⏰</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-gray-600 font-semibold">Rate</p>
-                <p className="text-2xl font-bold text-emerald-600 mt-1">{attendanceRate}%</p>
-              </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">📊</span>
-              </div>
-            </div>
-          </div>
+          {statsCards.map((stat, index) => (
+            <StatsCard key={index} {...stat} showButton={false} />
+          ))}
         </div>
 
         {/* Filters */}
@@ -316,95 +283,12 @@ const Attendance = () => {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {filteredStaff.map((member) => (
-              <div
+              <AttendanceCard
                 key={member.id}
-                className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden"
-              >
-                <div className="p-5">
-                  {/* Header */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-12 h-12 bg-gradient-to-br ${getStatusColor(member.status).badge} rounded-xl flex items-center justify-center shadow-md`}>
-                        <span className="text-white text-2xl">{getRoleIcon(member.role)}</span>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-bold text-gray-900">{member.name}</h3>
-                        <p className="text-sm text-gray-600 capitalize">{member.role}</p>
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-end space-y-1">
-                      <span className={`bg-gradient-to-r ${getStatusColor(member.status).badge} text-white text-xs font-bold px-3 py-1 rounded-full shadow-md capitalize`}>
-                        {member.status.replace('-', ' ')}
-                      </span>
-                      <span className="text-xl">{getStatusIcon(member.status)}</span>
-                    </div>
-                  </div>
-
-                  {/* Details */}
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">📍 Ward:</span>
-                      <span className="text-sm font-semibold text-gray-900">{member.assignedWard}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">📞 Phone:</span>
-                      <span className="text-sm font-semibold text-gray-900">{member.phone}</span>
-                    </div>
-                    {member.vehicleAssigned && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">🚛 Vehicle:</span>
-                        <span className="text-sm font-semibold text-gray-900">{member.vehicleAssigned}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Time Info */}
-                  <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-3 rounded-xl mb-4">
-                    <div className="grid grid-cols-3 gap-2 text-xs">
-                      <div>
-                        <p className="text-gray-600 mb-1">Check In</p>
-                        <p className="font-bold text-gray-900">{member.checkInTime || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-600 mb-1">Check Out</p>
-                        <p className="font-bold text-gray-900">{member.checkOutTime || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-600 mb-1">Working</p>
-                        <p className="font-bold text-emerald-600">{member.workingHours}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Leave Reason */}
-                  {member.leaveReason && (
-                    <div className="bg-blue-50 border border-blue-200 p-2 rounded-lg mb-4">
-                      <p className="text-xs text-blue-800">
-                        <span className="font-semibold">Reason:</span> {member.leaveReason}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Action Buttons */}
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => {
-                        setSelectedStaff(member);
-                        setShowModal(true);
-                      }}
-                      className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-2 rounded-lg text-sm font-semibold shadow-md transition-all"
-                    >
-                      View Details
-                    </button>
-                    <button
-                      onClick={() => toast.info('Edit attendance feature coming soon!')}
-                      className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white py-2 rounded-lg text-sm font-semibold shadow-md transition-all"
-                    >
-                      Edit
-                    </button>
-                  </div>
-                </div>
-              </div>
+                member={member}
+                onViewDetails={handleViewDetails}
+                onEdit={handleEdit}
+              />
             ))}
           </div>
         )}

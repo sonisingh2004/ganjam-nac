@@ -100,9 +100,142 @@ const AdminDashboard = () => {
       if (!silent) setLoading(true);
       setError(null);
       
-      // Fetch data using axios
-      const response = await api.get('/dashboard');
-      setDashboardData(response.data);
+      // Fetch all data sources in parallel
+      const [
+        dashboardResponse,
+        vehiclesResponse,
+        complaintsResponse,
+        attendanceResponse,
+        wardsResponse,
+        citizensResponse,
+        wasteCollectionsResponse,
+        fuelRecordsResponse
+      ] = await Promise.all([
+        api.get('/adminDashboard'),
+        api.get('/vehicles'),
+        api.get('/complaints'),
+        api.get('/attendance'),
+        api.get('/wards'),
+        api.get('/citizens'),
+        api.get('/wasteCollections'),
+        api.get('/fuelRecords')
+      ]);
+
+      const vehicles = vehiclesResponse.data || [];
+      const complaints = complaintsResponse.data || [];
+      const attendance = attendanceResponse.data || [];
+      const wards = wardsResponse.data || [];
+      const citizens = citizensResponse.data || [];
+      const wasteCollections = wasteCollectionsResponse.data || [];
+      const fuelRecords = fuelRecordsResponse.data || [];
+      const dashboardData = dashboardResponse.data || {};
+
+      // Calculate dynamic stats
+      const totalWaste = wasteCollections.reduce((sum, w) => sum + parseFloat(w.wasteQuantity || 0), 0) / 1000; // Convert to tons
+      const totalVehicles = vehicles.length;
+      const presentStaff = attendance.filter(a => a.status === 'Present').length;
+      const totalComplaints = complaints.length;
+      const totalWards = wards.length;
+      const totalCitizens = citizens.length;
+
+      // Calculate vehicle status
+      const runningVehicles = vehicles.filter(v => v.speed > 0).length;
+      const standingVehicles = vehicles.filter(v => v.speed === 0 && v.fuelLevel > 0 && v.status !== 'Maintenance').length;
+      const stoppedVehicles = vehicles.filter(v => v.status === 'Maintenance' || (v.speed === 0 && v.fuelLevel === 0)).length;
+      const dataNotRetrieving = vehicles.filter(v => !v.location || v.speed === null).length;
+
+      // Calculate complaint status
+      const pendingComplaints = complaints.filter(c => c.status === 'pending').length;
+      const openComplaints = complaints.filter(c => c.status === 'in-progress').length;
+      const closedComplaints = complaints.filter(c => c.status === 'resolved' || c.status === 'completed').length;
+      const outOfScopeComplaints = complaints.filter(c => c.status === 'rejected' || c.status === 'out-of-scope').length;
+
+      // Calculate staff performance
+      const absentStaff = attendance.filter(a => a.status === 'Absent').length;
+      const onLeaveStaff = attendance.filter(a => a.status === 'Leave').length;
+      const attendanceRate = attendance.length > 0 ? Math.round((presentStaff / attendance.length) * 100) : 0;
+
+      // Calculate fuel stats
+      const totalFuelCost = fuelRecords.reduce((sum, f) => sum + parseFloat(f.totalCost || 0), 0);
+      const totalFuelQuantity = fuelRecords.reduce((sum, f) => sum + parseFloat(f.quantity || 0), 0);
+      const avgCostPerLiter = totalFuelQuantity > 0 ? Math.round(totalFuelCost / totalFuelQuantity) : 0;
+
+      // Map vehicles to vehicle locations format
+      const vehicleLocations = vehicles.map(v => ({
+        id: v.id,
+        registrationNumber: v.registrationNumber || v.number,
+        type: v.type,
+        status: v.speed > 0 ? 'running' : v.speed === 0 && v.fuelLevel > 0 ? 'standing' : 'stopped',
+        location: v.location,
+        speed: v.speed,
+        assignedWard: v.assignedWard || v.ward,
+        driverName: v.driverName || v.driver,
+        driverPhone: v.driverPhone,
+        fuelLevel: v.fuelLevel,
+        lastUpdated: new Date().toISOString()
+      }));
+
+      // Set calculated data
+      setDashboardData({
+        stats: {
+          waste: totalWaste,
+          vehicles: totalVehicles,
+          activeStaff: presentStaff,
+          complaints: totalComplaints,
+          wards: totalWards,
+          citizens: totalCitizens
+        },
+        performance: {
+          resolvedComplaints: closedComplaints,
+          totalComplaints: totalComplaints,
+          collectionRate: dashboardData.performance?.collectionRate || 94,
+          complaintsTrend: dashboardData.performance?.complaintsTrend || [],
+          collectionTrend: dashboardData.performance?.collectionTrend || []
+        },
+        pending: {
+          pendingComplaints: pendingComplaints,
+          avgResponseTime: dashboardData.pending?.avgResponseTime || '2.4h'
+        },
+        wardCoverage: dashboardData.wardCoverage || { wards: [] },
+        staffPerformance: {
+          present: presentStaff,
+          absent: absentStaff,
+          onLeave: onLeaveStaff,
+          attendanceRate: attendanceRate,
+          tasksAssigned: dashboardData.staffPerformance?.tasksAssigned || 0,
+          tasksCompleted: dashboardData.staffPerformance?.tasksCompleted || 0,
+          tasksInProgress: dashboardData.staffPerformance?.tasksInProgress || 0
+        },
+        routeCompletion: dashboardData.routeCompletion || {
+          overallCompletion: 0,
+          completedRoutes: 0,
+          totalRoutes: 0,
+          routes: []
+        },
+        fuelManagement: {
+          todayUsage: dashboardData.fuelManagement?.todayUsage || 0,
+          monthUsage: dashboardData.fuelManagement?.monthUsage || 0,
+          totalCost: Math.round(totalFuelCost),
+          avgCostPerLiter: avgCostPerLiter,
+          alerts: dashboardData.fuelManagement?.alerts || []
+        },
+        vehicles: {
+          all: totalVehicles,
+          overSpeeding: 0,
+          running: runningVehicles,
+          standing: standingVehicles,
+          stopped: stoppedVehicles,
+          dataNotRetrieving: dataNotRetrieving
+        },
+        complaints: {
+          pending: pendingComplaints,
+          open: openComplaints,
+          closed: closedComplaints,
+          outOfScope: outOfScopeComplaints
+        },
+        recentActivities: dashboardData.recentActivities || [],
+        vehicleLocations: vehicleLocations
+      });
       
       if (showToast) {
         toast.success('Dashboard data refreshed successfully!');
@@ -116,6 +249,53 @@ const AdminDashboard = () => {
     }
   };
 
+  // Stats cards configuration
+  const statsCards = [
+    {
+      title: "Waste Collected",
+      value: dashboardData.stats.waste,
+      icon: "♻️",
+      gradient: "from-emerald-500 to-teal-600",
+      link: "/admin/waste-collection"
+    },
+    {
+      title: "Active Vehicles",
+      value: dashboardData.stats.vehicles,
+      icon: "🚛",
+      gradient: "from-teal-500 to-cyan-600",
+      link: "/admin/vehicles"
+    },
+    {
+      title: "Staff Present",
+      value: dashboardData.stats.activeStaff,
+      icon: "👷",
+      gradient: "from-blue-500 to-indigo-600",
+      link: "/admin/attendance"
+    },
+    {
+      title: "Complaints",
+      value: dashboardData.stats.complaints,
+      icon: "📧",
+      gradient: "from-rose-500 to-pink-600",
+      link: "/admin/complaints"
+    },
+    {
+      title: "Total Wards",
+      value: dashboardData.stats.wards,
+      icon: "🏘️",
+      gradient: "from-lime-600 to-green-600",
+      link: "/admin/wards"
+    },
+    {
+      title: "Registered Citizens",
+      value: dashboardData.stats.citizens,
+      icon: "👥",
+      gradient: "from-purple-500 to-violet-600",
+      link: null
+    }
+  ];
+
+  
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-emerald-50 via-green-50/50 to-teal-50 relative overflow-hidden">
@@ -179,42 +359,16 @@ const AdminDashboard = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 sm:gap-5 mb-8 sm:mb-10">
-          <StatsCard
-            title="Waste Collected"
-            value={dashboardData.stats.waste}
-            icon="♻️"
-            gradient="from-emerald-500 to-teal-600"
-          />
-          <StatsCard
-            title="Active Vehicles"
-            value={dashboardData.stats.vehicles}
-            icon="🚛"
-            gradient="from-teal-500 to-cyan-600"
-          />
-          <StatsCard
-            title="Staff Present"
-            value={dashboardData.stats.activeStaff}
-            icon="👷"
-            gradient="from-blue-500 to-indigo-600"
-          />
-          <StatsCard
-            title="Complaints"
-            value={dashboardData.stats.complaints}
-            icon="📧"
-            gradient="from-rose-500 to-pink-600"
-          />
-          <StatsCard
-            title="Total Wards"
-            value={dashboardData.stats.wards}
-            icon="🏘️"
-            gradient="from-lime-600 to-green-600"
-          />
-          <StatsCard
-            title="Registered Citizens"
-            value={dashboardData.stats.citizens}
-            icon="👥"
-            gradient="from-purple-500 to-violet-600"
-          />
+          {statsCards.map((stat, index) => (
+            <StatsCard
+              key={index}
+              title={stat.title}
+              value={stat.value}
+              icon={stat.icon}
+              gradient={stat.gradient}
+              link={stat.link}
+            />
+          ))}
         </div>
 
         {/* Performance & Actions Section */}

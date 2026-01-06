@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import api from '../../api/api';
+import StatsCard from '../../components/admin/StatsCard';
 
 
 const FuelManagement = () => {
@@ -173,6 +174,13 @@ const FuelManagement = () => {
 
   const stats = getTotalStats();
 
+  const statsCards = [
+    { title: "Total Records", value: stats.totalRecords, icon: "📊", gradient: "from-blue-500 to-indigo-500" },
+    { title: "Total Fuel", value: `${stats.totalFuel}L`, icon: "⛽", gradient: "from-emerald-500 to-teal-500" },
+    { title: "Total Cost", value: `₹${stats.totalCost}`, icon: "💰", gradient: "from-emerald-500 to-teal-500" },
+    { title: "Avg Efficiency", value: `${stats.avgEfficiency} km/L`, icon: "📈", gradient: "from-purple-500 to-pink-500" }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
@@ -197,50 +205,9 @@ const FuelManagement = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow-lg p-5 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 font-semibold">Total Records</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">{stats.totalRecords}</p>
-              </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
-                <span className="text-white text-2xl">📊</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-lg p-5 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 font-semibold">Total Fuel</p>
-                <p className="text-2xl font-bold text-emerald-600 mt-1">{stats.totalFuel}L</p>
-              </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
-                <span className="text-white text-2xl">⛽</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-lg p-5 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-gray-600 font-semibold">Total Cost</p>
-                <p className="text-2xl font-bold text-emerald-600 mt-1">₹{stats.totalCost}</p>
-              </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">💰</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-gray-600 font-semibold">Avg Efficiency</p>
-                <p className="text-2xl font-bold text-purple-600 mt-1">{stats.avgEfficiency} km/L</p>
-              </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">📈</span>
-              </div>
-            </div>
-          </div>
+          {statsCards.map((stat, index) => (
+            <StatsCard key={index} {...stat} showButton={false} />
+          ))}
         </div>
 
         {/* Fuel Type Distribution */}

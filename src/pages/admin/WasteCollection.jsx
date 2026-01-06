@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import api from '../../api/api';
+import StatsCard from '../../components/admin/StatsCard';
 
 
 const WasteCollection = () => {
@@ -187,6 +188,13 @@ const WasteCollection = () => {
 
   const stats = getTotalStats();
 
+  const statsCards = [
+    { title: "Total Collections", value: stats.total, icon: "📊", gradient: "from-blue-500 to-indigo-500" },
+    { title: "Completed", value: stats.completed, icon: "✅", gradient: "from-emerald-500 to-teal-500" },
+    { title: "In Progress", value: stats.inProgress, icon: "🔄", gradient: "from-blue-400 to-indigo-400" },
+    { title: "Pending", value: stats.pending, icon: "⏰", gradient: "from-orange-500 to-amber-500" }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
@@ -211,50 +219,9 @@ const WasteCollection = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow-lg p-5 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 font-semibold">Total Collections</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">{stats.total}</p>
-              </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
-                <span className="text-white text-2xl">📊</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-lg p-5 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 font-semibold">Completed</p>
-                <p className="text-2xl font-bold text-emerald-600 mt-1">{stats.completed}</p>
-              </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
-                <span className="text-white text-2xl">✅</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-lg p-5 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 font-semibold">In Progress</p>
-                <p className="text-2xl font-bold text-blue-600 mt-1">{stats.inProgress}</p>
-              </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-400 rounded-xl flex items-center justify-center">
-                <span className="text-white text-2xl">🔄</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-lg p-5 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 font-semibold">Pending</p>
-                <p className="text-2xl font-bold text-orange-600 mt-1">{stats.pending}</p>
-              </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center">
-                <span className="text-white text-2xl">⏰</span>
-              </div>
-            </div>
-          </div>
+          {statsCards.map((stat, index) => (
+            <StatsCard key={index} {...stat} showButton={false} />
+          ))}
         </div>
 
         {/* Waste Collection Progress */}

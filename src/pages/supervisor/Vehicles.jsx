@@ -1,7 +1,52 @@
 // @ts-nocheck
+// src/pages/supervisor/Vehicles.jsx
+
 import { MapPin, Search, Truck } from "lucide-react";
 import { useEffect, useState } from "react";
 import api from "../../api/api";
+
+/* ================= SUMMARY CONFIG ================= */
+
+const SUMMARY_CARDS = [
+  {
+    title: "Total Vehicles",
+    key: "total",
+    color: "bg-blue-600",
+  },
+  {
+    title: "Active",
+    key: "Active",
+    color: "bg-green-600",
+  },
+  {
+    title: "Maintenance",
+    key: "Maintenance",
+    color: "bg-yellow-500",
+  },
+];
+
+/* ================= TABLE HEADERS ================= */
+
+const TABLE_HEADERS = [
+  "Vehicle No",
+  "Type",
+  "Ward",
+  "Route",
+  "Driver",
+  "GPS",
+  "Trip",
+  "Status",
+  "Last Update",
+  "Action",
+];
+
+/* ================= STATUS STYLES ================= */
+
+const STATUS_STYLES = {
+  Active: "bg-green-100 text-green-700",
+  Inactive: "bg-red-100 text-red-700",
+  Maintenance: "bg-yellow-100 text-yellow-800",
+};
 
 /* ================= VEHICLES PAGE ================= */
 
@@ -9,12 +54,11 @@ const Vehicles = () => {
   const [vehicles, setVehicles] = useState([]);
   const [search, setSearch] = useState("");
 
-  /* --------- LOAD FROM API (NO UI CHANGE) --------- */
+  /* -------- LOAD VEHICLES -------- */
   useEffect(() => {
     const loadVehicles = async () => {
       try {
         const res = await api.get("/vehicles");
-        console.log("Vehicles API response:", res.data);
 
         if (res.data?.length) {
           setVehicles(
@@ -45,13 +89,20 @@ const Vehicles = () => {
     loadVehicles();
   }, []);
 
-  /* --------- SEARCH FILTER --------- */
+  /* -------- SEARCH FILTER -------- */
   const filteredVehicles = vehicles.filter(
     (v) =>
       v.number.toLowerCase().includes(search.toLowerCase()) ||
       v.ward.toLowerCase().includes(search.toLowerCase()) ||
       v.route.toLowerCase().includes(search.toLowerCase())
   );
+
+  /* -------- SUMMARY VALUES -------- */
+  const summaryValues = {
+    total: vehicles.length,
+    Active: vehicles.filter((v) => v.status === "Active").length,
+    Maintenance: vehicles.filter((v) => v.status === "Maintenance").length,
+  };
 
   return (
     <div className="space-y-8">
@@ -71,21 +122,14 @@ const Vehicles = () => {
 
       {/* ================= SUMMARY CARDS ================= */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <SummaryCard
-          title="Total Vehicles"
-          value={vehicles.length}
-          color="bg-blue-600"
-        />
-        <SummaryCard
-          title="Active"
-          value={vehicles.filter(v => v.status === "Active").length}
-          color="bg-green-600"
-        />
-        <SummaryCard
-          title="Maintenance"
-          value={vehicles.filter(v => v.status === "Maintenance").length}
-          color="bg-yellow-500"
-        />
+        {SUMMARY_CARDS.map((card) => (
+          <SummaryCard
+            key={card.title}
+            title={card.title}
+            value={summaryValues[card.key]}
+            color={card.color}
+          />
+        ))}
       </div>
 
       {/* ================= SEARCH BAR ================= */}
@@ -105,37 +149,30 @@ const Vehicles = () => {
         <table className="w-full text-sm">
           <thead className="bg-gray-100 text-gray-700">
             <tr>
-              <th className="px-4 py-3 text-left">Vehicle No</th>
-              <th className="px-4 py-3 text-left">Type</th>
-              <th className="px-4 py-3 text-left">Ward</th>
-              <th className="px-4 py-3 text-left">Route</th>
-              <th className="px-4 py-3 text-left">Driver</th>
-              <th className="px-4 py-3 text-left">GPS</th>
-              <th className="px-4 py-3 text-left">Trip</th>
-              <th className="px-4 py-3 text-left">Status</th>
-              <th className="px-4 py-3 text-left">Last Update</th>
-              <th className="px-4 py-3 text-left">Action</th>
+              {TABLE_HEADERS.map((h) => (
+                <th key={h} className="px-4 py-3 text-left">
+                  {h}
+                </th>
+              ))}
             </tr>
           </thead>
 
           <tbody>
             {filteredVehicles.length === 0 ? (
               <tr>
-                <td colSpan="10" className="text-center py-8 text-gray-500">
+                <td colSpan={TABLE_HEADERS.length} className="text-center py-8 text-gray-500">
                   No vehicles found
                 </td>
               </tr>
             ) : (
               filteredVehicles.map((v) => (
-                <tr
-                  key={v.id}
-                  className="border-b hover:bg-gray-50 transition"
-                >
+                <tr key={v.id} className="border-b hover:bg-gray-50 transition">
                   <td className="px-4 py-3 font-medium">{v.number}</td>
                   <td className="px-4 py-3">{v.type}</td>
                   <td className="px-4 py-3">{v.ward}</td>
                   <td className="px-4 py-3">{v.route}</td>
                   <td className="px-4 py-3">{v.driver}</td>
+
                   <td className="px-4 py-3">
                     <Badge
                       value={v.gps}
@@ -146,18 +183,22 @@ const Vehicles = () => {
                       }
                     />
                   </td>
+
                   <td className="px-4 py-3">
                     <Badge
                       value={v.trip}
                       color="bg-blue-100 text-blue-700"
                     />
                   </td>
+
                   <td className="px-4 py-3">
                     <StatusBadge status={v.status} />
                   </td>
+
                   <td className="px-4 py-3 text-xs text-gray-500">
                     {v.updatedAt}
                   </td>
+
                   <td className="px-4 py-3">
                     <button className="flex items-center gap-1 text-green-600 hover:underline text-xs">
                       <MapPin size={14} />
@@ -183,21 +224,15 @@ const SummaryCard = ({ title, value, color }) => (
   </div>
 );
 
-const StatusBadge = ({ status }) => {
-  const styles = {
-    Active: "bg-green-100 text-green-700",
-    Inactive: "bg-red-100 text-red-700",
-    Maintenance: "bg-yellow-100 text-yellow-800",
-  };
-
-  return (
-    <span
-      className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[status]}`}
-    >
-      {status}
-    </span>
-  );
-};
+const StatusBadge = ({ status }) => (
+  <span
+    className={`px-3 py-1 rounded-full text-xs font-semibold ${
+      STATUS_STYLES[status]
+    }`}
+  >
+    {status}
+  </span>
+);
 
 const Badge = ({ value, color }) => (
   <span className={`px-3 py-1 rounded-full text-xs font-medium ${color}`}>

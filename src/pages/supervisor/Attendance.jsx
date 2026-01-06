@@ -2,12 +2,47 @@
 import { useEffect, useState } from "react";
 import api from "../../api/api";
 
-/* ================= ATTENDANCE ================= */
+/* ================= CONFIG ================= */
+
+const SUMMARY_CONFIG = [
+  { title: "Total Staff", key: "total" },
+  { title: "Present", key: "Present", color: "text-green-600" },
+  { title: "Absent", key: "Absent", color: "text-red-600" },
+  { title: "On Leave", key: "Leave", color: "text-yellow-600" },
+];
+
+const TABLE_HEADERS = [
+  "Name",
+  "Role",
+  "Ward",
+  "Check-In",
+  "Check-Out",
+  "Method",
+  "Status",
+  "Remarks",
+];
+
+const STATUS_STYLES = {
+  Present: "bg-green-100 text-green-700",
+  Absent: "bg-red-100 text-red-700",
+  Leave: "bg-yellow-100 text-yellow-800",
+};
+
+const METHOD_STYLES = {
+  GPS: "bg-blue-100 text-blue-700",
+  Biometric: "bg-purple-100 text-purple-700",
+  Leave: "bg-yellow-100 text-yellow-700",
+  "-": "bg-gray-100 text-gray-500",
+};
+
+/* ================= MAIN COMPONENT ================= */
+
 const Attendance = () => {
   const [date] = useState(new Date().toISOString().split("T")[0]);
   const [staff, setStaff] = useState([]);
 
-  /* ================= LOAD ATTENDANCE (AXIOS) ================= */
+  /* ================= LOAD ATTENDANCE ================= */
+
   useEffect(() => {
     const loadAttendance = async () => {
       try {
@@ -41,15 +76,19 @@ const Attendance = () => {
     loadAttendance();
   }, []);
 
-  const total = staff.length;
-  const present = staff.filter((s) => s.status === "Present").length;
-  const absent = staff.filter((s) => s.status === "Absent").length;
-  const leave = staff.filter((s) => s.status === "Leave").length;
+  /* ================= SUMMARY VALUES ================= */
+
+  const summaryValues = {
+    total: staff.length,
+    Present: staff.filter((s) => s.status === "Present").length,
+    Absent: staff.filter((s) => s.status === "Absent").length,
+    Leave: staff.filter((s) => s.status === "Leave").length,
+  };
 
   return (
     <div className="space-y-8">
 
-      {/* ================= HEADER ================= */}
+      {/* HEADER */}
       <div>
         <h1 className="text-xl font-semibold text-gray-800">
           Attendance Register
@@ -59,27 +98,28 @@ const Attendance = () => {
         </p>
       </div>
 
-      {/* ================= SUMMARY ================= */}
+      {/* SUMMARY */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <SummaryCard title="Total Staff" value={total} />
-        <SummaryCard title="Present" value={present} color="text-green-600" />
-        <SummaryCard title="Absent" value={absent} color="text-red-600" />
-        <SummaryCard title="On Leave" value={leave} color="text-yellow-600" />
+        {SUMMARY_CONFIG.map((card) => (
+          <SummaryCard
+            key={card.title}
+            title={card.title}
+            value={summaryValues[card.key]}
+            color={card.color}
+          />
+        ))}
       </div>
 
-      {/* ================= DESKTOP TABLE ================= */}
+      {/* DESKTOP TABLE */}
       <div className="hidden md:block bg-white rounded-xl shadow overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-green-600 text-white">
             <tr>
-              <th className="px-4 py-3 text-left">Name</th>
-              <th className="px-4 py-3 text-left">Role</th>
-              <th className="px-4 py-3 text-left">Ward</th>
-              <th className="px-4 py-3 text-left">Check-In</th>
-              <th className="px-4 py-3 text-left">Check-Out</th>
-              <th className="px-4 py-3 text-left">Method</th>
-              <th className="px-4 py-3 text-left">Status</th>
-              <th className="px-4 py-3 text-left">Remarks</th>
+              {TABLE_HEADERS.map((h) => (
+                <th key={h} className="px-4 py-3 text-left">
+                  {h}
+                </th>
+              ))}
             </tr>
           </thead>
 
@@ -106,7 +146,7 @@ const Attendance = () => {
         </table>
       </div>
 
-      {/* ================= MOBILE VIEW ================= */}
+      {/* MOBILE VIEW */}
       <div className="md:hidden space-y-4">
         {staff.map((s) => (
           <div
@@ -146,7 +186,7 @@ const Attendance = () => {
   );
 };
 
-/* ================= COMPONENTS ================= */
+/* ================= REUSABLE COMPONENTS ================= */
 
 const SummaryCard = ({ title, value, color }) => (
   <div className="bg-white rounded-xl shadow p-4">
@@ -155,35 +195,24 @@ const SummaryCard = ({ title, value, color }) => (
   </div>
 );
 
-const StatusBadge = ({ status }) => {
-  const styles = {
-    Present: "bg-green-100 text-green-700",
-    Absent: "bg-red-100 text-red-700",
-    Leave: "bg-yellow-100 text-yellow-800",
-  };
+const StatusBadge = ({ status }) => (
+  <span
+    className={`px-3 py-1 rounded-full text-xs font-semibold ${
+      STATUS_STYLES[status]
+    }`}
+  >
+    {status}
+  </span>
+);
 
-  return (
-    <span
-      className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[status]}`}
-    >
-      {status}
-    </span>
-  );
-};
-
-const MethodBadge = ({ method }) => {
-  const styles = {
-    GPS: "bg-blue-100 text-blue-700",
-    Biometric: "bg-purple-100 text-purple-700",
-    Leave: "bg-yellow-100 text-yellow-700",
-    "-": "bg-gray-100 text-gray-500",
-  };
-
-  return (
-    <span className={`px-3 py-1 rounded-full text-xs ${styles[method]}`}>
-      {method}
-    </span>
-  );
-};
+const MethodBadge = ({ method }) => (
+  <span
+    className={`px-3 py-1 rounded-full text-xs ${
+      METHOD_STYLES[method]
+    }`}
+  >
+    {method}
+  </span>
+);
 
 export default Attendance;

@@ -65,13 +65,6 @@ const TrackVehicle = () => {
   const fetchVehicleLocations = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual API endpoint
-      // const response = await fetch('/api/admin/vehicles/locations', {
-      //   headers: {
-      //     'Authorization': `Bearer ${localStorage.getItem('token')}`
-      //   }
-      // });
-      // const data = await response.json();
       
       // Mock data with GPS coordinates for Ganjam area
       const mockData = [
@@ -676,5 +669,4 @@ const TrackVehicle = () => {
     </div>
   );
 };
-
 export default TrackVehicle;

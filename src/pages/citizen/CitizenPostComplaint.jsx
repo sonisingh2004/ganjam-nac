@@ -1,12 +1,15 @@
+// @ts-nocheck
 // src/pages/citizen/ComplaintsPage.jsx
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { X, Camera, RotateCcw } from "lucide-react";
 import Webcam from "react-webcam";
+import api from "../../api/api"; // <-- Axios instance
 
 export default function ComplaintsPage() {
   const [showComplaintForm, setShowComplaintForm] = useState(false);
   const [capturedPhoto, setCapturedPhoto] = useState(null);
   const [complaints, setComplaints] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [complaintFormData, setComplaintFormData] = useState({
     citizenName: "",
@@ -19,54 +22,6 @@ export default function ComplaintsPage() {
   });
 
   const webcamRef = useRef(null);
-
-  const capturePhoto = useCallback(() => {
-    const imageSrc = webcamRef.current?.getScreenshot();
-    if (imageSrc) {
-      setCapturedPhoto(imageSrc);
-      setComplaintFormData((prev) => ({ ...prev, photo: imageSrc }));
-    }
-  }, []);
-
-  const handleSubmitComplaint = (e) => {
-    e.preventDefault();
-
-    const newComplaint = {
-      id: Date.now().toString(),
-      citizenName: complaintFormData.citizenName,
-      phoneNumber: complaintFormData.phoneNumber,
-      wardNumber: complaintFormData.wardNumber,
-      area: complaintFormData.area,
-      category: complaintFormData.category,
-      description: complaintFormData.description,
-      photo: capturedPhoto,
-      status: "Started",
-      createdAt: new Date().toISOString(),
-    };
-
-    // Only local state, no backend
-    setComplaints((prev) => [newComplaint, ...prev]);
-    resetForm();
-    setShowComplaintForm(false);
-  };
-
-  const resetForm = () => {
-    setComplaintFormData({
-      citizenName: "",
-      phoneNumber: "",
-      wardNumber: "",
-      area: "",
-      category: "",
-      description: "",
-      photo: null,
-    });
-    setCapturedPhoto(null);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setComplaintFormData((prev) => ({ ...prev, [name]: value }));
-  };
 
   const videoConstraints = {
     width: 480,
@@ -100,13 +55,97 @@ export default function ComplaintsPage() {
     "Door To Door Collection Not Done",
   ];
 
+  // Load existing complaints from db.json via json-server
+  useEffect(() => {
+    const loadComplaints = async () => {
+      try {
+        const res = await api.get("/complaints");
+        setComplaints(res.data);
+      } catch (err) {
+        console.error("Error loading complaints", err);
+      }
+    };
+    loadComplaints();
+  }, []);
+
+  const capturePhoto = useCallback(() => {
+    const imageSrc = webcamRef.current?.getScreenshot();
+    if (imageSrc) {
+      setCapturedPhoto(imageSrc);
+      setComplaintFormData((prev) => ({ ...prev, photo: imageSrc }));
+    }
+  }, []);
+
+  const handleSubmitComplaint = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const now = new Date().toISOString();
+
+      // Map to db.json complaint shape
+      const payload = {
+        title: complaintFormData.category || "Citizen Complaint",
+        citizenName: complaintFormData.citizenName,
+        citizenPhone: complaintFormData.phoneNumber,
+        ward: `Ward ${complaintFormData.wardNumber}`,
+        location: complaintFormData.area,
+        category: complaintFormData.category,
+        description: complaintFormData.description,
+        status: "pending",
+        priority: "medium",
+        createdAt: now,
+        updatedAt: now,
+        assignedTo: "Not assigned",
+        resolvedDate: null,
+        notes: "",
+        photo: complaintFormData.photo, // base64 from webcam
+      };
+
+      const res = await api.post("/complaints", payload, {
+        headers: { "Content-Type": "application/json" },
+      }); // [web:53][web:50]
+
+      // res.data is the saved complaint with generated id
+      setComplaints((prev) => [res.data, ...prev]);
+      resetForm();
+      setShowComplaintForm(false);
+    } catch (err) {
+      console.error("Error submitting complaint", err);
+      alert("Failed to submit complaint.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const resetForm = () => {
+    setComplaintFormData({
+      citizenName: "",
+      phoneNumber: "",
+      wardNumber: "",
+      area: "",
+      category: "",
+      description: "",
+      photo: null,
+    });
+    setCapturedPhoto(null);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setComplaintFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   const getStatusColor = (status) => {
     switch (status) {
       case "Started":
+      case "pending":
         return "bg-yellow-100 text-yellow-800 border-yellow-300";
       case "In Progress":
+      case "in-progress":
         return "bg-orange-100 text-orange-800 border-orange-300";
       case "Done":
+      case "resolved":
         return "bg-green-100 text-green-800 border-green-300";
       default:
         return "bg-gray-100 text-gray-800";
@@ -178,19 +217,23 @@ export default function ComplaintsPage() {
                         <div className="flex-1">
                           <h4 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
                             {complaint.citizenName}
-                            <span className="text-sm px-3 py-1 bg-gray-100 text-gray-600 rounded-full select-none">
-                              #{complaint.id.slice(-6)}
-                            </span>
+                            {complaint.id && (
+                              <span className="text-sm px-3 py-1 bg-gray-100 text-gray-600 rounded-full select-none">
+                                #{String(complaint.id).slice(-6)}
+                              </span>
+                            )}
                           </h4>
                           <p className="text-md text-gray-700 mt-1 font-medium">
-                            {complaint.phoneNumber} | {complaint.area}, Ward{" "}
-                            {complaint.wardNumber}
+                            {complaint.citizenPhone || complaint.phoneNumber} |{" "}
+                            {complaint.location || complaint.area},{" "}
+                            {complaint.ward || `Ward ${complaint.wardNumber}`}
                           </p>
                           <p className="text-md text-gray-700 mt-1 font-medium">
                             {complaint.category} |{" "}
-                            {new Date(complaint.createdAt).toLocaleString(
-                              "en-IN"
-                            )}
+                            {complaint.createdAt &&
+                              new Date(complaint.createdAt).toLocaleString(
+                                "en-IN"
+                              )}
                           </p>
                           <p className="text-gray-800 mt-5 leading-relaxed">
                             {complaint.description}
@@ -246,6 +289,7 @@ export default function ComplaintsPage() {
             </div>
 
             <form onSubmit={handleSubmitComplaint} className="p-8 space-y-7">
+              {/* Full Name */}
               <div>
                 <label className="block text-md font-semibold text-gray-800 mb-2">
                   Full Name *
@@ -261,6 +305,7 @@ export default function ComplaintsPage() {
                 />
               </div>
 
+              {/* Phone */}
               <div>
                 <label className="block text-md font-semibold text-gray-800 mb-2">
                   Phone Number *
@@ -276,6 +321,7 @@ export default function ComplaintsPage() {
                 />
               </div>
 
+              {/* Ward + Area */}
               <div className="grid md:grid-cols-2 gap-8">
                 <div>
                   <label className="block text-md font-semibold text-gray-800 mb-2">
@@ -307,6 +353,7 @@ export default function ComplaintsPage() {
                 </div>
               </div>
 
+              {/* Category */}
               <div>
                 <label className="block text-md font-semibold text-gray-800 mb-2">
                   Category *
@@ -327,6 +374,7 @@ export default function ComplaintsPage() {
                 </select>
               </div>
 
+              {/* Description */}
               <div>
                 <label className="block text-md font-semibold text-gray-800 mb-2">
                   Description *
@@ -388,6 +436,7 @@ export default function ComplaintsPage() {
                 )}
               </div>
 
+              {/* Buttons */}
               <div className="flex justify-end gap-6 pt-6">
                 <button
                   type="button"
@@ -396,14 +445,16 @@ export default function ComplaintsPage() {
                     resetForm();
                   }}
                   className="px-8 py-4 border border-gray-300 text-gray-700 rounded-2xl hover:bg-gray-100 font-semibold transition-colors duration-300 shadow-sm"
+                  disabled={isSubmitting}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-700 text-white rounded-2xl font-semibold shadow-lg hover:from-green-700 hover:to-emerald-800 transition-transform duration-300 hover:scale-105 cursor-pointer"
+                  className="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-700 text-white rounded-2xl font-semibold shadow-lg hover:from-green-700 hover:to-emerald-800 transition-transform duration-300 hover:scale-105 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                  disabled={isSubmitting}
                 >
-                  Submit Complaint
+                  {isSubmitting ? "Submitting..." : "Submit Complaint"}
                 </button>
               </div>
             </form>

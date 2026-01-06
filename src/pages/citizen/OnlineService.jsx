@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Calendar, MapPin, Building2, Home, CreditCard, CheckCircle } from 'lucide-react';
+import api from '../../api/api';
 
 const ServiceBookingApp = () => {
   const [step, setStep] = useState(1);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     wardNumber: '',
     buildingNumber: '',
@@ -69,6 +71,43 @@ const ServiceBookingApp = () => {
   const calculateTotal = () => {
     const duration = durations.find(d => d.value === formData.duration);
     return duration ? duration.price : 0;
+  };
+
+  const handlePayNow = async () => {
+    if (!formData.subCategory || !formData.duration) return;
+
+    setSaving(true);
+    try {
+      const now = new Date().toISOString();
+
+      const payload = {
+        serviceType: formData.serviceType,
+        subCategory: formData.subCategory,
+        wardNumber: formData.wardNumber,
+        buildingNumber: formData.buildingNumber,
+        houseNumber: formData.houseNumber,
+        area: formData.area,
+        colony: formData.colony,
+        street: formData.street,
+        pincode: formData.pincode,
+        duration: formData.duration,
+        startMonth: formData.startMonth,
+        amount: calculateTotal(),
+        status: "Confirmed",
+        createdAt: now,
+      };
+
+      await api.post("/onlineServices", payload, {
+        headers: { "Content-Type": "application/json" },
+      }); // [web:50][web:53]
+
+      setStep(5);
+    } catch (err) {
+      console.error("Error saving online service booking", err);
+      alert("Failed to save booking");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const renderStep1 = () => (
@@ -346,12 +385,14 @@ const ServiceBookingApp = () => {
           Back
         </button>
         <button
-          onClick={() => setStep(5)}
-          className="flex-1 bg-green-600 text-white py-4 rounded-lg font-semibold text-lg hover:bg-green-700 transition-all flex items-center justify-center gap-2"
-        >
-          <CreditCard size={20} />
-          Pay Now
-        </button>
+  onClick={handlePayNow}
+  disabled={saving || !formData.subCategory || !formData.duration}
+  className="flex-1 bg-green-600 text-white py-4 rounded-lg font-semibold text-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+>
+  <CreditCard size={20} />
+  {saving ? "Processing..." : "Pay Now"}
+</button>
+
       </div>
     </div>
   );

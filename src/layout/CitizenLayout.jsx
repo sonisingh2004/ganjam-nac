@@ -11,7 +11,7 @@ export default function CitizenLayout() {
 
   return (
     <div className="min-h-screen flex">
-      {/* LEFT SIDEBAR – styled similar to admin panel */}
+      {/* LEFT SIDEBAR */}
       <aside className="w-60 bg-gradient-to-b from-emerald-500 to-emerald-700 text-white flex flex-col">
         {/* Top brand section */}
         <div className="px-4 pt-4 pb-3 border-b border-white/10">
@@ -21,7 +21,8 @@ export default function CitizenLayout() {
 
         {/* Navigation links */}
         <nav className="flex-1 flex flex-col gap-1 px-2 py-4">
-          <NavLink to="/citizen" className={linkClass}>
+          {/* FIX APPLIED HERE */}
+          <NavLink to="/citizen" end className={linkClass}>
             <span className="text-lg">🏠</span>
             <span>Dashboard</span>
           </NavLink>
@@ -42,31 +43,31 @@ export default function CitizenLayout() {
           </NavLink>
         </nav>
 
-        {/* Bottom user info (optional) */}
-        <div className="px-4 py-3 border-top border-white/10 text-[11px]">
+        {/* Bottom user info */}
+        <div className="px-4 py-3 border-t border-white/10 text-[11px]">
           <p className="font-semibold">Logged in as</p>
           <p className="text-white/80 truncate">Citizen User</p>
         </div>
       </aside>
 
-      {/* RIGHT CONTENT – header + page content */}
+      {/* RIGHT CONTENT */}
       <main className="flex-1 bg-gradient-to-br from-emerald-50 to-white overflow-y-auto">
-        {/* Top header bar like admin */}
+        {/* Header */}
         <div className="flex items-center justify-between px-6 py-3 bg-emerald-600 text-white shadow-sm">
-          {/* Left: title */}
           <div className="flex items-center space-x-3">
-            <img src={logo} alt="Logo" className="w-8 h-8 rounded-full object-cover" />
+            <img
+              src={logo}
+              alt="Logo"
+              className="w-8 h-8 rounded-full object-cover"
+            />
             <div>
               <p className="text-sm md:text-base font-semibold">
                 Solid Waste Management System
               </p>
-              <p className="text-[11px] text-emerald-100">
-                Citizen Panel
-              </p>
+              <p className="text-[11px] text-emerald-100">Citizen Panel</p>
             </div>
           </div>
 
-          {/* Right: date + logout */}
           <div className="flex items-center gap-3">
             <div className="hidden md:block bg-emerald-500/60 rounded-xl px-3 py-1.5 text-right text-[11px]">
               <p className="text-emerald-100">Current Date</p>
@@ -82,7 +83,6 @@ export default function CitizenLayout() {
             <button
               type="button"
               onClick={() => {
-                // TODO: clear auth (token) if you use one
                 window.location.href = "/";
               }}
               className="flex items-center gap-2 bg-white text-emerald-700 text-xs font-semibold px-3 py-2 rounded-full shadow hover:bg-emerald-50"
@@ -93,7 +93,7 @@ export default function CitizenLayout() {
           </div>
         </div>
 
-        {/* Main page content */}
+        {/* Page content */}
         <div className="px-4 pb-6 pt-4">
           <div className="bg-white/70 rounded-3xl shadow-sm">
             <Outlet />

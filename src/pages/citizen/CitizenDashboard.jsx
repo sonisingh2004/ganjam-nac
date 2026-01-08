@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import api from "../../api/api";
 export default function CitizenDashboard() {
   const [stats, setStats] = useState({
     total: 0,
@@ -9,7 +9,32 @@ export default function CitizenDashboard() {
 
   useEffect(() => {
     // TODO: replace with real API
-    setStats({ total: 2, resolved: 0, pending: 2 });
+    // setStats({ total: 2, resolved: 0, pending: 2 });
+
+    const loadStats = async () => {
+      try {
+        const res = await api.get("/complaints");
+        const complaints = res.data || [];
+
+        const total = complaints.length;
+
+        const resolved = complaints.filter((c) =>
+          ["resolved", "done"].includes(c.status?.toLowerCase())
+        ).length;
+
+        const pending = complaints.filter((c) =>
+          ["pending", "started", "in progress", "in-progress"].includes(
+            c.status?.toLowerCase()
+          )
+        ).length;
+
+        setStats({ total, resolved, pending });
+      } catch (err) {
+        console.error("Failed to load dashboard stats", err);
+      }
+    };
+
+    loadStats();
   }, []);
 
   /* =========================

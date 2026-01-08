@@ -1,228 +1,279 @@
-// @ts-nocheck
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import api from "../api/api";
+import { Phone, User, Lock, Globe } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-;
+import { useTranslation } from "react-i18next";
+import api from "../api/api";
 
 const LOGO = "https://swachhganjam.in/assets/logo-D7UUn_EU.png";
 
 const Login = () => {
-  const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
   const { login } = useAuth();
+  const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
   const [role, setRole] = useState("citizen");
-
-  // citizen
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
-  const [generatedOtp, setGeneratedOtp] = useState("");
   const [showOtpInput, setShowOtpInput] = useState(false);
-
-  // staff
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
   const [showNotice, setShowNotice] = useState(true);
 
-  const featureBoxes = [
-    { title: t("liveTracking"), color: "bg-emerald-500/20" },
-    { title: t("doorCollection"), color: "bg-lime-500/20" },
-    { title: t("photoComplaints"), color: "bg-cyan-500/20" },
-    { title: t("wardReports"), color: "bg-yellow-500/20" },
+  const wasteCategories = [
+    { name: "PAPER", color: "bg-blue-500", icon: "📄" },
+    { name: "PLASTIC", color: "bg-yellow-500", icon: "♻️" },
+    { name: "GLASS", color: "bg-cyan-500", icon: "🗑️" },
+    { name: "ORGANIC", color: "bg-green-500", icon: "🌱" }
   ];
 
-  /* ================= CITIZEN OTP ================= */
-  const handleGetOtp = async () => {
-    if (phone.length !== 10) {
-      toast.error("Phone number must be 10 digits");
-      return;
-    }
+  // -------- shared helpers --------
 
+  // Store login info into db.json -> loginLogs[]
+  const saveLoginLog = async ({ role, phone, username, status }) => {
     try {
-      const res = await api.get(`/citizens?phone=${phone}`);
-
-      if (res.data.length === 0) {
-        toast.error("Phone number not registered");
-        return;
-      }
-
-      setGeneratedOtp("123456");
-      setShowOtpInput(true);
-      toast.success("OTP sent to registered mobile");
-    } catch {
-      toast.error("Server error");
+      await api.post("/loginLogs", {
+        role,
+        phone: phone || null,
+        username: username || null,
+        time: new Date().toISOString(),
+        status // "success" | "failed"
+      });
+    } catch (error) {
+      console.error("Failed to save login log", error);
     }
   };
 
-  const handleVerifyOtp = () => {
-    if (!otp) {
-      toast.warning("Please enter OTP");
-      return;
-    }
-
-    if (otp !== generatedOtp) {
-      toast.error("Invalid OTP");
-      return;
-    }
-
-    // ✅ FIX: use AuthContext
-    login({ role: "citizen", phone });
-
-    toast.success("Citizen login successful");
-
-    setTimeout(() => {
-      navigate("/citizen");
-    }, 300);
-  };
-
-  /* ================= STAFF LOGIN ================= */
-  const handleStaffLogin = async () => {
-    if (!username || !password) {
-      toast.error("Username & password required");
-      return;
-    }
-
+  // Ensure citizen exists in db.json -> citizens[]
+  const ensureCitizenExists = async (phoneNumber) => {
     try {
-      const res = await api.get(
-        `/users?username=${username}&password=${password}&role=${role}`
-      );
-
-      if (res.data.length === 0) {
-        toast.error("Invalid credentials");
-        return;
-      }
-
-      const user = res.data[0];
-
-      // ✅ FIX: use AuthContext
-      login({
-        role: user.role,
-        username: user.username,
+      // check if this phone already exists
+      const { data: citizens } = await api.get("/citizens", {
+        params: { phone: phoneNumber }
       });
 
-      toast.success(
-        `${user.role.charAt(0).toUpperCase() + user.role.slice(1)} login successful`
-      );
+      if (!citizens || citizens.length === 0) {
+        // create new citizen record (json-server will auto-generate id)
+        await api.post("/citizens", {
+          phone: phoneNumber
+        });
+      }
+    } catch (error) {
+      console.error("Failed to ensure citizen exists", error);
+      // do not block login just because this failed
+    }
+  };
 
-      setTimeout(() => {
-        navigate(`/${user.role}`);
-      }, 300);
-    } catch {
+  // -------- citizen login --------
+
+  const handleGetOtp = () => {
+    if (phone.length !== 10) {
+      alert("Phone number must be 10 digits");
+      return;
+    }
+    setShowOtpInput(true);
+  };
+
+  const handleVerifyOtp = async () => {
+    if (otp === "123456") {
+      // 1) make sure citizen phone is stored in citizens[]
+      await ensureCitizenExists(phone);
+
+      // 2) log login success
+      await saveLoginLog({
+        role: "citizen",
+        phone,
+        username: null,
+        status: "success"
+      });
+
+      // 3) auth + navigation
+      login({ role: "citizen", phone });
+      toast.success("Login successful!");
+      navigate("/citizen");
+    } else {
+      await saveLoginLog({
+        role: "citizen",
+        phone,
+        username: null,
+        status: "failed"
+      });
+      alert("Invalid OTP");
+    }
+  };
+
+  // -------- staff (admin/supervisor) login --------
+
+  const handleStaffLogin = async () => {
+    if (!username || !password) {
+      alert("Please enter username and password");
+      return;
+    }
+
+    try {
+      const { data: users } = await api.get("/users", {
+        params: { username, password, role }
+      });
+
+      if (!users || users.length === 0) {
+        await saveLoginLog({
+          role,
+          phone: null,
+          username,
+          status: "failed"
+        });
+        toast.error("Invalid username or password");
+        return;
+      }
+
+      await saveLoginLog({
+        role,
+        phone: null,
+        username,
+        status: "success"
+      });
+
+      login({ role, username });
+      toast.success("Login successful!");
+      navigate(`/${role}`);
+    } catch (error) {
+      console.error(error);
       toast.error("Server error");
     }
   };
 
-  return (
-    <div className="min-h-screen relative font-sans">
+  // -------- JSX --------
 
-      {/* ================= NOTICE ================= */}
+  return (
+    <div className="min-h-screen flex flex-col lg:flex-row font-sans">
+      {/* Notice Popup */}
       {showNotice && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
-          <div className="bg-white max-w-md w-full rounded-2xl p-6 text-center shadow-xl">
-            <h2 className="text-xl font-semibold text-green-700 mb-3">
-              {t("officialPortal")}
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white max-w-md w-full rounded-2xl p-8 text-center shadow-2xl">
+            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden">
+              <img src={LOGO} alt="Ganjam Logo" className="w-full h-full object-cover" />
+            </div>
+            <h2 className="text-2xl font-bold text-emerald-700 mb-3">
+              Official Government Portal
             </h2>
-            <p className="text-sm text-gray-600 mb-5">
-              {t("officialWarning")}
+            <p className="text-gray-600 mb-6">
+              This is an official portal of GANJAM N.A.C for Solid Waste Management.
+              Please ensure you're on the correct website before entering any credentials.
             </p>
             <button
               onClick={() => setShowNotice(false)}
-              className="bg-green-600 text-white px-6 py-2 rounded-lg"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
             >
-              {t("iUnderstand")}
+              I Understand
             </button>
           </div>
         </div>
       )}
 
-      {/* ================= MOBILE NAVBAR ================= */}
-      <div className="lg:hidden fixed top-0 w-full z-40 bg-white border-b shadow-sm">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3">
-            <img src={LOGO} className="h-9 w-9 rounded-full" />
+      {/* Left Panel - Info Section */}
+      <div className="lg:w-1/2 bg-gradient-to-br from-teal-600 to-emerald-700 text-white p-8 lg:p-12 flex flex-col justify-between relative overflow-hidden">
+        <div>
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg overflow-hidden">
+              <img src={LOGO} alt="Ganjam Logo" className="w-full h-full object-cover" />
+            </div>
             <div>
-              <p className="font-semibold text-gray-800">
-                {t("berhampurNAC")}
-              </p>
-              <p className="text-xs text-gray-500">{t("solidWaste")}</p>
+              <h1 className="text-2xl font-bold">{t("berhampurNAC")}</h1>
+              <p className="text-teal-100 text-sm">{t("municipalServices")}</p>
             </div>
           </div>
-          <select
-            onChange={(e) => i18n.changeLanguage(e.target.value)}
-            className="border rounded-md text-xs px-2 py-1"
-          >
-            <option value="en">EN</option>
-            <option value="hi">HI</option>
-            <option value="od">OD</option>
-          </select>
+
+          <h2 className="text-4xl lg:text-5xl font-bold mb-4 mt-12">
+            {t("solidWaste")}
+          </h2>
+
+          <p className="text-xl text-teal-50 mb-4">
+            {t("joinMission")}
+          </p>
+
+          <p className="text-teal-100 mb-12">
+            {t("buildingFuture")}
+          </p>
+
+          <div className="grid grid-cols-2 gap-4 mt-8">
+            {wasteCategories.map((category, idx) => (
+              <div
+                key={idx}
+                className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 text-center hover:bg-white/15 transition-all"
+              >
+                <div className="text-4xl mb-2">{category.icon}</div>
+                <div
+                  className={`${category.color} text-white text-xs font-bold px-3 py-1 rounded-full inline-block mb-2`}
+                >
+                  {category.name}
+                </div>
+                <p className="text-sm text-teal-50">Recyclable</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-12">
+          <div className="relative h-32 opacity-30">
+            <svg viewBox="0 0 1200 200" className="absolute bottom-0 w-full">
+              <rect x="50" y="100" width="60" height="100" fill="currentColor" opacity="0.6" />
+              <rect x="130" y="80" width="50" height="120" fill="currentColor" opacity="0.7" />
+              <rect x="200" y="60" width="70" height="140" fill="currentColor" opacity="0.5" />
+              <rect x="290" y="90" width="55" height="110" fill="currentColor" opacity="0.6" />
+              <rect x="365" y="50" width="60" height="150" fill="currentColor" opacity="0.8" />
+              <rect x="445" y="70" width="50" height="130" fill="currentColor" opacity="0.5" />
+              <rect x="515" y="40" width="80" height="160" fill="currentColor" opacity="0.7" />
+              <rect x="615" y="85" width="55" height="115" fill="currentColor" opacity="0.6" />
+              <rect x="690" y="95" width="60" height="105" fill="currentColor" opacity="0.5" />
+              <rect x="770" y="55" width="70" height="145" fill="currentColor" opacity="0.7" />
+              <rect x="860" y="75" width="50" height="125" fill="currentColor" opacity="0.6" />
+              <rect x="930" y="90" width="65" height="110" fill="currentColor" opacity="0.5" />
+              <rect x="1015" y="65" width="55" height="135" fill="currentColor" opacity="0.7" />
+              <rect x="1090" y="80" width="60" height="120" fill="currentColor" opacity="0.6" />
+            </svg>
+          </div>
+          <p className="text-xs text-teal-100 mt-4">
+            © 2025 GANJAM N.A.C - All Rights Reserved
+          </p>
         </div>
       </div>
 
-      <div className="flex min-h-screen pt-20 lg:pt-0">
-
-        {/* ================= LEFT PANEL ================= */}
-        <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-green-700 to-emerald-600 text-white px-16 py-14 flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-4 mb-10">
-              <img src={LOGO} className="h-12 w-12 rounded-full bg-white p-1" />
-              <div>
-                <h2 className="text-xl font-bold">{t("berhampurNAC")}</h2>
-                <p className="text-sm text-green-100">{t("solidWaste")}</p>
-              </div>
-            </div>
-
-            <h1 className="text-6xl font-extrabold mb-6 mt-40">
-              {t("smartCity")}
-            </h1>
-
-            <p className="text-lg text-green-100 mb-12">
-              {t("platformDescription")}
-            </p>
-
-            <div className="grid grid-cols-2 gap-6 mt-10">
-              {featureBoxes.map((item, index) => (
-                <div
-                  key={index}
-                  className={`rounded-xl px-10 py-14 text-2xl font-medium
-                  text-white border border-white/30
-                  backdrop-blur shadow ${item.color}`}
-                >
-                  {item.title}
-                </div>
-              ))}
+      {/* Right Panel - Login Form */}
+      <div className="lg:w-1/2 bg-gray-50 flex items-center justify-center p-8">
+        <div className="w-full max-w-md">
+          <div className="lg:hidden flex justify-center mb-6">
+            <div className="w-20 h-20 bg-emerald-600 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
+              <img src={LOGO} alt="Ganjam Logo" className="w-full h-full object-cover" />
             </div>
           </div>
 
-          <p className="text-xs text-green-100">
-            {t("governmentAuthorized")}
-          </p>
-        </div>
-
-        {/* ================= RIGHT PANEL ================= */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center bg-white px-6">
-          <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
-
-            <div className="hidden lg:flex justify-end mb-3">
-              <select
-                onChange={(e) => i18n.changeLanguage(e.target.value)}
-                className="border rounded-md text-xs px-2 py-1"
-              >
-                <option value="en">English</option>
-                <option value="hi">हिन्दी</option>
-                <option value="od">ଓଡ଼ିଆ</option>
-              </select>
+          <div className="bg-white rounded-2xl shadow-xl p-8 border-t-4 border-emerald-500">
+            {/* Language Selector */}
+            <div className="flex justify-end mb-4">
+              <div className="flex items-center gap-2">
+                <Globe size={16} className="text-gray-500" />
+                <select
+                  value={i18n.language}
+                  onChange={(e) => i18n.changeLanguage(e.target.value)}
+                  className="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none"
+                >
+                  <option value="en">English</option>
+                  <option value="hi">हिन्दी</option>
+                  <option value="od">ଓଡ଼ିଆ</option>
+                </select>
+              </div>
             </div>
 
-            <div className="flex justify-center mb-4">
-              <img src={LOGO} className="h-16 w-16 rounded-full shadow" />
+            {/* Logo */}
+            <div className="flex justify-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
+                <img src={LOGO} alt="Ganjam Logo" className="w-full h-full object-cover" />
+              </div>
             </div>
 
-            {/* ROLES */}
-            <div className="flex justify-center gap-6 mb-6 text-sm">
+            {/* Role Tabs */}
+            <div className="flex justify-center gap-8 mb-8 border-b">
               {["citizen", "supervisor", "admin"].map((r) => (
                 <button
                   key={r}
@@ -230,13 +281,14 @@ const Login = () => {
                     setRole(r);
                     setShowOtpInput(false);
                     setOtp("");
+                    setPhone("");
                     setUsername("");
                     setPassword("");
                   }}
-                  className={`pb-1 font-semibold ${
+                  className={`pb-3 px-2 font-semibold text-sm uppercase transition-all ${
                     role === r
-                      ? "text-green-600 border-b-2 border-green-600"
-                      : "text-gray-400"
+                      ? "text-emerald-600 border-b-3 border-emerald-600"
+                      : "text-gray-400 hover:text-gray-600"
                   }`}
                 >
                   {t(`roles.${r}`)}
@@ -244,71 +296,146 @@ const Login = () => {
               ))}
             </div>
 
-            {/* FORMS */}
+            <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">
+              {t("loginTitle", { role: t(`roles.${role}`) })}
+            </h2>
+            <p className="text-gray-500 text-sm text-center mb-6">
+              {t("welcomeMessage")}
+            </p>
+
+            {/* Forms */}
             {role === "citizen" ? (
               <>
                 {!showOtpInput ? (
-                  <>
-                    <input
-                      value={phone}
-                      onChange={(e) =>
-                        /^\d*$/.test(e.target.value) &&
-                        e.target.value.length <= 10 &&
-                        setPhone(e.target.value)
-                      }
-                      placeholder={t("phone")}
-                      className="w-full border rounded-lg px-4 py-3 mb-4"
-                    />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {t("phone")}
+                    </label>
+                    <div className="relative">
+                      <Phone
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        size={20}
+                      />
+                      <input
+                        type="tel"
+                        value={phone}
+                        onChange={(e) =>
+                          /^\d*$/.test(e.target.value) &&
+                          e.target.value.length <= 10 &&
+                          setPhone(e.target.value)
+                        }
+                        placeholder={t("phone")}
+                        className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none"
+                      />
+                    </div>
                     <button
                       onClick={handleGetOtp}
-                      className="w-full bg-green-600 text-white py-3 rounded-lg"
+                      className="w-full mt-6 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg font-semibold transition-colors"
                     >
                       {t("getOtp")}
                     </button>
-                  </>
+                  </div>
                 ) : (
-                  <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {t("enterOtp")}
+                    </label>
                     <input
+                      type="text"
                       value={otp}
                       onChange={(e) => setOtp(e.target.value)}
                       placeholder={t("enterOtp")}
-                      className="w-full border rounded-lg px-4 py-3 mb-2"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none"
                     />
-                    <p className="text-xs text-center mb-3">
-                      {t("demoOtp")}: <b>123456</b>
+                    <p className="text-xs text-center text-gray-500 mt-2">
+                      Demo OTP:{" "}
+                      <span className="font-bold text-emerald-600">123456</span>
                     </p>
                     <button
                       onClick={handleVerifyOtp}
-                      className="w-full bg-green-600 text-white py-3 rounded-lg"
+                      className="w-full mt-6 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg font-semibold transition-colors"
                     >
                       {t("verifyOtp")}
                     </button>
-                  </>
+                    <button
+                      onClick={() => {
+                        setShowOtpInput(false);
+                        setOtp("");
+                      }}
+                      className="w-full mt-3 text-emerald-600 hover:text-emerald-700 text-sm font-medium"
+                    >
+                      ← {t("changePhone")}
+                    </button>
+                  </div>
                 )}
               </>
             ) : (
-              <>
-                <input
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder={t("username")}
-                  className="w-full border rounded-lg px-4 py-3 mb-4"
-                />
-                <input
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  type="password"
-                  placeholder={t("password")}
-                  className="w-full border rounded-lg px-4 py-3 mb-6"
-                />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("username")}
+                </label>
+                <div className="relative mb-4">
+                  <User
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                    size={20}
+                  />
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder={t("username")}
+                    className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none"
+                  />
+                </div>
+
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("password")}
+                </label>
+                <div className="relative">
+                  <Lock
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                    size={20}
+                  />
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder={t("password")}
+                    className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none"
+                  />
+                </div>
+
                 <button
                   onClick={handleStaffLogin}
-                  className="w-full bg-green-600 text-white py-3 rounded-lg"
+                  className="w-full mt-6 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg font-semibold transition-colors"
                 >
                   {t("login")}
                 </button>
-              </>
+              </div>
             )}
+
+            <p className="text-xs text-center text-gray-500 mt-6">
+              By logging in, you agree to our{" "}
+              <a href="#" className="text-emerald-600 hover:underline">
+                Terms of Service
+              </a>{" "}
+              and{" "}
+              <a href="#" className="text-emerald-600 hover:underline">
+                Privacy Policy
+              </a>
+            </p>
+          </div>
+
+          <div className="text-center mt-6">
+            <p className="text-sm text-gray-600">
+              Need help?{" "}
+              <a
+                href="mailto:support@ganjamnac.in"
+                className="text-emerald-600 hover:underline font-medium"
+              >
+                support@ganjamnac.in
+              </a>
+            </p>
           </div>
         </div>
       </div>

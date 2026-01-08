@@ -61,8 +61,8 @@ const Complaints = () => {
               ward: c.ward || "N/A",
               type: c.title || c.category || "General Issue",
               image:
-                c.image && c.image !== ""
-                  ? c.image
+                c.photo && c.photo !== ""
+                  ? c.photo
                   : "https://via.placeholder.com/300",
               vehicle: c.vehicle || "Not Assigned",
               driver: c.driver || "Not Assigned",

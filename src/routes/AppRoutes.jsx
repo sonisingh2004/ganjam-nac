@@ -20,7 +20,6 @@ import WasteCollection from "../pages/admin/WasteCollection";
 import CitizenLayout from "../layout/CitizenLayout";
 import CitizenDashboard from "../pages/citizen/CitizenDashboard";
 import CitizenPostComplaint from "../pages/citizen/CitizenPostComplaint";
-import CitizenTrackVehicle from "../pages/citizen/CitizenTrackVehicle";
 
 /* ================= SUPERVISOR ================= */
 import SupervisorLayout from "../layout/SupervisorLayout";
@@ -28,7 +27,6 @@ import OnlineService from "../pages/citizen/OnlineService";
 import Analytics from "../pages/supervisor/Analytics";
 import Attendance from "../pages/supervisor/Attendance";
 import Complaints from "../pages/supervisor/Complaints";
-import LiveTracking from "../pages/supervisor/LiveTracking";
 import QueueFulfillment from "../pages/supervisor/QueueFulfillment";
 import SupervisorDashboard from "../pages/supervisor/SupervisorDashboard";
 import Vehicles from "../pages/supervisor/Vehicles";
@@ -74,7 +72,7 @@ export default function AppRoutes() {
         >
           <Route index element={<CitizenDashboard />} />
           <Route path="complaint" element={<CitizenPostComplaint />} />
-          <Route path="track" element={<CitizenTrackVehicle />} />
+          <Route path="track" element={<TrackVehicle/>} />
           <Route path="payments" element={<OnlineService/>} />
         </Route>
 
@@ -94,7 +92,7 @@ export default function AppRoutes() {
           <Route path="complaints" element={<Complaints />} />
           <Route path="attendance" element={<Attendance />} />
           <Route path="analytics" element={<Analytics />} />
-          <Route path="live-tracking" element={<LiveTracking />} />
+          <Route path="live-tracking" element={<TrackVehicle />} />
           <Route path="queue-fulfillment" element={<QueueFulfillment />} />
         </Route>
 

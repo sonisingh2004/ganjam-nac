@@ -216,7 +216,7 @@ const TrackVehicle = () => {
         </div>
 
         {/* Map View */}
-        <MapView vehicles={filteredVehicles} />
+        <MapView vehicles={filteredVehicles} selectedVehicle={selectedVehicle} />
 
         {/* Vehicle List */}
         <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
@@ -232,11 +232,22 @@ const TrackVehicle = () => {
                 <div
                   key={vehicle.id}
                   className="bg-gradient-to-r from-gray-50 to-white hover:from-emerald-50 hover:to-teal-50 border border-gray-200 rounded-xl p-4 transition-all duration-300 cursor-pointer"
-                  onClick={() => setSelectedVehicle(vehicle)}
+                  onClick={() => {
+                    setSelectedVehicle(vehicle);
+                    // Scroll to map smoothly
+                    setTimeout(() => {
+                      document.querySelector('.max-w-7xl > div:nth-child(4)')?.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                      });
+                    }, 100);
+                  }}
                 >
                   <div className="flex items-center justify-between">
                     {/* Left Section */}
-                    <div className="flex items-center space-x-4">
+                    <div 
+                      className="flex items-center space-x-4"
+                    >
                       <div className={`w-12 h-12 ${getStatusColor(vehicle.status).bg} rounded-xl flex items-center justify-center shadow-md`}>
                         <span className="text-white text-2xl">{getVehicleIcon(vehicle.type)}</span>
                       </div>
@@ -285,15 +296,6 @@ const TrackVehicle = () => {
                           {getTimeSinceUpdate(vehicle.lastUpdated)}
                         </p>
                       </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedVehicle(vehicle);
-                        }}
-                        className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-4 py-1 rounded-lg text-sm font-semibold shadow-md transition-all"
-                      >
-                        Track
-                      </button>
                     </div>
                   </div>
 
@@ -326,154 +328,6 @@ const TrackVehicle = () => {
         </div>
       </div>
 
-      {/* Vehicle Detail Modal */}
-      {selectedVehicle && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                  Vehicle Tracking Details
-                </h2>
-                <button
-                  onClick={() => setSelectedVehicle(null)}
-                  className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
-                >
-                  ×
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                {/* Vehicle Info */}
-                <div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-3">Vehicle Information</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-600 font-semibold">Registration Number</p>
-                      <p className="text-lg font-bold text-gray-900">{selectedVehicle.registrationNumber}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600 font-semibold">Type</p>
-                      <p className="text-base font-bold text-gray-900 capitalize">{selectedVehicle.type}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600 font-semibold">Status</p>
-                      <span className={`${getStatusColor(selectedVehicle.status).bg} text-white text-sm font-bold px-3 py-1 rounded-full inline-block`}>
-                        {selectedVehicle.status.replace(/([A-Z])/g, ' $1').trim()}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600 font-semibold">Assigned Ward</p>
-                      <p className="text-base font-bold text-gray-900">{selectedVehicle.assignedWard}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Current Status */}
-                <div className="border-t border-gray-200 pt-4">
-                  <h3 className="text-lg font-bold text-gray-900 mb-3">Current Status</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-600 font-semibold">Speed</p>
-                      <p className="text-base font-bold text-gray-900">
-                        {selectedVehicle.speed !== null ? `${selectedVehicle.speed} km/h` : 'N/A'}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600 font-semibold">Fuel Level</p>
-                      <p className="text-base font-bold text-gray-900">
-                        {selectedVehicle.fuelLevel !== null ? `${selectedVehicle.fuelLevel}%` : 'N/A'}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600 font-semibold">Last Update</p>
-                      <p className="text-base font-bold text-gray-900">
-                        {getTimeSinceUpdate(selectedVehicle.lastUpdated)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600 font-semibold">Location</p>
-                      <p className="text-base font-bold text-gray-900">
-                        {selectedVehicle.location 
-                          ? `${selectedVehicle.location.lat.toFixed(4)}, ${selectedVehicle.location.lng.toFixed(4)}`
-                          : 'N/A'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Route Progress */}
-                <div className="border-t border-gray-200 pt-4">
-                  <h3 className="text-lg font-bold text-gray-900 mb-3">Route Progress</h3>
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-semibold text-gray-700">Completion</span>
-                      <span className="text-sm font-bold text-emerald-600">{selectedVehicle.routeProgress}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div 
-                        className="bg-gradient-to-r from-emerald-500 to-teal-500 h-3 rounded-full transition-all"
-                        style={{ width: `${selectedVehicle.routeProgress}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-600 font-semibold">Waste Collected</p>
-                      <p className="text-base font-bold text-gray-900">{selectedVehicle.wasteCollected} tons</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600 font-semibold">Target</p>
-                      <p className="text-base font-bold text-gray-900">{selectedVehicle.targetWaste} tons</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Driver Info */}
-                <div className="border-t border-gray-200 pt-4">
-                  <h3 className="text-lg font-bold text-gray-900 mb-3">Driver Information</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-600 font-semibold">Name</p>
-                      <p className="text-base font-bold text-gray-900">{selectedVehicle.driverName}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600 font-semibold">Phone</p>
-                      <p className="text-base font-bold text-gray-900">{selectedVehicle.driverPhone}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex space-x-3 pt-4">
-                  <button
-                    onClick={() => setSelectedVehicle(null)}
-                    className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-900 py-2 rounded-xl font-semibold transition-all"
-                  >
-                    Close
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (selectedVehicle.driverPhone) {
-                        window.location.href = `tel:${selectedVehicle.driverPhone}`;
-                      }
-                    }}
-                    className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white py-2 rounded-xl font-semibold transition-all"
-                  >
-                    Call Driver
-                  </button>
-                  <button
-                    onClick={() => toast.info('Route history feature coming soon!')}
-                    className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-2 rounded-xl font-semibold transition-all"
-                  >
-                    View History
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

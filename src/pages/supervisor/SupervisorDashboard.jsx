@@ -313,6 +313,9 @@
 // @ts-nocheck
 // src/pages/supervisor/SupervisorDashboard.jsx
 
+// @ts-nocheck
+// src/pages/supervisor/SupervisorDashboard.jsx
+
 import {
   Activity,
   AlertCircle,
@@ -333,95 +336,24 @@ import {
 } from "recharts";
 import api from "../../api/api";
 
-/* ================= FALLBACK DATA ================= */
+/* ================= FALLBACK ================= */
 
-const fallbackCollectionTrend = [
-  { day: "Mon", value: 72 },
-  { day: "Tue", value: 78 },
-  { day: "Wed", value: 85 },
-  { day: "Thu", value: 81 },
-  { day: "Fri", value: 90 },
-];
-
-const fallbackWards = [
-  { name: "Ward 1", percent: 92 },
-  { name: "Ward 3", percent: 84 },
-  { name: "Ward 5", percent: 76 },
-  { name: "Ward 12", percent: 88 },
-];
-
-const fallbackVehicles = [
-  { no: "OD-07-GT-1023", status: "Active" },
-];
-
-/* ================= KPI CONFIG ================= */
-
-const KPI_CONFIG = [
-  {
-    title: "Total Vehicles",
-    key: "vehicles",
-    icon: <Truck />,
-    color: "bg-gradient-to-br from-emerald-500 to-green-600",
-  },
-  {
-    title: "Active Complaints",
-    value: 12,
-    icon: <AlertCircle />,
-    color: "bg-gradient-to-br from-orange-500 to-orange-600",
-  },
-  {
-    title: "Defects Reported",
-    value: 6,
-    icon: <Wrench />,
-    color: "bg-gradient-to-br from-yellow-500 to-orange-500",
-  },
-  {
-    title: "Collection Rate",
-    value: "92%",
-    icon: <ClipboardList />,
-    color: "bg-gradient-to-br from-green-500 to-emerald-600",
-  },
-];
-
-/* ================= QUICK ACTIONS ================= */
-
-const QUICK_ACTIONS = [
-  {
-    label: "Report Defect",
-    icon: <Wrench />,
-    path: "/supervisor/defects",
-    color: "from-emerald-600 to-green-700",
-  },
-  {
-    label: "View Complaints",
-    icon: <AlertCircle />,
-    path: "/supervisor/complaints",
-    color: "from-orange-500 to-orange-600",
-  },
-  {
-    label: "Live Tracking",
-    icon: <Activity />,
-    path: "/supervisor/live-tracking",
-    color: "from-green-500 to-emerald-600",
-  },
-];
-
-/* ================= SYSTEM HEALTH ================= */
-
-const SYSTEM_HEALTH = [
-  "✔ API Services Online",
-  "✔ GPS Tracking Active",
-  "⚠ 1 Maintenance Alert",
+const fallbackTrend = [
+  { day: "Mon", value: 0 },
+  { day: "Tue", value: 0 },
+  { day: "Wed", value: 0 },
+  { day: "Thu", value: 0 },
+  { day: "Fri", value: 0 },
 ];
 
 /* ================= STAT CARD ================= */
 
 const StatCard = ({ title, value, icon, color }) => (
-  <div className={`rounded-3xl p-6 text-white shadow-sm ${color}`}>
+  <div className={`rounded-3xl p-6 text-white shadow ${color}`}>
     <div className="flex justify-between items-center mb-3">
       <div className="bg-white/20 p-2 rounded-lg">{icon}</div>
       <span className="text-xs bg-white/30 px-2 py-1 rounded-full">
-        Today
+        Live
       </span>
     </div>
     <p className="text-sm opacity-90">{title}</p>
@@ -434,37 +366,136 @@ const StatCard = ({ title, value, icon, color }) => (
 const SupervisorDashboard = () => {
   const navigate = useNavigate();
 
-  const [collectionTrend, setCollectionTrend] = useState(
-    fallbackCollectionTrend
-  );
-  const [wards, setWards] = useState(fallbackWards);
-  const [vehicles, setVehicles] = useState(fallbackVehicles);
+  const [vehicles, setVehicles] = useState([]);
+  const [complaints, setComplaints] = useState([]);
+  const [wards, setWards] = useState([]);
+  const [collectionTrend, setCollectionTrend] =
+    useState(fallbackTrend);
 
-  /* ================= API LOAD ================= */
+  /* ================= LOAD DATA ================= */
+
   useEffect(() => {
-    const loadDashboardData = async () => {
+    const loadData = async () => {
       try {
-        const vehicleRes = await api.get("/vehicles");
-        if (vehicleRes.data?.length) {
-          setVehicles(
-            vehicleRes.data.map((v) => ({
-              no: v.number,
-              status: v.status,
-            }))
-          );
-        }
-      } catch {}
+        const [vehicleRes, complaintRes] = await Promise.all([
+          api.get("/vehicles"),
+          api.get("/complaints"),
+        ]);
+
+        setVehicles(vehicleRes.data || []);
+        setComplaints(complaintRes.data || []);
+      } catch (err) {
+        console.error("Dashboard API Error", err);
+      }
     };
-    loadDashboardData();
+
+    loadData();
   }, []);
+
+  /* ================= DERIVED KPI ================= */
+
+  const activeComplaints = complaints.filter(
+    (c) => c.status === "pending" || c.status === "in-progress"
+  ).length;
+
+  const inProgress = complaints.filter(
+    (c) => c.status === "in-progress"
+  ).length;
+
+  const resolved = complaints.filter(
+    (c) => c.status === "resolved"
+  ).length;
+
+  /* ================= WARD PERFORMANCE ================= */
+
+  useEffect(() => {
+    if (!complaints.length) return;
+
+    const wardMap = {};
+
+    complaints.forEach((c) => {
+      if (!wardMap[c.ward]) {
+        wardMap[c.ward] = { total: 0, resolved: 0 };
+      }
+      wardMap[c.ward].total += 1;
+      if (c.status === "resolved") {
+        wardMap[c.ward].resolved += 1;
+      }
+    });
+
+    const wardStats = Object.keys(wardMap).map((ward) => ({
+      name: ward,
+      percent: Math.round(
+        (wardMap[ward].resolved / wardMap[ward].total) * 100
+      ),
+    }));
+
+    setWards(wardStats);
+  }, [complaints]);
+
+  /* ================= KPI CONFIG ================= */
+
+  const KPI_CONFIG = [
+    {
+      title: "Total Vehicles",
+      value: vehicles.length,
+      icon: <Truck />,
+      color: "bg-gradient-to-br from-emerald-500 to-green-600",
+    },
+    {
+      title: "Active Complaints",
+      value: activeComplaints,
+      icon: <AlertCircle />,
+      color: "bg-gradient-to-br from-orange-500 to-orange-600",
+    },
+    {
+      title: "In Progress",
+      value: inProgress,
+      icon: <Activity />,
+      color: "bg-gradient-to-br from-yellow-500 to-orange-500",
+    },
+    {
+      title: "Resolved",
+      value: resolved,
+      icon: <ClipboardList />,
+      color: "bg-gradient-to-br from-green-500 to-emerald-600",
+    },
+  ];
+
+  /* ================= QUICK ACTIONS ================= */
+
+  const QUICK_ACTIONS = [
+    {
+      label: "Report Defect",
+      icon: <Wrench />,
+      path: "/supervisor/defects",
+      color: "from-emerald-600 to-green-700",
+    },
+    {
+      label: "View Complaints",
+      icon: <AlertCircle />,
+      path: "/supervisor/complaints",
+      color: "from-orange-500 to-orange-600",
+    },
+    {
+      label: "Live Tracking",
+      icon: <Activity />,
+      path: "/supervisor/live-tracking",
+      color: "from-green-500 to-emerald-600",
+    },
+  ];
+
+  /* ================= UI ================= */
 
   return (
     <div className="space-y-8 bg-emerald-50 p-6 rounded-3xl">
 
-      {/* ALERT BAR */}
+      {/* ALERT */}
       <div className="bg-emerald-100 border border-emerald-300 text-emerald-800 rounded-xl px-6 py-4 flex items-center gap-3">
         <Bell size={20} />
-        <p className="text-sm">2 vehicles scheduled for maintenance today.</p>
+        <p className="text-sm">
+          {vehicles.length} vehicles currently registered.
+        </p>
       </div>
 
       {/* HEADER */}
@@ -474,32 +505,24 @@ const SupervisorDashboard = () => {
           Smart Solid Waste Monitoring System
         </p>
         <p className="text-xs opacity-80 mt-1">
-          Data Period: Today ({new Date().toLocaleDateString()})
+          Updated: {new Date().toLocaleString()}
         </p>
       </div>
 
-      {/* KPI CARDS */}
+      {/* KPI */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {KPI_CONFIG.map((kpi, index) => (
-          <StatCard
-            key={index}
-            title={kpi.title}
-            value={
-              kpi.key === "vehicles" ? vehicles.length : kpi.value
-            }
-            icon={kpi.icon}
-            color={kpi.color}
-          />
+        {KPI_CONFIG.map((kpi, i) => (
+          <StatCard key={i} {...kpi} />
         ))}
       </div>
 
-      {/* CHART + VEHICLE STATUS */}
+      {/* TREND + VEHICLES */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* COLLECTION TREND */}
-        <div className="bg-white rounded-3xl shadow-sm p-6 lg:col-span-2">
+        {/* TREND */}
+        <div className="bg-white rounded-3xl shadow p-6 lg:col-span-2">
           <h3 className="font-semibold mb-4">
-            Weekly Collection Trend (% Coverage)
+            Weekly Collection Trend
           </h3>
 
           <ResponsiveContainer width="100%" height={260}>
@@ -518,19 +541,19 @@ const SupervisorDashboard = () => {
         </div>
 
         {/* VEHICLE STATUS */}
-        <div className="bg-white rounded-3xl shadow-sm p-6">
+        <div className="bg-white rounded-3xl shadow p-6">
           <h3 className="font-semibold mb-4">Vehicle Status</h3>
-
           <ul className="space-y-3 text-sm h-72 overflow-y-auto">
             {vehicles.map((v) => (
-              <li key={v.no} className="flex justify-between items-center">
-                <span>{v.no}</span>
+              <li
+                key={v.id}
+                className="flex justify-between items-center"
+              >
+                <span>{v.number}</span>
                 <span
                   className={`px-3 py-1 rounded-full text-xs text-white ${
                     v.status === "Active"
                       ? "bg-green-600"
-                      : v.status === "Inactive"
-                      ? "bg-yellow-500"
                       : "bg-red-500"
                   }`}
                 >
@@ -543,7 +566,7 @@ const SupervisorDashboard = () => {
       </div>
 
       {/* WARD PERFORMANCE */}
-      <div className="bg-white rounded-3xl shadow-sm p-6">
+      <div className="bg-white rounded-3xl shadow p-6">
         <h3 className="font-semibold mb-4">
           Ward-wise Collection Performance
         </h3>
@@ -578,30 +601,6 @@ const SupervisorDashboard = () => {
           </button>
         ))}
       </div>
-
-      {/* SYSTEM HEALTH */}
-      <div className="bg-gradient-to-r from-emerald-700 to-green-800 text-white rounded-3xl shadow-sm p-6">
-        <h3 className="font-semibold mb-2">System Health</h3>
-        <p className="text-sm opacity-90 mb-4">
-          Overall platform performance
-        </p>
-
-        <div className="flex flex-wrap gap-4 text-sm">
-          {SYSTEM_HEALTH.map((item, i) => (
-            <span
-              key={i}
-              className="bg-white/20 px-4 py-2 rounded-full"
-            >
-              {item}
-            </span>
-          ))}
-        </div>
-
-        <p className="text-xs opacity-80 mt-3">
-          System status is auto-monitored. Manual intervention is restricted.
-        </p>
-      </div>
-
     </div>
   );
 };

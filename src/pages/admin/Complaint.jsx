@@ -15,6 +15,7 @@ const Complaint = () => {
   });
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [imageModal, setImageModal] = useState(null);
   const [supervisors, setSupervisors] = useState([]);
   const [selectedSupervisor, setSelectedSupervisor] = useState('');
 
@@ -299,7 +300,7 @@ const Complaint = () => {
                 <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Title</th>
                 <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider hidden md:table-cell">Category</th>
                 <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider hidden lg:table-cell">Location</th>
-                <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Priority</th>
+                <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Image</th>
                 <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Status</th>
                 <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider hidden xl:table-cell">Date</th>
                 <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Actions</th>
@@ -331,9 +332,17 @@ const Complaint = () => {
                       {complaint.location}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm">
-                      <span className={`font-semibold ${getPriorityColor(complaint.priority)}`}>
-                        {complaint.priority?.toUpperCase() || 'N/A'}
-                      </span>
+                      {complaint.photo ? (
+                        <img 
+                          src={complaint.photo} 
+                          alt="Complaint" 
+                          className="h-12 w-12 rounded-lg object-cover border-2 border-gray-200 cursor-pointer hover:scale-110 transition-transform"
+                          onClick={() => setImageModal(complaint.photo)}
+                          title="Click to view full image"
+                        />
+                      ) : (
+                        <span className="text-gray-400 text-xs">No image</span>
+                      )}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap">
                       <select
@@ -398,18 +407,23 @@ const Complaint = () => {
                   <p className="text-gray-900 leading-relaxed">{selectedComplaint.description}</p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
-                    <p className="text-gray-900 font-medium">{selectedComplaint.category}</p>
-                  </div>
-                  <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-100">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Priority</label>
-                    <p className={`font-bold text-lg ${getPriorityColor(selectedComplaint.priority)}`}>
-                      {selectedComplaint.priority?.toUpperCase() || 'N/A'}
-                    </p>
-                  </div>
+                <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
+                  <p className="text-gray-900 font-medium">{selectedComplaint.category}</p>
                 </div>
+
+                {selectedComplaint.photo && (
+                  <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">Complaint Image</label>
+                    <img 
+                      src={selectedComplaint.photo} 
+                      alt="Complaint" 
+                      className="w-full h-64 object-cover rounded-lg border-2 border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
+                      onClick={() => setImageModal(selectedComplaint.photo)}
+                      title="Click to view full image"
+                    />
+                  </div>
+                )}
 
                 <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Location</label>
@@ -487,6 +501,29 @@ const Complaint = () => {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Modal */}
+      {imageModal && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
+          onClick={() => setImageModal(null)}
+        >
+          <div className="relative max-w-7xl max-h-full">
+            <button
+              onClick={() => setImageModal(null)}
+              className="absolute -top-10 right-0 text-white hover:text-gray-300 text-4xl font-bold"
+            >
+              ×
+            </button>
+            <img 
+              src={imageModal} 
+              alt="Complaint Full Size" 
+              className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            />
           </div>
         </div>
       )}
